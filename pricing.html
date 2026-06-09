@@ -7,8 +7,8 @@
 <meta name="description" content="NEXA pricing: Starter €499, Growth €1499, Scale €4999, and custom Enterprise. Go annual to save 20%; the Scale plan includes a free MacBook or PC. Compare plans and read the FAQ." />
 <link rel="canonical" href="https://nexa.ai/pricing.html" />
 <meta property="og:title" content="NEXA Pricing — Hire your AI workforce" />
-<meta property="og:description" content="Per AI employee. Cancel anytime. Save 20% on annual billing; the Scale plan includes a free laptop." />
-<link rel="icon" href="assets/favicon.png" />
+<meta property="og:description" content="Per AI employee. 12-month plan, pay monthly or yearly. Save 20% on annual billing; the Scale plan includes a free laptop." />
+<link rel="icon" href="assets/img/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -24,8 +24,28 @@
 .pc .emp{ color:var(--c-indigo); font-size:13.5px; font-weight:600; } .pc .laptop{ font-size:12px; color:var(--c-violet); font-weight:600; margin-top:6px; min-height:16px; }
 .pc ul{ list-style:none; margin:18px 0 22px; flex:1; } .pc li{ font-size:13.5px; color:var(--text-2); padding:6px 0; display:flex; gap:9px; } .pc li::before{ content:"✓"; color:var(--c-green); font-weight:700; }
 .feat-badge{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink); font-weight:700; margin-bottom:6px; }
-.cmp { width:100%; border-collapse:collapse; } .cmp th,.cmp td{ text-align:left; padding:14px 16px; border-bottom:1px solid var(--border); font-size:14px; } .cmp th{ font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); } .cmp td.c{ text-align:center; } .cmp .yes{ color:var(--c-green); font-weight:700; } .cmp .no{ color:var(--text-3); } .cmp tr td:first-child{ color:var(--ink); font-weight:500; }
-.cmp-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:18px; }
+/* ---------- comparison table ---------- */
+.cmp-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:20px; box-shadow:var(--shadow-card); background:#fff; -webkit-overflow-scrolling:touch; }
+.cmp { width:100%; min-width:720px; border-collapse:separate; border-spacing:0; }
+.cmp th, .cmp td { padding:15px 18px; text-align:center; vertical-align:middle; border-bottom:1px solid var(--border); font-size:14px; }
+.cmp tbody tr:last-child td { border-bottom:none; }
+/* sticky feature column (stays visible while scrolling on mobile) */
+.cmp th:first-child, .cmp td:first-child { position:sticky; left:0; z-index:1; background:#fff; text-align:left; min-width:210px; font-weight:600; color:var(--ink); }
+.cmp thead th:first-child { z-index:2; font-size:11.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-3); font-weight:700; }
+/* plan header cells */
+.cmp thead .plan { padding:18px 18px 16px; }
+.cmp thead .plan .pname { font-size:15px; font-weight:800; color:var(--ink); letter-spacing:-.02em; }
+.cmp thead .plan .pprice { font-size:12.5px; color:var(--text-3); font-weight:500; margin-top:3px; }
+.cmp .badge-pop { display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:#fff; background:linear-gradient(135deg,var(--c-indigo),var(--c-violet)); padding:3px 10px; border-radius:999px; margin-bottom:9px; }
+/* values + marks */
+.cmp .val { font-weight:700; color:var(--ink); }
+.cmp .yes { display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%; background:rgba(22,163,74,.12); color:var(--c-green); font-size:12.5px; font-weight:800; }
+.cmp .no { color:var(--text-3); opacity:.45; font-weight:600; }
+/* highlighted recommended column */
+.cmp .hl { background:rgba(99,102,241,0.05); }
+.cmp tbody tr:hover td { background:var(--bg-2); }
+.cmp tbody tr:hover td:first-child { background:var(--bg-2); }
+.cmp tbody tr:hover td.hl { background:rgba(99,102,241,0.10); }
 .faq { max-width:760px; margin:0 auto; } .qa { border:1px solid var(--border); border-radius:14px; margin-bottom:12px; overflow:hidden; background:#fff; } .qa .q { padding:18px 20px; font-weight:600; font-size:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; } .qa .a { padding:0 20px; max-height:0; overflow:hidden; color:var(--text-2); font-size:14px; transition:max-height .3s, padding .3s; } .qa.open .a { padding:0 20px 18px; max-height:200px; } .qa .q .pl { color:var(--text-3); transition:.2s; } .qa.open .q .pl { transform:rotate(45deg); }
 .offer { background:var(--black); border-radius:var(--radius-xl); overflow:hidden; color:#fff; } .offer-grid{ display:grid; grid-template-columns:1.05fr 1fr; align-items:center; } @media(max-width:860px){ .offer-grid{grid-template-columns:1fr;} } .offer .copy{ padding:48px; } .offer h2{ color:#fff; } .offer p{ color:rgba(255,255,255,.7); margin-top:12px; } .offer .photo{ height:100%; min-height:300px; } .offer ul{ list-style:none; margin:18px 0 0; display:flex; flex-direction:column; gap:10px; } .offer li{ display:flex; gap:10px; color:rgba(255,255,255,.9); font-size:14.5px; } .offer li::before{ content:"✓"; color:#fff; }
 </style>
@@ -65,7 +85,7 @@
   <div class="container">
     <span class="eyebrow" style="justify-content:center"><span class="dot" style="background:var(--c-violet)"></span> <span data-i18n="price.eyebrow">Pricing</span></span>
     <h1 class="display" style="font-size:clamp(2.4rem,5.5vw,4.4rem); margin-top:18px" data-i18n="price.title">Hire your workforce.</h1>
-    <p class="lead" data-i18n="price.leadfull">Per AI employee. Cancel anytime. No headcount required. Annual billing saves 20%; the Scale plan includes a free laptop.</p>
+    <p class="lead" data-i18n="price.leadfull">Per AI employee. 12-month term — pay monthly or yearly (yearly saves 20%). No headcount required; the Scale plan includes a free laptop.</p>
     <div class="bill-toggle" id="billToggle"><button data-bill="monthly" class="active" data-i18n="price.monthly">Monthly</button><button data-bill="yearly" data-i18n="price.yearly">Yearly · save 20%</button></div>
   </div>
 </header>
@@ -97,18 +117,26 @@
     <div style="max-width:680px;margin-bottom:30px"><span class="eyebrow"><span class="dot" style="background:var(--c-blue)"></span> <span data-i18n="pr.cmp">Compare plans</span></span><h2 class="section-title" style="margin-top:14px" data-i18n="pr.cmpt">Everything in every plan.</h2></div>
     <div class="cmp-wrap">
       <table class="cmp">
-        <thead><tr><th data-i18n="pr.feature">Feature</th><th class="c">Starter</th><th class="c">Growth</th><th class="c">Scale</th><th class="c">Enterprise</th></tr></thead>
+        <thead>
+          <tr>
+            <th data-i18n="pr.feature">Feature</th>
+            <th class="plan"><div class="pname">Starter</div><div class="pprice">€499<span data-i18n="price.mo">/mo</span></div></th>
+            <th class="plan"><div class="pname">Growth</div><div class="pprice">€1,499<span data-i18n="price.mo">/mo</span></div></th>
+            <th class="plan hl"><div class="badge-pop" data-i18n="price.popular">Most popular</div><div class="pname">Scale</div><div class="pprice">€4,999<span data-i18n="price.mo">/mo</span></div></th>
+            <th class="plan"><div class="pname">Enterprise</div><div class="pprice" data-i18n="pr.custom">Custom</div></th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td data-i18n="pr.f.employees">AI employees</td><td class="c">1</td><td class="c">5</td><td class="c">25</td><td class="c" data-i18n="pr.unlimited">Unlimited</td></tr>
-          <tr><td data-i18n="pr.f.integrations">Integrations</td><td class="c">3</td><td class="c" data-i18n="pr.unlimited">Unlimited</td><td class="c" data-i18n="pr.unlimited">Unlimited</td><td class="c" data-i18n="pr.unlimited">Unlimited</td></tr>
-          <tr><td data-i18n="pr.f.cc">Command Center</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.voice">Voice commands</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.exec">Executive intelligence</td><td class="c no">—</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.workflows">Custom workflows</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.csm">Dedicated CSM</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.infra">Private infrastructure</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.models">Custom models</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✓</td></tr>
-          <tr><td data-i18n="pr.f.laptop">Free laptop (annual)</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✓</td><td class="c no">—</td></tr>
+          <tr><td data-i18n="pr.f.employees">AI employees</td><td><span class="val">1</span></td><td><span class="val">5</span></td><td class="hl"><span class="val">25</span></td><td><span class="val" data-i18n="pr.unlimited">Unlimited</span></td></tr>
+          <tr><td data-i18n="pr.f.integrations">Integrations</td><td><span class="val">3</span></td><td><span class="val" data-i18n="pr.unlimited">Unlimited</span></td><td class="hl"><span class="val" data-i18n="pr.unlimited">Unlimited</span></td><td><span class="val" data-i18n="pr.unlimited">Unlimited</span></td></tr>
+          <tr><td data-i18n="pr.f.cc">Command Center</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td class="hl"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.voice">Voice commands</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td class="hl"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.exec">Executive intelligence</td><td><span class="no">—</span></td><td><span class="yes">✓</span></td><td class="hl"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.workflows">Custom workflows</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="hl"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.csm">Dedicated CSM</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="hl"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.infra">Private infrastructure</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="hl"><span class="no">—</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.models">Custom models</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="hl"><span class="no">—</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td data-i18n="pr.f.laptop">Free laptop (annual)</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="hl"><span class="yes">✓</span></td><td><span class="no">—</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -121,7 +149,7 @@
     <div style="text-align:center;max-width:600px;margin:0 auto 32px"><span class="eyebrow" style="justify-content:center"><span class="dot" style="background:var(--c-amber)"></span> FAQ</span><h2 class="section-title" style="margin-top:14px" data-i18n="pr.faqt">Common questions.</h2></div>
     <div class="faq">
       <div class="qa"><div class="q"><span data-i18n="pr.q1">What exactly is an "AI employee"?</span> <span class="pl">+</span></div><div class="a" data-i18n="pr.a1">A specialized autonomous agent that owns a function — operations, sales, finance, support or recruiting — and executes real work inside your connected tools, 24/7.</div></div>
-      <div class="qa"><div class="q"><span data-i18n="pr.q2">Can I cancel anytime?</span> <span class="pl">+</span></div><div class="a" data-i18n="pr.a2">Yes. Monthly plans are cancellable any time. Annual plans run for twelve months and include the 20% discount (the free laptop comes with the Scale plan).</div></div>
+      <div class="qa"><div class="q"><span data-i18n="pr.q2">Is there a minimum term?</span> <span class="pl">+</span></div><div class="a" data-i18n="pr.a2">Yes. All plans run for a 12-month term. You can pay monthly or yearly (yearly saves 20%), but the subscription can only be cancelled after those 12 months. The free laptop comes with the Scale plan.</div></div>
       <div class="qa"><div class="q"><span data-i18n="pr.q3">How does the free laptop work?</span> <span class="pl">+</span></div><div class="a" data-i18n="pr.a3">The free laptop comes with our most expensive plan, Scale, on annual billing. We ship a new MacBook or PC to your team to run the Command Center once your workspace is live.</div></div>
       <div class="qa"><div class="q"><span data-i18n="pr.q4">Is my data safe?</span> <span class="pl">+</span></div><div class="a" data-i18n="pr.a4">Yes. NEXA is SOC 2 Type II and GDPR compliant, encrypts data in transit and at rest, uses least-privilege connector scopes, and keeps a full audit log of every action.</div></div>
       <div class="qa"><div class="q"><span data-i18n="pr.q5">Do the AI employees actually take actions?</span> <span class="pl">+</span></div><div class="a" data-i18n="pr.a5">Yes — NEXA is an execution system, not a suggestion tool. You can start in supervised mode and increase autonomy as you build trust.</div></div>

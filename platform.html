@@ -9,7 +9,7 @@
 <meta property="og:title" content="NEXA Platform — How autonomous operations work" />
 <meta property="og:description" content="AI employees that understand, decide and execute — inside the tools you already use." />
 <meta property="og:type" content="website" />
-<link rel="icon" href="assets/favicon.png" />
+<link rel="icon" href="assets/img/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -30,6 +30,11 @@
 .feat { padding:24px; } .feat .ic { width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:18px;color:#fff; } .feat h3 { font-size:16px; margin:14px 0 7px; } .feat p { font-size:14px; color:var(--text-2); }
 .bullets { list-style:none; margin-top:18px; display:flex; flex-direction:column; gap:12px; } .bullets li { display:flex; gap:11px; font-size:15px; color:var(--text-2); } .bullets li b{color:var(--ink);font-weight:600;} .bullets li::before { content:"✓"; color:var(--c-green); font-weight:800; }
 .cta-band { text-align:center; background:linear-gradient(rgba(10,12,24,.46),rgba(10,12,24,.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat #0A0A0A; color:#fff; border-radius:var(--radius-xl); padding:70px 28px; text-shadow:0 2px 14px rgba(0,0,0,.55); } .cta-band h2{color:#fff;}
+/* real product screenshots — show the top-left of the dashboard, no awkward crop */
+.photo img.shot { object-fit:cover; object-position:left top; background:#fff; }
+.shot-frame { border-radius:18px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow-lift); margin-bottom:30px; }
+.shot-frame .bar { display:flex; align-items:center; gap:7px; padding:11px 14px; border-bottom:1px solid var(--border); background:var(--bg-2); }
+.shot-frame .bar i { width:10px; height:10px; border-radius:50%; }
 </style>
 </head>
 <body>
@@ -76,7 +81,7 @@
         <button class="btn btn-ghost btn-lg" data-demo data-i18n="nav.demo">Book a demo</button>
       </div>
     </div>
-    <div class="hero-photo photo reveal"><img loading="lazy" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1100&q=70" alt="NEXA analytics in action" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    <div class="hero-photo photo reveal"><img class="shot" loading="lazy" src="assets/screens/workforce.png" alt="NEXA Workforce — your AI employees at work" onerror="this.closest('.photo').classList.add('imgfail')"></div>
   </div>
 </header>
 
@@ -113,7 +118,7 @@
     </div>
     <div class="device reveal-r">
       <div class="bar" style="display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--border);background:var(--bg-2)"><i style="width:10px;height:10px;border-radius:50%;background:#ff5f57"></i><i style="width:10px;height:10px;border-radius:50%;background:#febc2e"></i><i style="width:10px;height:10px;border-radius:50%;background:#28c840"></i></div>
-      <div class="photo" style="height:320px"><img loading="lazy" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1100&q=70" alt="Business analytics dashboard" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+      <div class="photo" style="height:320px"><img class="shot" loading="lazy" src="assets/screens/command-center.png" alt="NEXA Command Center — live activity & executive intelligence" onerror="this.closest('.photo').classList.add('imgfail')"></div>
     </div>
   </div>
 </section>
@@ -126,6 +131,10 @@
       <h2 class="section-title" style="margin-top:16px" data-i18n="pf.ctrlt">Autonomy you can dial in.</h2>
       <p class="lead" style="margin-top:14px">Start supervised, build trust, then let NEXA run. You decide how far each employee goes.</p>
     </div>
+    <div class="shot-frame reveal">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+      <div class="photo" style="height:440px"><img class="shot" loading="lazy" src="assets/screens/employee-profile.png" alt="Per-employee autonomy controls — approvals, working hours and escalation" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    </div>
     <div class="featrow">
       <div class="feat glass reveal"><div class="ic" style="background:var(--c-blue)">◐</div><h3>Suggest</h3><p>NEXA drafts the action and waits for your approval. Perfect for week one.</p></div>
       <div class="feat glass reveal"><div class="ic" style="background:var(--c-indigo)">◑</div><h3>Assist</h3><p>It executes the routine work and only asks you about the genuine edge cases.</p></div>
@@ -137,7 +146,7 @@
 <!-- SECURITY -->
 <section class="section" style="padding-top:0">
   <div class="container split">
-    <div class="hero-photo photo reveal-l" style="height:340px"><img loading="lazy" src="https://images.unsplash.com/photo-1510511459019-5dda7724fd87?auto=format&fit=crop&w=1100&q=70" alt="Security and infrastructure" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    <div class="hero-photo photo reveal-l" style="height:340px"><img class="shot" loading="lazy" src="assets/screens/operations.png" alt="NEXA Operations — full record of every autonomous action" onerror="this.closest('.photo').classList.add('imgfail')"></div>
     <div class="reveal-r">
       <span class="eyebrow"><span class="dot" style="background:var(--c-green)"></span> Security &amp; trust</span>
       <h2 class="section-title" style="margin-top:16px" data-i18n="pf.sect">Enterprise-grade by default.</h2>

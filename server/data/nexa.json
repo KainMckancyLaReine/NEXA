@@ -76,8 +76,8 @@
         "Meeting scheduling"
       ],
       "status": "live",
-      "tasksToday": 35,
-      "timeSavedToday": 5.8,
+      "tasksToday": 39,
+      "timeSavedToday": 6.2,
       "performance": 97,
       "installedAt": 1780905432345
     },
@@ -160,9 +160,79 @@
       "timeSavedToday": 1.2,
       "performance": 95,
       "installedAt": 1781011784093
+    },
+    {
+      "id": "DA",
+      "code": "DA",
+      "person": "Lucas",
+      "name": "AI Data Analyst",
+      "dept": "Operations",
+      "tagline": "Dashboards · Insights · Anomaly detection",
+      "skills": [
+        "Reporting",
+        "Trend analysis",
+        "Anomaly detection",
+        "Forecasting",
+        "KPI tracking"
+      ],
+      "status": "live",
+      "tasksToday": 0,
+      "timeSavedToday": 0,
+      "performance": 95,
+      "installedAt": 1781047833212
     }
   ],
   "activity": [
+    {
+      "id": "act_17",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "scheduled follow-up sequence",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781047833203
+    },
+    {
+      "id": "act_16",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "updated CRM · stage set to Re-engaged",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781047833203
+    },
+    {
+      "id": "act_15",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "sent 44 personalized follow-ups",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781047833203
+    },
+    {
+      "id": "act_14",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "identified 44 matching leads",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781047833203
+    },
+    {
+      "id": "act_13",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "received command: \"follow up all inactive leads\"",
+      "tag": "command",
+      "detail": null,
+      "ts": 1781047833203
+    },
     {
       "id": "act_12",
       "empId": "DOC",
@@ -284,7 +354,7 @@
       "ts": 1781011784136
     }
   ],
-  "seq": 13,
+  "seq": 18,
   "tasks": [
     {
       "id": "task_4",

@@ -53,23 +53,44 @@
 
   /* ---------- Workforce cards (named AI employees) ---------- */
   const WF = [
-    { in:'E', name:'Emma',  role:'AI Operations Manager', c:'#6366F1', tasks:112, time:'6.4h', perf:99, st:'live', href:'employee.html?id=OM' },
-    { in:'L', name:'Liam',  role:'AI Sales Manager',      c:'#16A34A', tasks:64,  time:'4.1h', perf:97, st:'live', href:'employee.html?id=SM' },
-    { in:'S', name:'Sophie',role:'AI Finance Manager',    c:'#F59E0B', tasks:38,  time:'3.2h', perf:98, st:'busy', href:'employee.html?id=FM' },
-    { in:'N', name:'Noah',  role:'AI Support Agent',      c:'#EC4899', tasks:124, time:'8.9h', perf:96, st:'live', href:'employee.html?id=SA' },
-    { in:'M', name:'Maya',  role:'AI Recruiting Agent',   c:'#06B6D4', tasks:53,  time:'5.0h', perf:95, st:'live', href:'employee.html?id=RA' },
+    { in:'E', id:'OM', name:'Emma',  role:'AI Operations Manager', c:'#6366F1', tasks:112, time:'6.4h', perf:99, st:'live', href:'employee.html?id=OM' },
+    { in:'L', id:'SM', name:'Liam',  role:'AI Sales Manager',      c:'#16A34A', tasks:64,  time:'4.1h', perf:97, st:'live', href:'employee.html?id=SM' },
+    { in:'S', id:'FM', name:'Sophie',role:'AI Finance Manager',    c:'#F59E0B', tasks:38,  time:'3.2h', perf:98, st:'busy', href:'employee.html?id=FM' },
+    { in:'N', id:'SA', name:'Noah',  role:'AI Support Agent',      c:'#EC4899', tasks:124, time:'8.9h', perf:96, st:'live', href:'employee.html?id=SA' },
+    { in:'M', id:'RA', name:'Maya',  role:'AI Recruiting Agent',   c:'#06B6D4', tasks:53,  time:'5.0h', perf:95, st:'live', href:'employee.html?id=RA' },
     { in:'+', name:'Hire more', role:'From the marketplace', c:'#0A0A0A', tasks:'∞', time:'—', perf:100, st:'idle', href:'marketplace.html' },
   ];
   const wg = $('#wfGrid');
   if (wg) WF.forEach((e, i) => {
     const a = document.createElement('a'); a.href = e.href; a.className = 'empc glass reveal'; a.style.transitionDelay = (i * 40) + 'ms';
-    a.innerHTML = `<div class="av" style="background:${e.c}">${e.in}</div>
+    const avatar = (e.id && window.aiAvatar)
+      ? `<div class="av" style="padding:0;overflow:hidden;background:transparent">${aiAvatar(e.id, 46)}</div>`
+      : `<div class="av" style="background:${e.c}">${e.in}</div>`;
+    a.innerHTML = `${avatar}
       <div class="pn">${e.name}</div><div class="rl">${e.role}</div>
       <div class="ms"><div class="m"><div class="v">${e.tasks}</div><div class="k">Tasks today</div></div>
       <div class="m"><div class="v">${e.time}</div><div class="k">Time saved</div></div></div>
       <div class="ft"><span class="status-dot ${e.st}"></span> ${e.perf}% · ${e.st}</div>`;
     wg.appendChild(a); io.observe(a);
   });
+
+  /* ---------- Testimonials (continuously rotating slideshow) ---------- */
+  const TESTI = [
+    { q:'We grew pipeline 2.4× without adding a single ops hire. NEXA runs the work that used to drown the team.', n:'Maya Renner', r:'COO, Northwind', c:'#6366F1', in:'MR', img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=70' },
+    { q:'Our finance close went from nine days to two. Sophie just handles it — invoices, reminders, reconciliation.', n:'David Køhler', r:'CFO, Atlas Group', c:'#16A34A', in:'DK', img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=70' },
+    { q:'Support resolution is fully autonomous below tier-2. Response time dropped 43% and CSAT went up.', n:'Sofia Park', r:'VP Ops, Lumen', c:'#EC4899', in:'SP', img:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&q=70' },
+    { q:'Onboarding took an afternoon. By the next morning our AI workforce was already clearing the backlog.', n:'James Whitfield', r:'CEO, Vertex Labs', c:'#F59E0B', in:'JW', img:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=70' },
+    { q:'We reinvested the hours NEXA gave back into product. Shipping velocity is up and the team is happier.', n:'Elena Vasquez', r:'Head of Ops, Cohort', c:'#06B6D4', in:'EV', img:'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=120&q=70' },
+    { q:'Recruiting screening that used to eat a full role now runs itself. Maya surfaces only the candidates worth my time.', n:'Tom Becker', r:'Founder, Hatch', c:'#7C3AED', in:'TB', img:'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=120&q=70' },
+    { q:'It quietly handles the operational long tail — the 100 small tasks no one wanted to own. Game changer.', n:'Priya Nair', r:'COO, Brightline', c:'#2563EB', in:'PN', img:'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=120&q=70' },
+    { q:'We scaled revenue 3× this year with the same headcount. NEXA is the leverage we didn’t know we needed.', n:'Marcus Lindqvist', r:'CEO, Northpeak', c:'#0EA5E9', in:'ML', img:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=70' },
+  ];
+  const tt = $('#testiTrack');
+  if (tt) {
+    const card = t => `<div class="testi glass"><p>"${t.q}"</p><div class="who"><div class="av photo" style="background:${t.c}">${t.in}<img src="${t.img}" alt="${t.n}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.closest('.photo').classList.add('imgfail')"></div><div><div class="n">${t.n}</div><div class="r">${t.r}</div></div></div></div>`;
+    // duplicate the set so the loop is seamless
+    tt.innerHTML = TESTI.map(card).join('') + TESTI.map(card).join('');
+  }
 
   /* ---------- Integrations (real logos) ---------- */
   const ig = $('#intGrid');

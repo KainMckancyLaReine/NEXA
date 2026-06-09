@@ -45,8 +45,8 @@
     var o = document.createElement('div');
     o.id = 'nexa-pre';
     o.innerHTML =
-      '<img class="nplogo" src="assets/nexa-mark-trans.png" alt="NEXA" ' +
-        'onerror="this.onerror=null;this.src=\'assets/nexa-mark.png\'">' +
+      '<img class="nplogo" src="assets/img/nexa-mark-trans.png" alt="NEXA" ' +
+        'onerror="this.onerror=null;this.src=\'assets/img/nexa-mark.png\'">' +
       '<div class="npw"><span class="t"></span><span class="cur"></span></div>' +
       '<div class="npbar"><i></i></div>' +
       '<div class="npsub">AI Workforce OS</div>';

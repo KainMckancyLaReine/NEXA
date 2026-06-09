@@ -100,7 +100,7 @@ h1,h2,h3,h4 { font-weight:700; letter-spacing:-0.035em; line-height:1.04; color:
 
 /* ---------- Logo / brand ---------- */
 .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:19px; letter-spacing:-0.04em; color:var(--ink); }
-.brand .logo { width:32px; height:32px; border-radius:9px; background:#fff url("../nexa-mark.png") center/82% no-repeat; box-shadow:0 1px 4px rgba(0,0,0,.10); position:relative; flex:none; display:block; }
+.brand .logo { width:32px; height:32px; border-radius:9px; background:#fff url("../img/nexa-mark.png") center/82% no-repeat; box-shadow:0 1px 4px rgba(0,0,0,.10); position:relative; flex:none; display:block; }
 .brand .wm { font-weight:800; }
 .brand .wm b { color:var(--c-indigo); }   /* the dot of color */
 
@@ -126,6 +126,10 @@ h1,h2,h3,h4 { font-weight:700; letter-spacing:-0.035em; line-height:1.04; color:
 .mobile-menu.open { transform:translateX(0); }
 .mobile-menu a { padding:13px 14px; border-radius:12px; font-size:16px; font-weight:500; color:var(--ink); }
 .mobile-menu a:hover { background:var(--bg-2); }
+/* keep CTA buttons inside the mobile menu readable (white text on dark bg) */
+.mobile-menu a.btn-primary, .mobile-menu a.btn-accent { color:#fff; }
+.mobile-menu a.btn-primary:hover, .mobile-menu a.btn-accent:hover { color:#fff; background:#000; }
+.mobile-menu a.btn-ghost { color:var(--ink); }
 .mobile-backdrop { position:fixed; inset:0; background:rgba(10,10,10,0.3); opacity:0; visibility:hidden; transition:.25s; z-index:250; }
 .mobile-backdrop.open { opacity:1; visibility:visible; }
 @media (max-width:920px){ .nav-toggle { display:flex; } }

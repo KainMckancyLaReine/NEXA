@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script>/* auth guard — no dashboard without login */try{if(!localStorage.getItem('nexa_user'))location.replace('signin.html');}catch(e){}</script>
 <title>NEXA — Command Center</title>
+<link rel="icon" href="assets/img/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -14,21 +15,8 @@
 body { height: 100vh; overflow: hidden; }
 .app { display: grid; grid-template-columns: 252px 1fr; height: 100vh; }
 @media (max-width: 1000px){ .app { grid-template-columns: 76px 1fr; } }
-@media (max-width: 680px){
-  html, body { height: auto; overflow: auto; }
-  .app { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
-  /* sidebar becomes a horizontal, scrollable tab bar at the top */
-  .side { flex-direction: row; align-items: center; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-          border-right: none; border-bottom: 1px solid var(--border); padding: 10px 12px;
-          position: sticky; top: 0; z-index: 40; background: var(--surface); }
-  .side .brand, .side .grp-label, .side .user { display: none; }
-  .side .nav-i { flex: 0 0 auto; padding: 8px 13px; }
-  .side .nav-i span:not(.ic):not(.badge) { display: inline; }   /* show labels in the bar */
-  .center-col { height: auto; }
-  .view-scroll { height: auto; overflow: visible; padding: 18px 16px; }
-  .cmdbar { padding: 14px 16px; }
-  .dash { grid-template-columns: 1fr; }
-}
+/* NOTE: mobile/responsive rules live in one authoritative block at the
+   bottom of this stylesheet so they win the cascade (see "MOBILE" below). */
 
 /* Sidebar */
 .side { border-right: 1px solid var(--border); padding: 22px 16px; display: flex; flex-direction: column; gap: 4px; background: var(--surface); overflow-y: auto; }
@@ -140,6 +128,65 @@ body { height: 100vh; overflow: hidden; }
 /* Toast */
 .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: 13px 20px; font-size: 13.5px; box-shadow: var(--shadow-soft); z-index: 100; transition: .3s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } .toast b { color: var(--sunset); }
+
+/* ============================================================
+   MOBILE — authoritative responsive rules (placed last so they
+   win the cascade over the desktop sidebar/grid rules above)
+   ============================================================ */
+/* tablet: collapse sidebar to an icon rail (phones handled below) */
+@media (min-width:681px) and (max-width:1000px){
+  .app { grid-template-columns: 76px 1fr; }
+  .nav-i span:not(.ic):not(.badge), .grp-label, .side .brand span:last-child, .side .user div { display: none; }
+  .side { align-items: center; } .nav-i { justify-content: center; }
+}
+
+@media (max-width:680px){
+  html, body { height: auto; overflow: auto; }
+  .app { display: block; height: auto; min-height: 100vh; }
+
+  /* sidebar -> sticky horizontal tab bar (icon + label, swipeable) */
+  .side {
+    display: flex; flex-direction: row; align-items: center; gap: 6px;
+    height: auto; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
+    border-right: none; border-bottom: 1px solid var(--border); padding: 8px 12px;
+    position: sticky; top: 0; z-index: 50; background: var(--surface); scrollbar-width: none;
+  }
+  .side::-webkit-scrollbar { display: none; }
+  .side .brand, .side .grp-label, .side .user { display: none; }
+  .side .nav-i { flex: 0 0 auto; justify-content: flex-start; gap: 9px; padding: 8px 13px; white-space: nowrap; font-size: 13.5px; }
+  .side .nav-i span:not(.ic):not(.badge) { display: inline; }
+  .side .nav-i .badge { margin-left: 6px; }
+
+  /* center column flows naturally; command bar not sticky to avoid overlap */
+  .center-col { height: auto; display: block; }
+  .cmdbar { padding: 14px 15px; position: static; background: var(--surface); }
+  .cmd-head { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .cmd-head .hi { font-size: 13px; }
+  .cmd-input { padding: 10px 12px; gap: 8px; }
+  .cmd-input input { font-size: 14px; min-width: 0; }
+  .cmd-input .send { padding: 9px 14px; }
+  .cmd-input .mic { width: 38px; height: 38px; }
+  .suggestions { margin-top: 9px; }
+
+  .view-scroll { height: auto; overflow: visible; padding: 18px 15px 44px; }
+  .dash { grid-template-columns: 1fr; }
+  .metrics-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .view-head h2 { font-size: 19px; }
+  .metric { padding: 15px; } .metric .v { font-size: 22px; }
+  .wf-card { padding: 18px; }
+  .act { padding: 12px 13px; gap: 11px; }
+  .act .time { display: none; }
+}
+
+@media (max-width:430px){
+  .metrics-row, .ops-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .view-scroll { padding: 14px 12px 38px; }
+  .cmd-input { flex-wrap: wrap; }
+  .cmd-input input { flex: 1 1 100%; order: -1; padding: 2px 0 6px; }
+  .cmd-input .send { flex: 1; }
+  .cmd-input .mic { order: 1; }
+  .cmd-head .hi { width: 100%; }
+}
 </style>
 </head>
 <body>
