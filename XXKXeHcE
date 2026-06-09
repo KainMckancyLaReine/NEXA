@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXA — The AI Workforce Operating System</title>
+<meta name="description" content="NEXA deploys autonomous AI employees that execute real business operations across email, CRM, finance, sales, support and recruiting — so you scale output without scaling headcount." />
+<meta name="keywords" content="AI workforce, AI employees, autonomous agents, business automation, AI operations, digital workforce, AI operating system" />
+<meta name="author" content="NEXA" />
+<link rel="canonical" href="https://nexa.ai/" />
+<meta name="theme-color" content="#0A0A0A" />
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="NEXA" />
+<meta property="og:title" content="NEXA — The AI Workforce Operating System" />
+<meta property="og:description" content="Deploy autonomous AI employees that execute real work across your company while your team focuses on growth." />
+<meta property="og:url" content="https://nexa.ai/" />
+<meta property="og:image" content="https://nexa.ai/og-image.png" />
+<meta property="og:locale" content="en" />
+<meta property="og:locale:alternate" content="de" />
+<meta property="og:locale:alternate" content="nl" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NEXA — The AI Workforce Operating System" />
+<meta name="twitter:description" content="Autonomous AI employees that execute real work across your company." />
+<meta name="twitter:image" content="https://nexa.ai/og-image.png" />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "NEXA",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "description": "NEXA is an AI Workforce Operating System. Deploy autonomous AI employees that execute real business operations across email, CRM, finance, sales, support and recruiting.",
+  "offers": { "@type": "Offer", "price": "499", "priceCurrency": "EUR" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "248" }
+}
+</script>
+<style>
+/* ---------- Landing-specific (strak) ---------- */
+.hero { position:relative; padding:160px 0 90px; }
+.hero-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:54px; align-items:center; }
+@media (max-width:960px){ .hero-grid { grid-template-columns:1fr; gap:40px; } }
+.hero .display { margin-top:22px; }
+.hero .lead { margin-top:22px; max-width:540px; }
+.hero-cta { display:flex; gap:12px; margin-top:32px; flex-wrap:wrap; }
+.hero-proof { margin-top:26px; font-size:13px; color:var(--text-3); }
+/* typewriter line */
+.tw-line { display:flex; align-items:center; gap:9px; margin-top:22px; font-size:14.5px; color:var(--text-2); font-weight:500; min-height:22px; }
+.tw-line #twText { color:var(--ink); }
+.tw-cur { width:2px; height:15px; background:var(--ink); display:inline-block; animation:twblink 1s step-end infinite; }
+@keyframes twblink { 50% { opacity:0; } }
+/* hero entrance */
+@keyframes heroUp { to { opacity:1; transform:none; } }
+.hero-grid > div:first-child > * { opacity:0; transform:translateY(16px); animation:heroUp .7s cubic-bezier(.2,.8,.2,1) forwards; }
+.hero-grid > div:first-child > *:nth-child(1){ animation-delay:.04s } .hero-grid > div:first-child > *:nth-child(2){ animation-delay:.1s }
+.hero-grid > div:first-child > *:nth-child(3){ animation-delay:.16s } .hero-grid > div:first-child > *:nth-child(4){ animation-delay:.22s }
+.hero-grid > div:first-child > *:nth-child(5){ animation-delay:.28s } .hero-grid > div:first-child > *:nth-child(6){ animation-delay:.34s }
+.hero-grid > div:first-child > *:nth-child(7){ animation-delay:.4s }
+.hero-grid .device { opacity:0; transform:translateY(18px); animation:heroUp .8s cubic-bezier(.2,.8,.2,1) .28s forwards; }
+@media (prefers-reduced-motion: reduce){ .hero-grid > div:first-child > *, .hero-grid .device { opacity:1; transform:none; animation:none; } }
+.avatars { display:flex; margin-top:18px; align-items:center; gap:12px; }
+.avatars .stack { display:flex; }
+.avatars .stack span { width:34px; height:34px; border-radius:50%; border:2px solid #fff; margin-left:-10px; display:grid; place-items:center; color:#fff; font-size:12px; font-weight:700; }
+
+/* device mock */
+.mock-side { display:flex; gap:1px; }
+.mock { padding:0; }
+.mock .row { display:flex; }
+.mock .sb { width:120px; border-right:1px solid var(--border); padding:14px 10px; }
+.mock .sb .li { display:flex; align-items:center; gap:8px; padding:7px 8px; border-radius:8px; font-size:11px; color:var(--text-2); }
+.mock .sb .li.on { background:var(--bg-2); color:var(--ink); font-weight:600; }
+.mock .sb .li .d { width:6px; height:6px; border-radius:2px; }
+.mock .main { flex:1; padding:14px; }
+.mock .mrow { display:flex; align-items:center; gap:10px; padding:9px 11px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:11.5px; }
+.mock .mrow .av { width:24px; height:24px; border-radius:7px; display:grid; place-items:center; color:#fff; font-size:10px; font-weight:700; flex:none; }
+.mock .mrow .ex { margin-left:auto; font-size:9.5px; color:var(--c-green); background:rgba(22,163,74,.1); padding:2px 7px; border-radius:999px; }
+
+/* section heads */
+.shead { max-width:680px; margin:0 auto 52px; text-align:center; }
+.shead .section-title { margin-top:18px; } .shead .lead { margin-top:14px; }
+
+/* problem chips */
+.prob-grid { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:760px; margin:0 auto; }
+.prob-chip { display:flex; align-items:center; gap:10px; padding:13px 18px; border:1px solid var(--border); border-radius:12px; background:#fff; font-size:14px; color:var(--text-2); box-shadow:var(--shadow-card); }
+.prob-chip .i { width:26px; height:26px; border-radius:7px; display:grid; place-items:center; font-size:13px; }
+
+/* solution statements */
+.statements { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+.statements .st { font-size:clamp(1.3rem,2.6vw,2rem); font-weight:800; letter-spacing:-.03em; color:var(--text-3); }
+.statements .st b { color:var(--ink); }
+.statements .st.on { color:var(--ink); }
+
+/* workforce cards */
+.wf-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+@media (max-width:980px){ .wf-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .wf-grid { grid-template-columns:1fr; } }
+.empc { padding:22px; transition:transform .25s, box-shadow .25s; }
+.empc:hover { transform:translateY(-4px); box-shadow:var(--shadow-lift); }
+.empc .av { width:46px; height:46px; border-radius:13px; display:grid; place-items:center; color:#fff; font-weight:800; }
+.empc .pn { font-weight:700; font-size:16px; margin-top:14px; } .empc .rl { color:var(--text-3); font-size:13px; }
+.empc .ms { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+.empc .ms .m { padding:11px; border-radius:11px; background:var(--bg-2); } .empc .ms .m .v { font-weight:800; font-size:17px; } .empc .ms .m .k { font-size:10.5px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; }
+.empc .ft { display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13px; color:var(--text-2); }
+
+/* human band */
+.human-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:46px; align-items:center; }
+@media (max-width:860px){ .human-grid { grid-template-columns:1fr; } }
+.human-photos { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:12px; height:440px; }
+.human-photos .photo { border-radius:16px; } .human-photos .photo:nth-child(1){ grid-row:span 2; }
+.human .tags { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+
+/* integrations grid */
+.int-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+@media (max-width:900px){ .int-grid { grid-template-columns:repeat(3,1fr); } }
+@media (max-width:560px){ .int-grid { grid-template-columns:repeat(2,1fr); } }
+.integ { aspect-ratio:1.5/1; border-radius:14px; border:1px solid var(--border); background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; font-size:13px; font-weight:600; color:var(--text-2); box-shadow:var(--shadow-card); transition:transform .25s, box-shadow .25s; }
+.integ:hover { transform:translateY(-4px); box-shadow:var(--shadow-lift); }
+.integ .logo-tile { width:40px; height:40px; background:transparent; } .integ .logo-tile img { width:26px; height:26px; }
+
+/* offer (mac) */
+.offer { background:var(--black); border-radius:var(--radius-xl); padding:0; overflow:hidden; color:#fff; }
+.offer-grid { display:grid; grid-template-columns:1.05fr 1fr; align-items:center; }
+@media (max-width:860px){ .offer-grid { grid-template-columns:1fr; } }
+.offer .copy { padding:54px; }
+.offer h2 { color:#fff; font-size:clamp(1.8rem,3.5vw,2.8rem); }
+.offer p { color:rgba(255,255,255,.7); margin-top:14px; font-size:16px; }
+.offer ul { list-style:none; margin:22px 0 28px; display:flex; flex-direction:column; gap:12px; }
+.offer li { display:flex; align-items:center; gap:11px; font-size:14.5px; color:rgba(255,255,255,.92); }
+.offer li .ck { width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,.12); display:grid; place-items:center; flex:none; }
+.offer .photo { height:100%; min-height:340px; background:#111; }
+.offer .badge-y { display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:linear-gradient(135deg,var(--c-violet),var(--c-pink)); padding:7px 13px; border-radius:999px; }
+
+/* ROI */
+.roi-grid { display:grid; grid-template-columns:1fr 1.05fr; gap:26px; } @media(max-width:880px){ .roi-grid{grid-template-columns:1fr;} }
+.roi-in, .roi-out-card { padding:30px; }
+.fld2 { margin-bottom:22px; } .fld2 label { display:flex; justify-content:space-between; font-size:13px; color:var(--text-2); margin-bottom:10px; } .fld2 label b { color:var(--ink); font-weight:700; }
+input[type=range]{ -webkit-appearance:none; width:100%; height:4px; border-radius:4px; background:#E6E9EE; outline:none; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--black); cursor:pointer; border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.25); }
+.seg{ display:flex; gap:8px; flex-wrap:wrap; } .seg button{ flex:1; min-width:84px; padding:10px; border-radius:10px; border:1px solid var(--border); background:#fff; color:var(--text-2); font-size:13px; cursor:pointer; font-family:inherit; transition:.2s; } .seg button.active{ background:var(--black); border-color:var(--black); color:#fff; }
+.roi-out{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.roi-out .o{ padding:20px; border-radius:14px; border:1px solid var(--border); background:var(--bg-2); } .roi-out .o .v{ font-size:clamp(1.5rem,3vw,2.1rem); font-weight:800; letter-spacing:-.03em; } .roi-out .o .k{ font-size:12px; color:var(--text-3); margin-top:6px; }
+.roi-out .o.c1 .v{ color:var(--c-green); } .roi-out .o.c2 .v{ color:var(--c-indigo); } .roi-out .o.c3 .v{ color:var(--c-orange); } .roi-out .o.c4 .v{ color:var(--c-pink); }
+
+/* command preview */
+.cc-shell{ overflow:hidden; padding:0; } .cc-bar{ display:flex; align-items:center; gap:7px; padding:13px 16px; border-bottom:1px solid var(--border); background:var(--bg-2); } .cc-bar i{ width:10px;height:10px;border-radius:50%; }
+.cc-body{ display:grid; grid-template-columns:190px 1fr 230px; min-height:380px; } @media(max-width:820px){ .cc-body{ grid-template-columns:1fr; } .cc-body .s,.cc-body .ri{ display:none; } }
+.cc-body .s{ border-right:1px solid var(--border); padding:16px; } .cc-body .s .i{ padding:9px 11px; border-radius:9px; font-size:13px; color:var(--text-2); margin-bottom:3px; } .cc-body .s .i.on{ background:var(--bg-2); color:var(--ink); font-weight:600; }
+.cc-body .f{ padding:16px; } .cc-body .fr{ display:flex; gap:11px; align-items:center; padding:11px 13px; border:1px solid var(--border); border-radius:11px; margin-bottom:9px; font-size:13px; }
+.cc-body .ri{ border-left:1px solid var(--border); padding:16px; } .cc-body .ib{ padding:13px; border:1px solid var(--border); border-radius:11px; margin-bottom:11px; } .cc-body .ib .t{ font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-3); } .cc-body .ib .b{ font-size:17px; font-weight:800; margin-top:3px; }
+
+/* proof */
+.proof-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:36px; } @media(max-width:700px){ .proof-stats{grid-template-columns:1fr;} }
+.pstat{ padding:30px; text-align:center; } .pstat .v{ font-size:clamp(2.2rem,5vw,3.4rem); font-weight:800; letter-spacing:-.04em; } .pstat:nth-child(1) .v{color:var(--c-indigo);} .pstat:nth-child(2) .v{color:var(--c-green);} .pstat:nth-child(3) .v{color:var(--c-orange);} .pstat .k{ color:var(--text-2); margin-top:6px; }
+.testi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; } @media(max-width:860px){ .testi-grid{grid-template-columns:1fr;} }
+.testi{ padding:26px; } .testi p{ font-size:15px; } .testi .who{ display:flex; align-items:center; gap:12px; margin-top:20px; } .testi .who .av{ width:42px; height:42px; border-radius:50%; overflow:hidden; position:relative; display:grid; place-items:center; color:#fff; font-weight:700; font-size:14px; } .testi .who .n{ font-weight:600; font-size:14px; } .testi .who .r{ color:var(--text-3); font-size:12.5px; }
+
+/* pricing */
+.bill-toggle{ display:inline-flex; align-items:center; gap:4px; padding:5px; border-radius:999px; border:1px solid var(--border); background:#fff; margin-top:20px; }
+.bill-toggle button{ padding:9px 18px; border-radius:999px; border:none; background:none; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--text-2); cursor:pointer; transition:.2s; } .bill-toggle button.active{ background:var(--black); color:#fff; }
+.price-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; } @media(max-width:980px){ .price-grid{grid-template-columns:repeat(2,1fr);} } @media(max-width:560px){ .price-grid{grid-template-columns:1fr;} }
+.pc{ padding:26px; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; } .pc:hover{ transform:translateY(-5px); box-shadow:var(--shadow-lift); }
+.pc.feat{ border-color:var(--ink); }
+.pc .tier{ font-size:14px; font-weight:600; color:var(--text-2); } .pc .price{ font-size:36px; font-weight:800; letter-spacing:-.04em; margin:10px 0 2px; } .pc .price small{ font-size:13px; color:var(--text-3); font-weight:500; }
+.pc .emp{ color:var(--c-indigo); font-size:13.5px; font-weight:600; } .pc .laptop{ font-size:12px; color:var(--c-violet); font-weight:600; margin-top:6px; min-height:16px; }
+.pc ul{ list-style:none; margin:18px 0 22px; flex:1; } .pc li{ font-size:13.5px; color:var(--text-2); padding:6px 0; display:flex; gap:9px; } .pc li::before{ content:"✓"; color:var(--c-green); font-weight:700; }
+.feat-badge{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink); font-weight:700; margin-bottom:6px; }
+
+/* vision */
+.vis{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; } @media(max-width:900px){ .vis{grid-template-columns:1fr;} }
+.ph{ padding:22px; position:relative; } .ph .n{ font-size:38px; font-weight:800; color:var(--bg-2); position:absolute; top:14px; right:16px; } .ph .e{ font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; } .ph:nth-child(1) .e{color:var(--c-blue);} .ph:nth-child(2) .e{color:var(--c-indigo);} .ph:nth-child(3) .e{color:var(--c-violet);} .ph:nth-child(4) .e{color:var(--c-pink);} .ph:nth-child(5) .e{color:var(--c-orange);} .ph .tt{ font-weight:700; font-size:16px; margin:10px 0 7px; } .ph .dd{ color:var(--text-3); font-size:13px; }
+
+/* final */
+.final{ text-align:center; } .final-card{ padding:80px 28px; border-radius:var(--radius-xl); background:var(--black); color:#fff; } .final-card h2{ color:#fff; } .final-card .lead{ color:rgba(255,255,255,.7); margin:18px auto 0; max-width:520px; }
+
+/* ---------- Command Center demo "video" player ---------- */
+.demo-live{ margin-left:auto; display:flex; align-items:center; gap:6px; font-size:10px; font-weight:800; letter-spacing:.12em; color:var(--c-red); }
+.demo-live .dotl{ width:7px; height:7px; border-radius:50%; background:var(--c-red); animation:pulse 1.2s infinite; }
+.demo-progress{ height:3px; background:var(--bg-2); } .demo-progress i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--c-indigo),var(--c-violet)); }
+.demo-cmd{ display:flex; align-items:center; gap:8px; padding:9px 11px; border:1px solid var(--border); border-radius:10px; margin-bottom:10px; font-size:11.5px; background:var(--bg-2); }
+.demo-cmd .pre{ color:var(--c-violet); font-weight:700; } .demo-cmd .typed{ color:var(--ink); white-space:nowrap; overflow:hidden; }
+.demo-cmd .cursor{ width:1.5px; height:13px; background:var(--ink); display:inline-block; animation:blink 1s step-end infinite; }
+.demo-cmd .ex-btn{ margin-left:auto; background:var(--black); color:#fff; border:none; border-radius:7px; padding:5px 11px; font-size:10px; font-weight:600; font-family:inherit; transition:.2s; flex:none; }
+.demo-cmd .ex-btn.go{ background:var(--c-green); }
+@keyframes blink{ 50%{ opacity:0; } }
+.f .feed .fr{ display:flex; gap:9px; align-items:center; padding:9px 11px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:11.5px; background:#fff; opacity:0; transform:translateY(-6px); transition:opacity .35s, transform .35s; }
+.f .feed .fr.in{ opacity:1; transform:none; }
+.f .feed .fr .av{ width:22px; height:22px; border-radius:6px; display:grid; place-items:center; color:#fff; font-size:9px; font-weight:700; flex:none; }
+.f .feed .fr .nm{ font-weight:600; } .f .feed .fr .wt{ color:var(--text-2); }
+.f .feed .fr .ex{ margin-left:auto; font-size:9px; color:var(--c-green); background:rgba(22,163,74,.1); padding:2px 7px; border-radius:999px; opacity:0; transition:opacity .25s; white-space:nowrap; } .f .feed .fr .ex.show{ opacity:1; }
+.cc-body .s .i{ transition:background .25s, color .25s, box-shadow .25s; }
+.cc-body .s .i.act-hl{ background:var(--bg-2); color:var(--ink); font-weight:600; box-shadow:inset 0 0 0 1px var(--border); }
+/* demo mini-views */
+.dv{ animation:dvIn .4s ease; } @keyframes dvIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+.dv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.dv-chip{ display:flex; align-items:center; gap:9px; padding:9px 10px; border:1px solid var(--border); border-radius:10px; background:#fff; }
+.dv-chip .av{ width:24px; height:24px; border-radius:7px; display:grid; place-items:center; color:#fff; font-size:9px; font-weight:700; flex:none; }
+.dv-chip b{ font-size:11.5px; } .dv-chip small{ display:block; color:var(--text-3); font-size:9.5px; }
+.dv-board{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
+.dv-col{ background:var(--bg-2); border-radius:9px; padding:7px; } .dv-col .h{ font-size:9px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-3); margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+.dv-task{ background:#fff; border:1px solid var(--border); border-radius:7px; padding:6px 7px; font-size:9.5px; margin-bottom:5px; }
+.dv-rep svg{ width:100%; height:auto; display:block; }
+.dv-app{ display:flex; align-items:center; gap:9px; padding:9px 11px; border:1px solid var(--border); border-radius:10px; margin-bottom:7px; background:#fff; font-size:11.5px; }
+.dv-app .av{ width:26px; height:26px; border-radius:7px; display:grid; place-items:center; color:#fff; font-size:9px; font-weight:700; flex:none; }
+.dv-app .ins{ margin-left:auto; font-size:9px; font-weight:600; color:#fff; background:var(--black); border-radius:6px; padding:3px 9px; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a>
+  <div class="nav-links">
+    <a href="platform.html" data-i18n="nav.platform">Platform</a>
+    <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+    <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+    <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+    <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  </div>
+  <div class="nav-actions">
+    <span data-lang-mount></span>
+    <a href="signin.html" class="btn btn-ghost" style="padding:10px 18px" data-i18n="nav.signin">Sign in</a>
+    <a href="onboarding.html" class="btn btn-primary" style="padding:10px 20px" data-i18n="nav.deploy">Deploy Workforce</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-backdrop" id="mBackdrop"></div>
+<div class="mobile-menu" id="mMenu">
+  <a href="platform.html" data-i18n="nav.platform">Platform</a>
+  <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+  <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+  <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+  <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  <a href="signin.html" data-i18n="nav.signin">Sign in</a>
+  <a href="#" data-demo data-i18n="nav.demo">Book a demo</a>
+  <a href="onboarding.html" class="btn btn-primary" style="margin-top:10px" data-i18n="nav.deploy">Deploy Workforce</a>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> <span data-i18n="hero.badge">The AI Workforce Operating System</span></span>
+      <h1 class="display"><span data-i18n="hero.title1">Your first</span><br><span data-i18n="hero.title2">digital workforce.</span></h1>
+      <p class="lead" data-i18n="hero.sub">Deploy autonomous AI employees that execute real work across your company — while your team focuses on growth.</p>
+      <div class="hero-cta">
+        <a href="onboarding.html" class="btn btn-primary btn-lg" data-i18n="hero.cta1">Deploy Workforce</a>
+        <button class="btn btn-ghost btn-lg" data-demo data-i18n="nav.demo">Book a demo</button>
+      </div>
+      <div class="tw-line"><span class="status-dot live"></span><span id="twText"></span><span class="tw-cur"></span></div>
+      <div class="avatars">
+        <div class="stack">
+          <span style="background:#6366F1">E</span><span style="background:#16A34A">L</span><span style="background:#F59E0B">S</span><span style="background:#EC4899">N</span><span style="background:#06B6D4">M</span>
+        </div>
+        <span class="faint" style="font-size:13px">5 AI employees ready to deploy</span>
+      </div>
+      <p class="hero-proof" data-i18n="hero.proof">Trusted by modern teams · SOC 2 Type II · GDPR</p>
+    </div>
+    <!-- device mock of the command center -->
+    <div class="device mock reveal">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="faint" style="margin-left:10px;font-size:12px">NEXA — Command Center</span></div>
+      <div class="row">
+        <div class="sb">
+          <div class="li on"><span class="d" style="background:#6366F1"></span> Command</div>
+          <div class="li"><span class="d" style="background:#16A34A"></span> Workforce</div>
+          <div class="li"><span class="d" style="background:#F59E0B"></span> Operations</div>
+          <div class="li"><span class="d" style="background:#EC4899"></span> Reports</div>
+        </div>
+        <div class="main">
+          <div class="mrow"><span class="av" style="background:#6366F1">E</span> Emma processed 17 emails <span class="ex">Executed</span></div>
+          <div class="mrow"><span class="av" style="background:#16A34A">L</span> Liam followed up 24 leads <span class="ex">Executed</span></div>
+          <div class="mrow"><span class="av" style="background:#F59E0B">S</span> Sophie reconciled 12 invoices <span class="ex">Executed</span></div>
+          <div class="mrow"><span class="av" style="background:#EC4899">N</span> Noah resolved 18 tickets <span class="ex">Executed</span></div>
+          <div class="mrow"><span class="av" style="background:#06B6D4">M</span> Maya screened 42 applicants <span class="ex">Executed</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- PROBLEM -->
+<section class="section" id="problem">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-red)"></span> <span data-i18n="prob.eyebrow">The Problem</span></span>
+      <h2 class="section-title" data-i18n="prob.title">Manual operations are breaking modern companies.</h2>
+      <p class="lead" data-i18n="prob.sub">Teams spend thousands of hours a year on repetitive work.</p>
+    </div>
+    <div class="prob-grid reveal" id="probGrid"></div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="section" id="solution" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot"></span> <span data-i18n="sol.eyebrow">The Solution</span></span>
+      <h2 class="display" style="font-size:clamp(2.4rem,6vw,4.4rem)" data-i18n="sol.title">Meet NEXA.</h2>
+      <p class="lead" data-i18n="sol.sub">The operating system for autonomous companies.</p>
+    </div>
+    <div class="statements reveal" id="statements">
+      <span class="st">NEXA <b data-i18n="sol.understand">Understands</b>.</span>
+      <span class="st">NEXA <b data-i18n="sol.decide">Decides</b>.</span>
+      <span class="st">NEXA <b data-i18n="sol.execute">Executes</b>.</span>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFORCE -->
+<section class="section" id="workforce" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-indigo)"></span> <span data-i18n="wf.eyebrow">Digital Workforce</span></span>
+      <h2 class="section-title" data-i18n="wf.title">Specialists. Working 24/7.</h2>
+      <p class="lead" data-i18n="wf.sub">Each AI employee owns a function, reports live metrics, and never stops.</p>
+    </div>
+    <div class="wf-grid" id="wfGrid"></div>
+  </div>
+</section>
+
+<!-- HUMAN + AI -->
+<section class="section" id="human" style="padding-top:0">
+  <div class="container human-grid">
+    <div class="human-photos reveal">
+      <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=900&q=70" alt="Team collaborating" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+      <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=700&q=70" alt="Focused professional" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+      <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=70" alt="Strategy session" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    </div>
+    <div class="reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-pink)"></span> <span data-i18n="human.eyebrow">Human + AI</span></span>
+      <h2 class="section-title" style="margin-top:20px" data-i18n="human.title">Your people do the strategy. NEXA does the execution.</h2>
+      <p class="lead" style="margin-top:16px" data-i18n="human.sub">The repetitive work that drains your team runs autonomously in the background. Your people focus on judgement, relationships and growth.</p>
+      <div class="tags">
+        <span class="chip">Less busywork</span><span class="chip">More deep work</span><span class="chip">Happier teams</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS -->
+<section class="section" id="integrations" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-cyan)"></span> <span data-i18n="int.eyebrow">Integrations</span></span>
+      <h2 class="section-title" data-i18n="int.title">One workforce. Every system.</h2>
+      <p class="lead" data-i18n="int.sub">NEXA sits above your stack — reading, deciding and acting inside the tools you already use.</p>
+    </div>
+    <div class="int-grid reveal" id="intGrid"></div>
+    <div class="marquee reveal" id="intMarquee" style="margin-top:20px"><div class="track" id="intTrack"></div></div>
+  </div>
+</section>
+
+<!-- OFFER: MAC + ANNUAL -->
+<section class="section" id="offer" style="padding-top:0">
+  <div class="container">
+    <div class="offer reveal">
+      <div class="offer-grid">
+        <div class="copy">
+          <span class="badge-y" data-i18n="offer.eyebrow">Annual plan perk</span>
+          <h2 style="margin-top:18px" data-i18n="offer.title">Go annual on Scale. Get a MacBook on us.</h2>
+          <p data-i18n="offer.sub">Choose the annual Scale plan — our top tier — and we ship a new MacBook or PC to run your Command Center, plus 20% off versus monthly.</p>
+          <ul>
+            <li><span class="ck">✓</span> <span data-i18n="offer.b1">Free MacBook or PC, shipped to your team</span></li>
+            <li><span class="ck">✓</span> <span data-i18n="offer.b2">20% lower than monthly billing</span></li>
+            <li><span class="ck">✓</span> <span data-i18n="offer.b3">Priority onboarding & dedicated support</span></li>
+          </ul>
+          <a href="#pricing" class="btn btn-accent btn-lg" data-i18n="offer.cta">Claim the annual offer</a>
+        </div>
+        <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=70" alt="MacBook included with annual plan" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROI -->
+<section class="section" id="roi" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-green)"></span> <span data-i18n="roi.eyebrow">ROI Calculator</span></span>
+      <h2 class="section-title" data-i18n="roi.title">Scale revenue without scaling headcount.</h2>
+      <p class="lead" data-i18n="roi.sub">Move the sliders. See what an autonomous workforce returns.</p>
+    </div>
+    <div class="roi-grid reveal">
+      <div class="roi-in glass">
+        <div class="fld2"><label><span data-i18n="roi.employees">Employees</span> <b id="vEmp">50</b></label><input type="range" id="rEmp" min="5" max="500" value="50" step="5"></div>
+        <div class="fld2"><label><span data-i18n="roi.salary">Average salary</span> <b id="vSal">€55,000</b></label><input type="range" id="rSal" min="25000" max="150000" value="55000" step="5000"></div>
+        <div class="fld2"><label><span data-i18n="roi.hours">Hours lost to admin / week</span> <b id="vHrs">12</b></label><input type="range" id="rHrs" min="2" max="30" value="12" step="1"></div>
+        <div class="fld2"><label style="margin-bottom:14px" data-i18n="roi.industry">Industry</label>
+          <div class="seg" id="indSeg"><button data-f="1.0" class="active">SaaS</button><button data-f="0.92">Finance</button><button data-f="1.08">Agency</button><button data-f="0.85">Healthcare</button></div>
+        </div>
+      </div>
+      <div class="roi-out-card glass">
+        <div class="roi-out">
+          <div class="o c1"><div class="v" id="oSave">€0</div><div class="k" data-i18n="roi.save">Annual cost savings</div></div>
+          <div class="o c2"><div class="v" id="oHours">0</div><div class="k" data-i18n="roi.recovered">Hours recovered / yr</div></div>
+          <div class="o c3"><div class="v" id="oProd">0%</div><div class="k" data-i18n="roi.prod">Productivity increase</div></div>
+          <div class="o c4"><div class="v" id="oScore">0</div><div class="k" data-i18n="roi.score">Efficiency score</div></div>
+        </div>
+        <a href="onboarding.html" class="btn btn-primary btn-block btn-lg" style="margin-top:22px" data-i18n="hero.cta1">Deploy Workforce</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMAND PREVIEW -->
+<section class="section" id="command" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot"></span> <span data-i18n="cp.eyebrow">Command Center</span></span>
+      <h2 class="section-title" data-i18n="cp.title">Command your digital workforce.</h2>
+      <p class="lead" data-i18n="cp.sub">Live workforce activity, business metrics, AI insights and autonomous actions — in one cockpit.</p>
+    </div>
+    <div class="device cc-shell reveal" id="ccDemo">
+      <div class="cc-bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="faint" style="margin-left:10px;font-size:12px">NEXA — Command Center</span><span class="demo-live"><span class="dotl"></span> LIVE DEMO</span></div>
+      <div class="demo-progress"><i id="ccProg"></i></div>
+      <div class="cc-body">
+        <div class="s" id="ccSide">
+          <div class="i">◎ Command Center</div><div class="i">⚏ Workforce</div><div class="i">⇄ Operations</div><div class="i">◷ Reports</div><div class="i">⊕ Marketplace</div>
+        </div>
+        <div class="f">
+          <div class="demo-cmd"><span class="pre">⌘</span><span class="typed" id="ccTyped"></span><span class="cursor" id="ccCursor"></span><button class="ex-btn" id="ccExec">Execute</button></div>
+          <div class="feed" id="ccFeed"></div>
+        </div>
+        <div class="ri">
+          <div class="ib"><div class="t">Actions today</div><div class="b" id="ccActions">0</div></div>
+          <div class="ib"><div class="t">Revenue forecast</div><div class="b" style="color:var(--c-green)" id="ccRev">€0</div></div>
+          <div class="ib"><div class="t">Performance</div><div class="b" id="ccPerf">0%</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="center" style="margin-top:28px"><a href="command-center.html" class="btn btn-ghost btn-lg">Open live Command Center →</a></div>
+  </div>
+</section>
+
+<!-- IN ACTION (real photo band) -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="reveal" style="position:relative; border-radius:24px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow-lift)">
+      <div class="photo" style="height:380px"><img loading="lazy" src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1500&q=70" alt="Modern team at work" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+      <div style="position:absolute; inset:0; background:linear-gradient(90deg,rgba(10,10,10,.78),rgba(10,10,10,.25) 60%,transparent); display:flex; align-items:center">
+        <div style="padding:0 7%; max-width:580px; color:#fff">
+          <h2 style="color:#fff; font-size:clamp(1.6rem,3.6vw,2.8rem)">Scale output — not headcount.</h2>
+          <p style="color:rgba(255,255,255,.82); margin-top:14px; font-size:16px">NEXA runs the operational engine room around the clock, so your people spend their hours on the work only humans can do.</p>
+          <div style="display:flex; gap:28px; margin-top:24px">
+            <div><div style="font-size:26px; font-weight:800">24/7</div><div style="font-size:12px; color:rgba(255,255,255,.6)">always on</div></div>
+            <div><div style="font-size:26px; font-weight:800; color:#818CF8">5×</div><div style="font-size:12px; color:rgba(255,255,255,.6)">output per head</div></div>
+            <div><div style="font-size:26px; font-weight:800; color:#34D399">−67%</div><div style="font-size:12px; color:rgba(255,255,255,.6)">admin load</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="section" id="proof" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-orange)"></span> <span data-i18n="proof.eyebrow">Proven impact</span></span>
+      <h2 class="section-title" data-i18n="proof.title">Enterprise teams run leaner with NEXA.</h2>
+    </div>
+    <div class="proof-stats">
+      <div class="pstat glass reveal"><div class="v" data-count="67" data-suffix="%">0%</div><div class="k" data-i18n="proof.s1">reduction in administrative workload</div></div>
+      <div class="pstat glass reveal"><div class="v" data-count="43" data-suffix="%">0%</div><div class="k" data-i18n="proof.s2">faster lead response time</div></div>
+      <div class="pstat glass reveal"><div class="v" data-count="82" data-suffix="%">0%</div><div class="k" data-i18n="proof.s3">increase in operational efficiency</div></div>
+    </div>
+    <div class="testi-grid">
+      <div class="testi glass reveal"><p>"We grew pipeline 2.4× without adding a single ops hire. NEXA runs the work that used to drown the team."</p><div class="who"><div class="av photo" style="background:#6366F1">MR<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=70" alt="Maya Renner" style="position:absolute;inset:0" onerror="this.closest('.photo').classList.add('imgfail')"></div><div><div class="n">Maya Renner</div><div class="r">COO, Northwind</div></div></div></div>
+      <div class="testi glass reveal"><p>"Our finance close went from nine days to two. Sophie just handles it — invoices, reminders, reconciliation."</p><div class="who"><div class="av photo" style="background:#16A34A">DK<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=70" alt="David Køhler" style="position:absolute;inset:0" onerror="this.closest('.photo').classList.add('imgfail')"></div><div><div class="n">David Køhler</div><div class="r">CFO, Atlas Group</div></div></div></div>
+      <div class="testi glass reveal"><p>"Support resolution is fully autonomous below tier-2. Response time dropped 43% and CSAT went up."</p><div class="who"><div class="av photo" style="background:#EC4899">SP<img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&q=70" alt="Sofia Park" style="position:absolute;inset:0" onerror="this.closest('.photo').classList.add('imgfail')"></div><div><div class="n">Sofia Park</div><div class="r">VP Ops, Lumen</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-violet)"></span> <span data-i18n="price.eyebrow">Pricing</span></span>
+      <h2 class="section-title" data-i18n="price.title">Hire your workforce.</h2>
+      <p class="lead" data-i18n="price.sub">Per AI employee. Cancel anytime. No headcount required.</p>
+      <div class="bill-toggle" id="billToggle">
+        <button data-bill="monthly" class="active" data-i18n="price.monthly">Monthly</button>
+        <button data-bill="yearly" data-i18n="price.yearly">Yearly · save 20%</button>
+      </div>
+    </div>
+    <div class="price-grid" id="priceGrid"></div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="shead reveal"><span class="eyebrow"><span class="dot"></span> Long-term vision</span><h2 class="section-title">The road to the autonomous company.</h2></div>
+    <div class="vis">
+      <div class="ph glass reveal"><div class="n">1</div><div class="e">Phase 1</div><div class="tt">AI Operations Manager</div><div class="dd">The first autonomous employee runs your back office.</div></div>
+      <div class="ph glass reveal"><div class="n">2</div><div class="e">Phase 2</div><div class="tt">Multi-agent workforce</div><div class="dd">A coordinated team of AI specialists.</div></div>
+      <div class="ph glass reveal"><div class="n">3</div><div class="e">Phase 3</div><div class="tt">Workforce marketplace</div><div class="dd">Install AI employees like apps.</div></div>
+      <div class="ph glass reveal"><div class="n">4</div><div class="e">Phase 4</div><div class="tt">Autonomous company OS</div><div class="dd">The whole operation runs on NEXA.</div></div>
+      <div class="ph glass reveal"><div class="n">5</div><div class="e">Phase 5</div><div class="tt">Digital organizations</div><div class="dd">AI handles execution; humans set strategy.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="final-card reveal">
+      <span class="eyebrow" style="background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.18); color:#fff"><span class="dot"></span> Deploy today</span>
+      <h2 class="display" style="font-size:clamp(2.2rem,5vw,4rem); margin-top:20px" data-i18n="final.title">Stop hiring for repetitive work.</h2>
+      <p class="lead" data-i18n="final.sub">Deploy your first digital workforce today.</p>
+      <div style="margin-top:30px"><a href="onboarding.html" class="btn btn-primary btn-lg" style="background:#fff;color:#0A0A0A" data-i18n="final.cta">Create workspace</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a>
+        <p class="faint" style="margin-top:14px;max-width:280px;font-size:14px">The operating system for autonomous companies.</p>
+      </div>
+      <div><h5 data-i18n="nav.platform">Platform</h5><a href="platform.html" data-i18n="nav.platform">Platform</a><a href="workforce.html" data-i18n="nav.workforce">Workforce</a><a href="integrations.html" data-i18n="nav.integrations">Integrations</a></div>
+      <div><h5>Company</h5><a href="pricing.html" data-i18n="nav.pricing">Pricing</a><a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a><a href="command-center.html" data-i18n="nav.command">Command Center</a></div>
+      <div><h5>Resources</h5><a href="#">Documentation</a><a href="#">Security</a><a href="#">Status</a></div>
+    </div>
+    <p class="faint" style="margin-top:46px;font-size:13px">© 2026 NEXA · SOC 2 Type II · GDPR</p>
+  </div>
+</footer>
+
+<!-- BOOK A DEMO MODAL -->
+<div class="modal-back" id="demoModal">
+  <div class="modal">
+    <div class="mhead">
+      <div><h3 data-i18n="demo.title">Book your NEXA demo</h3><div class="msub" data-i18n="demo.sub">Pick a slot — we walk you through deploying your first AI workforce.</div></div>
+      <button class="x" data-demo-close aria-label="Close">✕</button>
+    </div>
+    <div id="demoForm">
+      <div class="mlabel" data-i18n="demo.name">Your details</div>
+      <div class="mfield"><input id="dName" placeholder="Full name" autocomplete="name"></div>
+      <div class="mfield"><input id="dEmail" type="email" placeholder="Work email" autocomplete="email"></div>
+      <div class="mrow2">
+        <div class="mfield"><input id="dCompany" placeholder="Company" autocomplete="organization"></div>
+        <div class="mfield"><select id="dTeam"><option value="" disabled selected data-i18n="demo.teamph">Team size…</option><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div>
+      </div>
+      <div class="mlabel" data-i18n="demo.topics">What would you like to see?</div>
+      <div class="chips" id="dTopics">
+        <button class="ch sel" data-topic="Operations">Operations</button>
+        <button class="ch" data-topic="Sales">Sales</button>
+        <button class="ch" data-topic="Finance">Finance</button>
+        <button class="ch" data-topic="Support">Support</button>
+        <button class="ch" data-topic="Recruiting">Recruiting</button>
+      </div>
+      <div class="mlabel" data-i18n="demo.date">Choose a day</div>
+      <div class="chips" id="dDates"></div>
+      <div class="mlabel" data-i18n="demo.time">Choose a time</div>
+      <div class="chips" id="dTimes"></div>
+      <button class="btn btn-primary btn-block btn-lg" id="dConfirm" style="margin-top:22px" data-i18n="demo.confirm">Confirm booking</button>
+    </div>
+    <div id="demoDone" class="done hidden">
+      <div class="ok">✓</div>
+      <h3 data-i18n="demo.booked">Demo booked!</h3>
+      <div class="msub" id="demoWhen" style="margin-top:8px;font-weight:600;color:var(--ink)"></div>
+      <div class="msub" data-i18n="demo.bookedsub" style="margin-top:6px">Check your inbox for the calendar invite.</div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/landing.js"></script>
+</body>
+</html>

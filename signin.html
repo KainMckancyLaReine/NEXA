@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXA — Sign in</title>
+<meta name="description" content="Sign in to NEXA — command your autonomous AI workforce." />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+body { min-height:100vh; }
+.auth { display:grid; grid-template-columns:1.05fr 1fr; min-height:100vh; }
+@media (max-width:860px){ .auth { grid-template-columns:1fr; } .visual { display:none; } }
+.visual { position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; padding:40px; }
+.visual .bgphoto { position:absolute; inset:0; z-index:0; }
+.visual .bgphoto::after { content:""; position:absolute; inset:0; background:linear-gradient(160deg, rgba(10,10,10,.78), rgba(10,10,10,.5)); }
+.visual .vtop, .visual .vbot { position:relative; z-index:2; color:#fff; }
+.visual .brand { color:#fff; } .visual .brand .wm { color:#fff; }
+.formbrand { margin-bottom:24px; }
+.visual h2 { color:#fff; font-size:30px; letter-spacing:-.03em; line-height:1.12; }
+.visual p { color:rgba(255,255,255,.72); margin-top:12px; font-size:15px; max-width:380px; }
+.vstats { display:flex; gap:26px; margin-top:22px; }
+.vstats .n { font-size:22px; font-weight:800; letter-spacing:-.03em; color:#fff; } .vstats .l { font-size:12px; color:rgba(255,255,255,.6); }
+.formwrap { display:grid; place-items:center; padding:40px 28px; }
+.formcard { width:100%; max-width:400px; }
+.formtop { display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; }
+.head h1 { font-size:26px; letter-spacing:-.03em; } .head .sub { color:var(--text-2); font-size:14px; margin-top:6px; }
+.social { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.sso { display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; border-radius:12px; border:1px solid var(--border-strong); background:#fff; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; transition:.2s; color:var(--ink); }
+.sso:hover { border-color:var(--ink); }
+.sso img { width:18px; height:18px; }
+.divider { display:flex; align-items:center; gap:12px; color:var(--text-3); font-size:12px; margin:16px 0; }
+.divider::before, .divider::after { content:""; flex:1; height:1px; background:var(--border); }
+.fld { margin-bottom:15px; }
+.fld label { display:block; font-size:13px; color:var(--text-2); margin-bottom:7px; font-weight:500; }
+.fld input { width:100%; padding:13px 15px; border-radius:12px; background:#fff; border:1px solid var(--border-strong); color:var(--ink); font-size:14.5px; font-family:inherit; outline:none; transition:.2s; }
+.fld input:focus { border-color:var(--ink); box-shadow:0 0 0 4px rgba(10,10,10,0.06); }
+.row { display:flex; align-items:center; justify-content:space-between; font-size:13px; margin-bottom:20px; }
+.row label { display:flex; align-items:center; gap:8px; color:var(--text-2); cursor:pointer; }
+.row a { color:var(--accent-2); font-weight:500; }
+.err { color:var(--error); font-size:13px; margin:0 0 14px; padding:10px 12px; border:1px solid rgba(239,68,68,.3); background:rgba(239,68,68,.06); border-radius:10px; display:none; }
+.foot-note { text-align:center; font-size:13.5px; color:var(--text-2); margin-top:20px; }
+.foot-note a { color:var(--accent-2); font-weight:600; }
+.hint { text-align:center; font-size:12px; color:var(--text-3); margin-top:14px; }
+.back { font-size:14px; color:rgba(255,255,255,.85); z-index:3; position:relative; }
+</style>
+</head>
+<body>
+<div class="auth">
+  <div class="visual">
+    <div class="bgphoto photo"><img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1200&q=70" alt="Modern office" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    <div class="vtop" style="display:flex;justify-content:space-between;align-items:center">
+      <a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA</span></a>
+      <a class="back" href="index.html">← Back</a>
+    </div>
+    <div class="vbot">
+      <h2>Welcome back to your<br>digital workforce.</h2>
+      <p>Your AI employees kept working while you were away. Sign in to see what they executed.</p>
+      <div class="vstats">
+        <div><div class="n">318</div><div class="l">actions today</div></div>
+        <div><div class="n">27.6h</div><div class="l">time saved</div></div>
+        <div><div class="n">98%</div><div class="l">performance</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formwrap">
+    <div class="formcard">
+      <a class="brand formbrand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a>
+      <div class="formtop">
+        <div class="head"><h1 data-i18n="si.title">Sign in to NEXA</h1><div class="sub" data-i18n="si.sub">Command your autonomous workforce</div></div>
+        <span data-lang-mount></span>
+      </div>
+      <div class="social">
+        <button class="sso" id="ssoGoogle"><img src="https://cdn.simpleicons.org/google" alt="" onerror="this.style.display='none'"> Continue with Google</button>
+        <button class="sso" id="ssoMs"><img src="https://cdn.simpleicons.org/microsoft" alt="" onerror="this.style.display='none'"> Continue with Microsoft</button>
+      </div>
+      <div class="divider">or sign in with your account</div>
+      <div class="err" id="err">Invalid credentials. Use your NEXA admin account.</div>
+      <form id="signinForm">
+        <div class="fld"><label data-i18n="si.user">Username or email</label><input id="user" type="text" placeholder="Kain" autocomplete="username" required></div>
+        <div class="fld"><label data-i18n="si.pass">Password</label><input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required></div>
+        <div class="row">
+          <label><input type="checkbox" id="remember" checked style="accent-color:#0A0A0A"> Remember me</label>
+          <a href="#" data-i18n="si.forgot">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="si.go">Sign in →</button>
+      </form>
+      <div class="foot-note">No workspace yet? <a href="onboarding.html">Create one</a></div>
+      <div class="hint">Admin demo · username <b>Kain</b> · password <b>Kain25</b></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/i18n.js"></script>
+<script>
+const ADMIN = { user: 'kain', pass: 'Kain25' };
+const go = () => { try { localStorage.setItem('nexa_user', 'Kain'); } catch(e){} window.location.href = 'command-center.html'; };
+document.getElementById('signinForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const u = document.getElementById('user').value.trim();
+  const p = document.getElementById('password').value;
+  const err = document.getElementById('err');
+  if (u.toLowerCase() === ADMIN.user && p === ADMIN.pass) {
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.textContent = 'Signing in…'; btn.disabled = true; setTimeout(go, 600);
+  } else {
+    err.style.display = 'block';
+    document.getElementById('password').value = '';
+  }
+});
+document.getElementById('ssoGoogle').onclick = go;
+document.getElementById('ssoMs').onclick = go;
+</script>
+</body>
+</html>

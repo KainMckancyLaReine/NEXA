@@ -1,0 +1,18 @@
+{
+  "name": "naamloze-map",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/engine.js",
+  "scripts": {
+    "start": "node server/engine.js",
+    "dev": "node server/engine.js",
+    "test": "echo \"No test specified\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
+
+X
+

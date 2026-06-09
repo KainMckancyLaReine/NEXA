@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXA — Platform · How autonomous operations work</title>
+<meta name="description" content="See how the NEXA platform works: AI employees that understand, decide and execute real operations across your stack — with a Command Center, autonomy controls and enterprise-grade security." />
+<link rel="canonical" href="https://nexa.ai/platform.html" />
+<meta property="og:title" content="NEXA Platform — How autonomous operations work" />
+<meta property="og:description" content="AI employees that understand, decide and execute — inside the tools you already use." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+.sub-hero { padding:150px 0 70px; }
+.sub-hero .grid { display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; }
+@media (max-width:920px){ .sub-hero .grid { grid-template-columns:1fr; gap:34px; } }
+.sub-hero .lead { margin-top:20px; max-width:520px; }
+.sub-hero .cta { display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+.hero-photo { border-radius:22px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow-lift); height:380px; }
+.split { display:grid; grid-template-columns:1fr 1fr; gap:46px; align-items:center; }
+@media (max-width:860px){ .split { grid-template-columns:1fr; gap:30px; } }
+.steps3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; } @media(max-width:820px){ .steps3{grid-template-columns:1fr;} }
+.step { padding:26px; } .step .n { width:40px; height:40px; border-radius:11px; display:grid; place-items:center; color:#fff; font-weight:800; font-size:16px; } .step h3 { font-size:18px; margin:16px 0 8px; } .step p { color:var(--text-2); font-size:14.5px; }
+.featrow { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; } @media(max-width:820px){ .featrow{grid-template-columns:1fr;} }
+.feat { padding:24px; } .feat .ic { width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:18px;color:#fff; } .feat h3 { font-size:16px; margin:14px 0 7px; } .feat p { font-size:14px; color:var(--text-2); }
+.bullets { list-style:none; margin-top:18px; display:flex; flex-direction:column; gap:12px; } .bullets li { display:flex; gap:11px; font-size:15px; color:var(--text-2); } .bullets li b{color:var(--ink);font-weight:600;} .bullets li::before { content:"✓"; color:var(--c-green); font-weight:800; }
+.cta-band { text-align:center; background:linear-gradient(rgba(10,12,24,.46),rgba(10,12,24,.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat #0A0A0A; color:#fff; border-radius:var(--radius-xl); padding:70px 28px; text-shadow:0 2px 14px rgba(0,0,0,.55); } .cta-band h2{color:#fff;}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a>
+  <div class="nav-links">
+    <a href="platform.html" style="color:var(--ink)" data-i18n="nav.platform">Platform</a>
+    <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+    <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+    <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+    <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  </div>
+  <div class="nav-actions">
+    <span data-lang-mount></span>
+    <a href="signin.html" class="btn btn-ghost" style="padding:10px 18px" data-i18n="nav.signin">Sign in</a>
+    <a href="onboarding.html" class="btn btn-primary" style="padding:10px 20px" data-i18n="nav.deploy">Deploy Workforce</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-backdrop" id="mBackdrop"></div>
+<div class="mobile-menu" id="mMenu">
+  <a href="platform.html" data-i18n="nav.platform">Platform</a>
+  <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+  <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+  <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+  <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  <a href="#" data-demo data-i18n="nav.demo">Book a demo</a>
+  <a href="signin.html" data-i18n="nav.signin">Sign in</a>
+  <a href="onboarding.html" class="btn btn-primary" style="margin-top:10px" data-i18n="nav.deploy">Deploy Workforce</a>
+</div>
+
+<!-- HERO -->
+<header class="sub-hero">
+  <div class="container grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Platform</span>
+      <h1 class="display" style="font-size:clamp(2.4rem,5.5vw,4.4rem); margin-top:18px" data-i18n="pf.title">The platform behind autonomous operations.</h1>
+      <p class="lead" data-i18n="pf.sub">NEXA is not a chatbot or a workflow builder. It is a digital labour platform: AI employees that read context, make decisions and carry out real work inside your existing tools — supervised by you, operated by them.</p>
+      <div class="cta">
+        <a href="onboarding.html" class="btn btn-primary btn-lg" data-i18n="hero.cta1">Deploy Workforce</a>
+        <button class="btn btn-ghost btn-lg" data-demo data-i18n="nav.demo">Book a demo</button>
+      </div>
+    </div>
+    <div class="hero-photo photo reveal"><img loading="lazy" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1100&q=70" alt="NEXA analytics in action" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+  </div>
+</header>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:40px">
+  <div class="container">
+    <div style="max-width:680px; margin-bottom:40px">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-indigo)"></span> How it works</span>
+      <h2 class="section-title" style="margin-top:16px" data-i18n="pf.howt">Understand. Decide. Execute.</h2>
+      <p class="lead" style="margin-top:14px">Every request runs through the same autonomous loop — no human in the loop for the repetitive 80%.</p>
+    </div>
+    <div class="steps3">
+      <div class="step glass reveal"><div class="n" style="background:var(--c-blue)">1</div><h3>Understand</h3><p>NEXA reads the email, ticket, record or message, pulls in context from connected systems, and works out what is actually being asked.</p></div>
+      <div class="step glass reveal"><div class="n" style="background:var(--c-indigo)">2</div><h3>Decide</h3><p>It weighs your policies, priorities and history, then chooses the right action — or escalates the edge cases that genuinely need a human.</p></div>
+      <div class="step glass reveal"><div class="n" style="background:var(--c-violet)">3</div><h3>Execute</h3><p>It performs the work end to end: sends the reply, updates the CRM, books the meeting, raises the invoice — and reports back what it did.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMAND CENTER DEEP DIVE -->
+<section class="section" style="padding-top:0">
+  <div class="container split">
+    <div class="reveal-l">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-pink)"></span> Command Center</span>
+      <h2 class="section-title" style="margin-top:16px" data-i18n="pf.cct">One cockpit for your whole digital workforce.</h2>
+      <p class="lead" style="margin-top:14px">Watch every action as it happens, steer with natural language, and read the intelligence your workforce surfaces.</p>
+      <ul class="bullets">
+        <li><b>Global command bar</b> — tell your workforce what to accomplish, by text or voice.</li>
+        <li><b>Live activity feed</b> — every executed action, attributed to the AI employee that did it.</li>
+        <li><b>Executive intelligence</b> — forecasts, bottlenecks, risks and recommendations.</li>
+        <li><b>Per-employee control</b> — autonomy levels, approvals and working hours.</li>
+      </ul>
+      <a href="command-center.html" class="btn btn-primary" style="margin-top:24px">Open the Command Center →</a>
+    </div>
+    <div class="device reveal-r">
+      <div class="bar" style="display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--border);background:var(--bg-2)"><i style="width:10px;height:10px;border-radius:50%;background:#ff5f57"></i><i style="width:10px;height:10px;border-radius:50%;background:#febc2e"></i><i style="width:10px;height:10px;border-radius:50%;background:#28c840"></i></div>
+      <div class="photo" style="height:320px"><img loading="lazy" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1100&q=70" alt="Business analytics dashboard" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTONOMY / CONTROL -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div style="max-width:680px; margin-bottom:38px">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-amber)"></span> Control</span>
+      <h2 class="section-title" style="margin-top:16px" data-i18n="pf.ctrlt">Autonomy you can dial in.</h2>
+      <p class="lead" style="margin-top:14px">Start supervised, build trust, then let NEXA run. You decide how far each employee goes.</p>
+    </div>
+    <div class="featrow">
+      <div class="feat glass reveal"><div class="ic" style="background:var(--c-blue)">◐</div><h3>Suggest</h3><p>NEXA drafts the action and waits for your approval. Perfect for week one.</p></div>
+      <div class="feat glass reveal"><div class="ic" style="background:var(--c-indigo)">◑</div><h3>Assist</h3><p>It executes the routine work and only asks you about the genuine edge cases.</p></div>
+      <div class="feat glass reveal"><div class="ic" style="background:var(--c-violet)">●</div><h3>Autonomous</h3><p>Full execution within your guardrails, with a complete audit trail of every action.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="section" style="padding-top:0">
+  <div class="container split">
+    <div class="hero-photo photo reveal-l" style="height:340px"><img loading="lazy" src="https://images.unsplash.com/photo-1510511459019-5dda7724fd87?auto=format&fit=crop&w=1100&q=70" alt="Security and infrastructure" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+    <div class="reveal-r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-green)"></span> Security &amp; trust</span>
+      <h2 class="section-title" style="margin-top:16px" data-i18n="pf.sect">Enterprise-grade by default.</h2>
+      <p class="lead" style="margin-top:14px">Your data stays yours. NEXA acts with least-privilege access and a full record of everything it does.</p>
+      <ul class="bullets">
+        <li><b>SOC 2 Type II</b> &amp; GDPR compliant</li>
+        <li><b>Encryption</b> in transit and at rest</li>
+        <li><b>Least-privilege</b> connector scopes, revocable any time</li>
+        <li><b>Full audit log</b> of every autonomous action</li>
+        <li><b>Private infrastructure</b> &amp; custom models on Enterprise</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS TEASER -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="center" style="max-width:640px;margin:0 auto 24px">
+      <span class="eyebrow" style="justify-content:center"><span class="dot" style="background:var(--c-cyan)"></span> Works with your stack</span>
+      <h2 class="section-title" style="margin-top:14px">Sits above every system.</h2>
+    </div>
+    <div class="marquee reveal"><div class="track" id="intTrack"></div></div>
+    <div class="center" style="margin-top:24px"><a href="integrations.html" class="btn btn-ghost btn-lg">See all integrations →</a></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2 class="display" style="font-size:clamp(2rem,4.5vw,3.4rem)" data-i18n="pf.cta">Put your operations on autopilot.</h2>
+      <p class="lead" style="color:rgba(255,255,255,.7); margin:16px auto 0; max-width:480px">Deploy your first AI employee in minutes.</p>
+      <div style="margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+        <a href="onboarding.html" class="btn btn-primary btn-lg" style="background:#fff;color:#0A0A0A" data-i18n="hero.cta1">Deploy Workforce</a>
+        <button class="btn btn-lg" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3)" data-demo data-i18n="nav.demo">Book a demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a><p class="faint" style="margin-top:14px;max-width:280px;font-size:14px">The operating system for autonomous companies.</p></div>
+      <div><h5 data-i18n="nav.platform">Platform</h5><a href="platform.html" data-i18n="nav.platform">Platform</a><a href="workforce.html" data-i18n="nav.workforce">Workforce</a><a href="integrations.html" data-i18n="nav.integrations">Integrations</a></div>
+      <div><h5>Company</h5><a href="pricing.html" data-i18n="nav.pricing">Pricing</a><a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a><a href="command-center.html" data-i18n="nav.command">Command Center</a></div>
+      <div><h5>Resources</h5><a href="#">Documentation</a><a href="#">Security</a><a href="#">Status</a></div>
+    </div>
+    <p class="faint" style="margin-top:46px;font-size:13px">© 2026 NEXA · SOC 2 Type II · GDPR · Dev by <a href="https://www.kainlareine.nl" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">Kain Mckancy</a></p>
+  </div>
+</footer>
+
+<!-- DEMO MODAL -->
+<div class="modal-back" id="demoModal">
+  <div class="modal">
+    <div class="mhead"><div><h3 data-i18n="demo.title">Book your NEXA demo</h3><div class="msub" data-i18n="demo.sub">Pick a slot — we walk you through deploying your first AI workforce.</div></div><button class="x" data-demo-close aria-label="Close">✕</button></div>
+    <div id="demoForm">
+      <div class="mlabel" data-i18n="demo.name">Your details</div>
+      <div class="mfield"><input id="dName" placeholder="Full name" autocomplete="name"></div>
+      <div class="mfield"><input id="dEmail" type="email" placeholder="Work email" autocomplete="email"></div>
+      <div class="mrow2">
+        <div class="mfield"><input id="dCompany" placeholder="Company" autocomplete="organization"></div>
+        <div class="mfield"><select id="dTeam"><option value="" disabled selected data-i18n="demo.teamph">Team size…</option><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div>
+      </div>
+      <div class="mlabel" data-i18n="demo.topics">What would you like to see?</div>
+      <div class="chips" id="dTopics">
+        <button class="ch sel" data-topic="Operations">Operations</button>
+        <button class="ch" data-topic="Sales">Sales</button>
+        <button class="ch" data-topic="Finance">Finance</button>
+        <button class="ch" data-topic="Support">Support</button>
+        <button class="ch" data-topic="Recruiting">Recruiting</button>
+      </div>
+      <div class="mlabel" data-i18n="demo.date">Choose a day</div>
+      <div class="chips" id="dDates"></div>
+      <div class="mlabel" data-i18n="demo.time">Choose a time</div>
+      <div class="chips" id="dTimes"></div>
+      <button class="btn btn-primary btn-block btn-lg" id="dConfirm" style="margin-top:22px" data-i18n="demo.confirm">Confirm booking</button>
+    </div>
+    <div id="demoDone" class="done hidden"><div class="ok">✓</div><h3 data-i18n="demo.booked">Demo booked!</h3><div class="msub" id="demoWhen" style="margin-top:8px;font-weight:600;color:var(--ink)"></div><div class="msub" data-i18n="demo.bookedsub" style="margin-top:6px">Check your inbox for the calendar invite.</div></div>
+  </div>
+</div>
+
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+{
+  "company": {
+    "name": "Acme Inc.",
+    "industry": "SaaS / Technology",
+    "team": "11–50",
+    "revenue": "€1M – €10M",
+    "plan": "Growth"
+  },
+  "connectors": [
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "category": "Email",
+      "connected": true
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "category": "Chat",
+      "connected": true
+    },
+    {
+      "id": "hubspot",
+      "name": "HubSpot",
+      "category": "CRM",
+      "connected": true
+    },
+    {
+      "id": "gcal",
+      "name": "Google Calendar",
+      "category": "Calendar",
+      "connected": true
+    },
+    {
+      "id": "exact",
+      "name": "Exact",
+      "category": "Accounting",
+      "connected": false
+    }
+  ],
+  "workforce": [
+    {
+      "id": "OM",
+      "code": "OM",
+      "person": "Emma",
+      "name": "AI Operations Manager",
+      "dept": "Operations",
+      "tagline": "Email · Scheduling · Reporting · CRM",
+      "skills": [
+        "Email management",
+        "Scheduling",
+        "Documentation",
+        "Reporting",
+        "CRM updates",
+        "Workflow execution"
+      ],
+      "status": "live",
+      "tasksToday": 119,
+      "timeSavedToday": 7.5,
+      "performance": 98,
+      "installedAt": 1780991832345
+    },
+    {
+      "id": "SM",
+      "code": "SM",
+      "person": "Liam",
+      "name": "AI Sales Manager",
+      "dept": "Sales",
+      "tagline": "Lead qualification · Follow-up · Proposals",
+      "skills": [
+        "Lead qualification",
+        "Lead follow-up",
+        "Proposal creation",
+        "Pipeline management",
+        "CRM updates",
+        "Meeting scheduling"
+      ],
+      "status": "live",
+      "tasksToday": 35,
+      "timeSavedToday": 5.8,
+      "performance": 97,
+      "installedAt": 1780905432345
+    },
+    {
+      "id": "FM",
+      "code": "FM",
+      "person": "Sophie",
+      "name": "AI Finance Manager",
+      "dept": "Finance",
+      "tagline": "Invoices · Reminders · Cashflow reports",
+      "skills": [
+        "Invoices",
+        "Expense monitoring",
+        "Payment reminders",
+        "Cashflow reports",
+        "Financial forecasting"
+      ],
+      "status": "busy",
+      "tasksToday": 66,
+      "timeSavedToday": 2.1,
+      "performance": 96,
+      "installedAt": 1780819032345
+    },
+    {
+      "id": "SA",
+      "code": "SA",
+      "person": "Noah",
+      "name": "AI Support Agent",
+      "dept": "Support",
+      "tagline": "Tickets · Customer comms · 24/7 support",
+      "skills": [
+        "Ticket resolution",
+        "Customer communication",
+        "Knowledge base updates",
+        "Escalation handling",
+        "24/7 support"
+      ],
+      "status": "live",
+      "tasksToday": 60,
+      "timeSavedToday": 3.7,
+      "performance": 99,
+      "installedAt": 1780732632345
+    },
+    {
+      "id": "RA",
+      "code": "RA",
+      "person": "Maya",
+      "name": "AI Recruiting Agent",
+      "dept": "Recruiting",
+      "tagline": "Screening · Scheduling · Analytics",
+      "skills": [
+        "Candidate screening",
+        "Interview scheduling",
+        "Application review",
+        "Follow-up management",
+        "Recruitment analytics"
+      ],
+      "status": "live",
+      "tasksToday": 58,
+      "timeSavedToday": 9,
+      "performance": 95,
+      "installedAt": 1780646232345
+    },
+    {
+      "id": "DOC",
+      "code": "DOC",
+      "person": "Ava",
+      "name": "AI Document Specialist",
+      "dept": "Documents",
+      "tagline": "Excel · Word · PowerPoint · fully automated",
+      "skills": [
+        "Excel spreadsheets",
+        "Word documents",
+        "PowerPoint decks",
+        "Report generation",
+        "Template automation"
+      ],
+      "status": "live",
+      "tasksToday": 12,
+      "timeSavedToday": 1.2,
+      "performance": 95,
+      "installedAt": 1781011784093
+    }
+  ],
+  "activity": [
+    {
+      "id": "act_12",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "shared it with the team",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813550
+    },
+    {
+      "id": "act_11",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "saved NEXA-Business-Report-2026-06-09.docx",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813550
+    },
+    {
+      "id": "act_10",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "generated Weekly operations report",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813550
+    },
+    {
+      "id": "act_9",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "pulled the latest data from connected systems",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813550
+    },
+    {
+      "id": "act_8",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "shared it with the team",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813538
+    },
+    {
+      "id": "act_7",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "generated NEXA-Pitch-Deck-2026-06-09.pptx",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813538
+    },
+    {
+      "id": "act_6",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "drafted and formatted the PowerPoint deck",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813538
+    },
+    {
+      "id": "act_5",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "pulled the latest figures from connected systems",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011813538
+    },
+    {
+      "id": "act_4",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "shared it with the team",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011784136
+    },
+    {
+      "id": "act_3",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "generated NEXA-Financial-Model-2026-06-09.xlsx",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011784136
+    },
+    {
+      "id": "act_2",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "drafted and formatted the Excel workbook",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011784136
+    },
+    {
+      "id": "act_1",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "summary": "pulled the latest figures from connected systems",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781011784136
+    }
+  ],
+  "seq": 13,
+  "tasks": [
+    {
+      "id": "task_4",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "text": "Chase overdue invoices",
+      "steps": [],
+      "status": "pending_approval",
+      "mode": "supervised",
+      "createdAt": 1781012542219,
+      "resolvedAt": null,
+      "document": null
+    },
+    {
+      "id": "task_3",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "text": "Weekly operations report",
+      "steps": [
+        "pulled the latest data from connected systems",
+        "generated Weekly operations report",
+        "saved NEXA-Business-Report-2026-06-09.docx",
+        "shared it with the team"
+      ],
+      "status": "done",
+      "mode": "scheduled",
+      "createdAt": 1781011813550,
+      "resolvedAt": 1781011813550,
+      "document": {
+        "type": "docx",
+        "filename": "NEXA-Business-Report-2026-06-09.docx"
+      }
+    },
+    {
+      "id": "task_2",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "text": "Generate the board pitch deck",
+      "steps": [
+        "pulled the latest figures from connected systems",
+        "drafted and formatted the PowerPoint deck",
+        "generated NEXA-Pitch-Deck-2026-06-09.pptx",
+        "shared it with the team"
+      ],
+      "status": "done",
+      "mode": "auto",
+      "createdAt": 1781011813537,
+      "resolvedAt": 1781011813538,
+      "document": {
+        "type": "pptx",
+        "filename": "NEXA-Pitch-Deck-2026-06-09.pptx"
+      }
+    },
+    {
+      "id": "task_1",
+      "empId": "DOC",
+      "empCode": "DOC",
+      "empName": "AI Document Specialist",
+      "text": "Build the Q1 financial model in Excel",
+      "steps": [
+        "pulled the latest figures from connected systems",
+        "drafted and formatted the Excel workbook",
+        "generated NEXA-Financial-Model-2026-06-09.xlsx",
+        "shared it with the team"
+      ],
+      "status": "done",
+      "mode": "supervised",
+      "createdAt": 1781011784102,
+      "resolvedAt": 1781011784136,
+      "document": {
+        "type": "xlsx",
+        "filename": "NEXA-Financial-Model-2026-06-09.xlsx"
+      }
+    }
+  ],
+  "audit": [
+    {
+      "id": "aud_9",
+      "ts": 1781012542219,
+      "empId": "FM",
+      "empCode": "FM",
+      "type": "command",
+      "summary": "received command: \"Chase overdue invoices\"",
+      "detail": {
+        "taskId": "task_4",
+        "mode": "supervised"
+      }
+    },
+    {
+      "id": "aud_8",
+      "ts": 1781011813562,
+      "empId": "FM",
+      "empCode": "FM",
+      "type": "memory",
+      "summary": "learned: \"Always CC finance@acme.com on reminders\"",
+      "detail": null
+    },
+    {
+      "id": "aud_7",
+      "ts": 1781011813550,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "schedule",
+      "summary": "ran schedule: Weekly operations report",
+      "detail": {
+        "scheduleId": "sch_1",
+        "file": "NEXA-Business-Report-2026-06-09.docx"
+      }
+    },
+    {
+      "id": "aud_6",
+      "ts": 1781011813538,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "execute",
+      "summary": "executed: \"Generate the board pitch deck\"",
+      "detail": {
+        "taskId": "task_2",
+        "steps": [
+          "pulled the latest figures from connected systems",
+          "drafted and formatted the PowerPoint deck",
+          "generated NEXA-Pitch-Deck-2026-06-09.pptx",
+          "shared it with the team"
+        ]
+      }
+    },
+    {
+      "id": "aud_5",
+      "ts": 1781011813537,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "command",
+      "summary": "received command: \"Generate the board pitch deck\"",
+      "detail": {
+        "taskId": "task_2",
+        "mode": "auto"
+      }
+    },
+    {
+      "id": "aud_4",
+      "ts": 1781011813532,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "autonomy",
+      "summary": "autonomy set to auto",
+      "detail": null
+    },
+    {
+      "id": "aud_3",
+      "ts": 1781011784136,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "approve",
+      "summary": "approved & executed: \"Build the Q1 financial model in Excel\"",
+      "detail": {
+        "taskId": "task_1"
+      }
+    },
+    {
+      "id": "aud_2",
+      "ts": 1781011784136,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "execute",
+      "summary": "executed: \"Build the Q1 financial model in Excel\"",
+      "detail": {
+        "taskId": "task_1",
+        "steps": [
+          "pulled the latest figures from connected systems",
+          "drafted and formatted the Excel workbook",
+          "generated NEXA-Financial-Model-2026-06-09.xlsx",
+          "shared it with the team"
+        ]
+      }
+    },
+    {
+      "id": "aud_1",
+      "ts": 1781011784102,
+      "empId": "DOC",
+      "empCode": "DOC",
+      "type": "command",
+      "summary": "received command: \"Build the Q1 financial model in Excel\"",
+      "detail": {
+        "taskId": "task_1",
+        "mode": "supervised"
+      }
+    }
+  ],
+  "memory": {
+    "FM": [
+      {
+        "ts": 1781011813562,
+        "note": "Always CC finance@acme.com on reminders"
+      }
+    ]
+  },
+  "autonomy": {
+    "OM": "supervised",
+    "SM": "supervised",
+    "FM": "supervised",
+    "SA": "auto",
+    "RA": "supervised",
+    "DOC": "auto",
+    "DA": "auto",
+    "MM": "supervised",
+    "PM": "supervised"
+  },
+  "schedules": [
+    {
+      "id": "sch_1",
+      "empId": "DOC",
+      "title": "Weekly operations report",
+      "docType": "docx",
+      "cadence": "Weekly · Mon 08:00",
+      "enabled": true,
+      "lastRun": 1781011813550
+    },
+    {
+      "id": "sch_2",
+      "empId": "DOC",
+      "title": "Monthly financial model",
+      "docType": "xlsx",
+      "cadence": "Monthly · 1st 07:00",
+      "enabled": true,
+      "lastRun": null
+    }
+  ],
+  "tseq": 5,
+  "aseq": 10
+}

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /command-center.html
+Disallow: /signin.html
+Disallow: /employee.html
+
+Sitemap: https://nexa.ai/sitemap.xml

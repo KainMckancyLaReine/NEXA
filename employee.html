@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>/* auth guard — no employee profiles without login */try{if(!localStorage.getItem('nexa_user'))location.replace('signin.html');}catch(e){}</script>
+<title>NEXA — AI Employee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+.ep-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid var(--border); position: sticky; top:0; background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); z-index: 50; }
+.ep-top a.back { color: var(--text-2); font-size: 14px; }
+.ep-top a.back:hover { color:var(--text); }
+
+.ep-hero { padding: 44px 0 30px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.ep-hero .av { width: 84px; height: 84px; border-radius: 22px; background: linear-gradient(135deg,#3B82F6,#1e40af); display: grid; place-items: center; font-weight: 800; font-size: 28px; box-shadow: 0 0 40px -8px var(--accent-glow); flex: none; }
+.ep-hero h1 { font-size: clamp(1.8rem,4vw,2.6rem); letter-spacing: -.03em; }
+.ep-hero .dept { color: var(--accent-2); font-weight: 600; font-size: 14px; margin-top: 4px; }
+.ep-hero .tag { color: var(--text-2); margin-top: 8px; }
+.ep-hero .status { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.ep-hero .status .chip { font-size: 13px; }
+
+.cols { display: grid; grid-template-columns: 1fr 320px; gap: 24px; padding-bottom: 80px; align-items: start; }
+@media (max-width: 900px){ .cols { grid-template-columns: 1fr; } }
+
+.kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 700px){ .kpis { grid-template-columns: repeat(2,1fr);} }
+.kpi { padding: 18px; } .kpi .v { font-size: 24px; font-weight: 800; letter-spacing: -.03em; } .kpi .k { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+.panel { padding: 24px; margin-bottom: 20px; }
+.panel h3 { font-size: 15px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+.hist { display: flex; flex-direction: column; gap: 10px; }
+.hrow { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border: 1px solid var(--border); border-radius: 12px; background: rgba(15,23,42,0.02); font-size: 13.5px; }
+.hrow .dotx { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex: none; box-shadow: 0 0 8px var(--success); }
+.hrow .what { flex: 1; } .hrow .when { color: var(--text-3); font-size: 12px; white-space: nowrap; }
+.hrow .tag { font-size: 11px; padding: 3px 9px; border-radius: 999px; color: var(--success); border: 1px solid rgba(34,197,94,0.3); background: rgba(34,197,94,0.08); }
+.hrow .tag.command { color: var(--accent-2); border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.08); }
+
+.skill-list { display: flex; flex-direction: column; gap: 10px; }
+.skill-item { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--text-2); }
+.skill-item::before { content:'✓'; color: var(--accent-2); font-weight: 700; }
+
+.queue .q { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px dashed var(--border-strong); border-radius: 12px; margin-bottom: 8px; font-size: 13px; color: var(--text-2); }
+.queue .q .sp { width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);border-top-color:var(--accent);animation:spin 1s linear infinite;flex:none;}
+
+.setting { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.setting:last-child { border-bottom: none; }
+.switch { width: 42px; height: 24px; border-radius: 999px; background: #DBE4F0; position: relative; cursor: pointer; transition: .2s; flex: none; }
+.switch.on { background: var(--accent); }
+.switch i { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: .2s; }
+.switch.on i { left: 21px; }
+
+.assign { display: flex; gap: 10px; margin-top: 8px; }
+.assign input { flex:1; padding: 11px 14px; border-radius: 11px; background: rgba(15,23,42,0.03); border: 1px solid var(--border); color:var(--text); font-size:13.5px; font-family:inherit; outline:none; }
+.assign input:focus { border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<div class="ep-top">
+  <a class="brand" href="index.html"><span class="logo"></span> NEXA</a>
+  <a class="back" href="command-center.html">← Command Center</a>
+</div>
+
+<div class="container">
+  <div class="ep-hero">
+    <div class="av" id="av">··</div>
+    <div>
+      <h1 id="name">Loading…</h1>
+      <div class="dept" id="dept"></div>
+      <div class="tag" id="tag"></div>
+    </div>
+    <div class="status"><span class="chip" id="statusChip"><span class="status-dot live"></span> <span id="statusText">live</span></span></div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <div class="kpis">
+        <div class="kpi glass"><div class="v" id="kTasks">0</div><div class="k">Tasks today</div></div>
+        <div class="kpi glass"><div class="v" id="kTime">0h</div><div class="k">Time saved today</div></div>
+        <div class="kpi glass"><div class="v" id="kPerf">0%</div><div class="k">Performance</div></div>
+        <div class="kpi glass"><div class="v">24/7</div><div class="k">Availability</div></div>
+      </div>
+
+      <div class="panel glass">
+        <h3><span class="status-dot live"></span> Live Queue</h3>
+        <div class="queue" id="queue"></div>
+        <div class="assign">
+          <input id="assignInput" placeholder="Assign a task to this employee…" />
+          <button class="btn btn-primary" id="assignBtn" style="padding:11px 18px">Execute</button>
+        </div>
+      </div>
+
+      <div class="panel glass">
+        <h3>Action History</h3>
+        <div class="hist" id="hist"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel glass">
+        <h3>Responsibilities</h3>
+        <div class="skill-list" id="skills"></div>
+      </div>
+      <div class="panel glass">
+        <h3>Settings</h3>
+        <div class="setting"><span>Autonomous execution</span><div class="switch on" data-k="auto"><i></i></div></div>
+        <div class="setting"><span>Require approval for sends</span><div class="switch" data-k="approval"><i></i></div></div>
+        <div class="setting"><span>Work outside business hours</span><div class="switch on" data-k="hours"><i></i></div></div>
+        <div class="setting"><span>Escalate edge cases</span><div class="switch on" data-k="escalate"><i></i></div></div>
+      </div>
+      <div class="panel glass">
+        <h3 data-i18n="mem.title">Memory</h3>
+        <div class="assign"><input id="memInput" data-i18n-ph="mem.ph" placeholder="Teach this employee something it should remember…"><button class="btn btn-primary" id="memBtn" style="padding:11px 18px" data-i18n="mem.save">Save</button></div>
+        <div id="memList" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/avatars.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const id = new URLSearchParams(location.search).get('id') || 'OM';
+
+const FALLBACK = {
+  OM:{id:'OM',code:'OM',name:'AI Operations Manager',dept:'Operations',tagline:'Email · Scheduling · Reporting · CRM',skills:['Email management','Scheduling','Documentation','Reporting','CRM updates','Workflow execution'],status:'live',tasksToday:112,timeSavedToday:6.4,performance:99},
+  SM:{id:'SM',code:'SM',name:'AI Sales Manager',dept:'Sales',tagline:'Lead qualification · Follow-up · Proposals',skills:['Lead qualification','Lead follow-up','Proposal creation','Pipeline management','CRM updates','Meeting scheduling'],status:'live',tasksToday:64,timeSavedToday:4.1,performance:97},
+  FM:{id:'FM',code:'FM',name:'AI Finance Manager',dept:'Finance',tagline:'Invoices · Reminders · Cashflow reports',skills:['Invoices','Expense monitoring','Payment reminders','Cashflow reports','Financial forecasting'],status:'busy',tasksToday:38,timeSavedToday:3.2,performance:98},
+  SA:{id:'SA',code:'SA',name:'AI Support Agent',dept:'Support',tagline:'Tickets · Customer comms · 24/7 support',skills:['Ticket resolution','Customer communication','Knowledge base updates','Escalation handling','24/7 support'],status:'live',tasksToday:124,timeSavedToday:8.9,performance:96},
+  RA:{id:'RA',code:'RA',name:'AI Recruiting Agent',dept:'Recruiting',tagline:'Screening · Scheduling · Analytics',skills:['Candidate screening','Interview scheduling','Application review','Follow-up management','Recruitment analytics'],status:'live',tasksToday:53,timeSavedToday:5.0,performance:95},
+  DOC:{id:'DOC',code:'DOC',name:'AI Document Specialist',dept:'Documents',tagline:'Excel · Word · PowerPoint · fully automated',skills:['Excel spreadsheets','Word documents','PowerPoint decks','Report generation','Template automation'],status:'live',tasksToday:47,timeSavedToday:5.6,performance:99},
+  DA:{id:'DA',code:'DA',name:'AI Data Analyst',dept:'Operations',tagline:'Dashboards · Insights · Anomaly detection',skills:['Reporting','Trend analysis','Anomaly detection','Forecasting','KPI tracking'],status:'live',tasksToday:71,timeSavedToday:4.8,performance:98},
+  MM:{id:'MM',code:'MM',name:'AI Marketing Manager',dept:'Marketing',tagline:'Campaigns · Content · Lead gen',skills:['Campaign execution','Content drafting','Lead generation','A/B testing','Reporting'],status:'live',tasksToday:44,timeSavedToday:4.2,performance:96},
+  PM:{id:'PM',code:'PM',name:'AI Procurement Manager',dept:'Operations',tagline:'Vendors · POs · Approvals',skills:['Vendor management','Purchase orders','Approval routing','Spend tracking'],status:'live',tasksToday:29,timeSavedToday:3.0,performance:97},
+};
+const HIST_FALLBACK = {
+  OM:['processed 17 emails and updated 9 CRM records','scheduled 5 meetings for next week','generated the weekly operational report','triaged inbox · 0 left unread'],
+  SM:['followed up 24 leads · 6 replied','generated and sent 3 proposals','moved 4 deals to Proposal Sent','scheduled 11 discovery calls'],
+  FM:['reconciled 12 invoices · €48k cleared','sent reminders for 6 overdue invoices','updated cashflow forecast','flagged 1 account for escalation'],
+  SA:['resolved 18 tickets · CSAT 4.8','updated 2 knowledge base articles','escalated 2 tickets to human review','answered 31 customer messages'],
+  RA:['reviewed 42 applications · shortlisted 7','scheduled 4 interview slots','sent follow-ups to 12 applicants','updated recruitment analytics'],
+  DOC:['generated Q1 financial model in Excel','wrote the weekly operations report in Word','built a 5-slide pitch deck in PowerPoint','assembled monthly KPI workbook'],
+};
+const QUEUE = {
+  OM:['Drafting Q2 operations summary','Syncing CRM with latest email threads'],
+  SM:['Re-engaging 38 inactive leads','Preparing proposal for Northwind'],
+  FM:['Reconciling June bank statement','Chasing 6 overdue invoices'],
+  SA:['Resolving ticket #4821','Updating KB: password reset flow'],
+  RA:['Screening 14 new applications','Coordinating 3 interview panels'],
+  DOC:['Generating Q2 board deck (PowerPoint)','Compiling cashflow workbook (Excel)'],
+};
+
+let lastTs = 0;
+
+function paint(emp, history){
+  if(window.aiAvatar){ const a=$('#av'); a.style.padding='0'; a.style.overflow='hidden'; a.innerHTML=aiAvatar(emp.id||id,84); }
+  else $('#av').textContent = (emp.person||(window.AINAMES&&AINAMES[id])||emp.code)[0];
+  $('#name').textContent = emp.person || (window.AINAMES&&AINAMES[id]) || emp.name;
+  $('#dept').textContent = emp.dept + ' · Digital Employee';
+  $('#tag').textContent = emp.tagline;
+  $('#statusText').textContent = emp.status;
+  const dot = $('#statusChip .status-dot'); dot.className = 'status-dot ' + (emp.status==='busy'?'busy':emp.status==='idle'?'idle':'live');
+  animate('#kTasks', emp.tasksToday, '');
+  $('#kTime').textContent = (emp.timeSavedToday||0).toFixed(1) + 'h';
+  animate('#kPerf', emp.performance, '%');
+  $('#skills').innerHTML = (emp.skills||[]).map(s=>`<div class="skill-item">${s}</div>`).join('');
+  const q = QUEUE[emp.id] || QUEUE.OM;
+  $('#queue').innerHTML = q.map(x=>`<div class="q"><span class="sp"></span>${x}</div>`).join('');
+  renderHist(history);
+}
+function animate(sel, val, suf){ const el=$(sel); gsap.to({v:0},{v:val,duration:1.2,ease:'power2.out',onUpdate(){el.textContent=Math.round(this.targets()[0].v)+suf;}}); }
+function timeAgo(ts){ const d=Math.round((Date.now()-ts)/60000); return d<=0?'just now':d+'m ago'; }
+function hrow(what, tag, when){
+  return `<div class="hrow"><span class="dotx"></span><span class="what">${what}</span><span class="tag ${tag==='command'?'command':''}">${tag==='command'?'Command':'Executed'}</span><span class="when">${when}</span></div>`;
+}
+function renderHist(history){
+  const el = $('#hist');
+  if(history && history.length){
+    el.innerHTML = history.map(a=>hrow(a.summary, a.tag, timeAgo(a.ts))).join('');
+    lastTs = history[0].ts;
+  } else {
+    const h = HIST_FALLBACK[id] || HIST_FALLBACK.OM;
+    el.innerHTML = h.map((x,i)=>hrow(x,'executed',(i*4+2)+'m ago')).join('');
+  }
+  gsap.from('#hist .hrow', { opacity:0, x:14, duration:.4, stagger:.05 });
+}
+
+// settings toggles
+document.querySelectorAll('.switch').forEach(s => s.onclick = () => s.classList.toggle('on'));
+
+// autonomy (first switch) + memory — persisted, shared with the Command Center
+function lsCC(){ try{ return JSON.parse(localStorage.getItem('nexa_cc_v1'))||{}; }catch(e){ return {}; } }
+function lsCCsave(o){ try{ localStorage.setItem('nexa_cc_v1', JSON.stringify(o)); }catch(e){} }
+const autoSwitch = document.querySelector('.switch[data-k="auto"]');
+async function initAutonomy(){
+  let level='supervised';
+  if(NEXA.online){ const m=await NEXA.getMemory(id); if(m&&m.autonomy) level=m.autonomy; }
+  else { const cc=lsCC(); if(cc.autonomy&&cc.autonomy[id]) level=cc.autonomy[id]; }
+  if(autoSwitch) autoSwitch.classList.toggle('on', level==='auto');
+}
+if(autoSwitch) autoSwitch.addEventListener('click', async () => {
+  const level = autoSwitch.classList.contains('on') ? 'auto' : 'supervised';
+  if(NEXA.online) { try{ await NEXA.setAutonomy(id, level); }catch(e){} }
+  const cc=lsCC(); cc.autonomy=cc.autonomy||{}; cc.autonomy[id]=level; lsCCsave(cc);
+});
+async function loadMem(){
+  let mem=[];
+  if(NEXA.online){ const m=await NEXA.getMemory(id); mem=(m&&m.memory)||[]; }
+  else { try{ mem=JSON.parse(localStorage.getItem('nexa_mem_'+id))||[]; }catch(e){} }
+  const el=$('#memList');
+  el.innerHTML = mem.length ? mem.map(x=>`<div class="hrow" style="margin-bottom:8px"><span class="dotx"></span><span class="what">${x.note}</span></div>`).join('') : `<div style="color:var(--text-3);font-size:13px" data-i18n="mem.none">No memory yet.</div>`;
+  if(window.I18N) I18N.apply(el);
+}
+const memBtn=$('#memBtn');
+if(memBtn) memBtn.onclick = async () => {
+  const v=$('#memInput').value.trim(); if(!v) return; $('#memInput').value='';
+  if(NEXA.online){ try{ await NEXA.addMemory(id, v); }catch(e){} }
+  else { let mem=[]; try{ mem=JSON.parse(localStorage.getItem('nexa_mem_'+id))||[]; }catch(e){} mem.unshift({ts:Date.now(),note:v}); try{ localStorage.setItem('nexa_mem_'+id, JSON.stringify(mem)); }catch(e){} }
+  loadMem();
+};
+const memInput=$('#memInput'); if(memInput) memInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); memBtn.click(); } });
+initAutonomy(); loadMem();
+
+// assign task -> command via API or local
+async function assign(text){
+  $('#assignInput').value='';
+  if(NEXA.online){
+    const res = await NEXA.command(text);
+    if(res && res.actions){
+      // show this employee's actions at top
+      const mine = res.actions.filter(a=>a.empId===id);
+      const rows = (mine.length?mine:res.actions);
+      $('#hist').insertAdjacentHTML('afterbegin', rows.map(a=>hrow(a.summary,a.tag,'just now')).join(''));
+      gsap.from('#hist .hrow:nth-child(-n+'+rows.length+')', {opacity:0,y:-10,duration:.4,stagger:.05});
+      return;
+    }
+  }
+  $('#hist').insertAdjacentHTML('afterbegin', hrow('executed: "'+text+'"','executed','just now'));
+  gsap.from('#hist .hrow:first-child',{opacity:0,y:-10,duration:.4});
+}
+$('#assignBtn').onclick = () => { const v=$('#assignInput').value.trim(); if(v) assign(v); };
+$('#assignInput').addEventListener('keydown', e => { if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) assign(v); } });
+
+async function boot(){
+  const data = await NEXA.employee(id);
+  if(data && data.employee){ paint(data.employee, data.history); pollLive(); }
+  else { paint(FALLBACK[id] || FALLBACK.OM, null); }
+}
+async function pollLive(){
+  setInterval(async () => {
+    const data = await NEXA.activity(lastTs);
+    if(data && data.latest){
+      const mine = data.latest.filter(a=>a.empId===id);
+      if(mine.length){
+        $('#hist').insertAdjacentHTML('afterbegin', mine.reverse().map(a=>hrow(a.summary,a.tag,'just now')).join(''));
+        lastTs = Math.max(lastTs, ...mine.map(a=>a.ts));
+      }
+      if(data.latest.length) lastTs = Math.max(lastTs, ...data.latest.map(a=>a.ts));
+    }
+  }, 4500);
+}
+boot();
+</script>
+</body>
+</html>

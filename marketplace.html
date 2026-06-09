@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXA — AI Employee Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+.mk-top { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(16px); z-index: 50; }
+.mk-top .links { display: flex; gap: 22px; }
+.mk-top .links a { color: var(--text-2); font-size: 14px; }
+.mk-top .links a:hover { color: #fff; }
+.mk-hero { padding: 132px 0 34px; text-align: center; }
+.mk-hero h1 { font-size: clamp(2.2rem,5vw,3.6rem); letter-spacing: -.04em; }
+.mk-hero p { color: var(--text-2); margin-top: 14px; font-size: 17px; }
+
+.filters { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 28px 0 40px; }
+.filters button { padding: 9px 18px; border-radius: 999px; border: 1px solid var(--border); background: rgba(15,23,42,0.02); color: var(--text-2); font-size: 13.5px; cursor: pointer; font-family: inherit; transition: .2s; }
+.filters button.active { background: rgba(59,130,246,0.16); border-color: var(--accent); color: var(--accent-2); }
+
+.mk-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; padding-bottom: 80px; }
+@media (max-width: 980px){ .mk-grid { grid-template-columns: repeat(2,1fr);} }
+@media (max-width: 620px){ .mk-grid { grid-template-columns: 1fr;} }
+.app-card { padding: 24px; display: flex; flex-direction: column; transition: transform .3s, border-color .3s; }
+.app-card:hover { transform: translateY(-5px); border-color: var(--border-strong); }
+.app-card .head { display: flex; align-items: center; gap: 14px; }
+.app-card .av { width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg,#3B82F6,#1e40af); display: grid; place-items: center; font-weight: 700; font-size: 16px; box-shadow: 0 0 26px -6px var(--accent-glow); }
+.app-card .name { font-weight: 700; font-size: 16px; }
+.app-card .dept { font-size: 12px; color: var(--accent-2); }
+.app-card .tag { color: var(--text-2); font-size: 13.5px; margin: 16px 0 14px; }
+.skills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.skills span { font-size: 11.5px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-3); }
+.app-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+.app-foot .price { font-size: 14px; color: var(--text-2); } .app-foot .price b { color: var(--text); font-weight: 700; font-size: 16px; }
+.btn-install { padding: 10px 18px; font-size: 13.5px; }
+.installed-badge { font-size: 12px; color: var(--success); display: flex; align-items: center; gap: 6px; font-weight: 600; }
+
+.toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: 14px 22px; font-size: 14px; box-shadow: var(--shadow-soft); z-index: 100; transition: .35s; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast b { color: var(--accent-2); }
+.api-flag { font-size: 12px; color: var(--text-3); text-align: center; padding: 0 0 30px; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="grid-overlay"></div>
+
+<nav class="nav" id="nav">
+  <a class="brand" href="index.html"><span class="logo"></span> NEXA</a>
+  <div class="nav-links">
+    <a href="platform.html" data-i18n="nav.platform">Platform</a>
+    <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+    <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+    <a href="marketplace.html" style="color:var(--ink)" data-i18n="nav.marketplace">Marketplace</a>
+    <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  </div>
+  <div class="nav-actions">
+    <span data-lang-mount></span>
+    <a href="signin.html" class="btn btn-ghost" style="padding:10px 18px" data-i18n="nav.signin">Sign in</a>
+    <a href="onboarding.html" class="btn btn-primary" style="padding:11px 22px" data-i18n="nav.deploy">Deploy Workforce</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-backdrop" id="mBackdrop"></div>
+<div class="mobile-menu" id="mMenu">
+  <a href="platform.html" data-i18n="nav.platform">Platform</a>
+  <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+  <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+  <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+  <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  <a href="#" data-demo data-i18n="nav.demo">Book a demo</a>
+  <a href="signin.html" data-i18n="nav.signin">Sign in</a>
+  <a href="onboarding.html" class="btn btn-primary" style="margin-top:10px" data-i18n="nav.deploy">Deploy Workforce</a>
+</div>
+
+<div class="container">
+  <div class="mk-hero">
+    <span class="eyebrow"><span class="dot"></span> <span data-i18n="mk.eyebrow">Phase 3 · Workforce Marketplace</span></span>
+    <h1 style="margin-top:20px" data-i18n-html="mk.title">Install AI employees<br>like apps.</h1>
+    <p data-i18n="mk.sub">Browse specialized digital workers. One click hires them into your workforce — instantly operational.</p>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="mk-grid" id="grid"></div>
+  <p class="api-flag" id="apiFlag"></p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-back" id="demoModal">
+  <div class="modal">
+    <div class="mhead"><div><h3 data-i18n="demo.title">Book your NEXA demo</h3><div class="msub" data-i18n="demo.sub">Pick a slot — we walk you through deploying your first AI workforce.</div></div><button class="x" data-demo-close aria-label="Close">✕</button></div>
+    <div id="demoForm">
+      <div class="mlabel" data-i18n="demo.name">Your details</div>
+      <div class="mfield"><input id="dName" placeholder="Full name" autocomplete="name"></div>
+      <div class="mfield"><input id="dEmail" type="email" placeholder="Work email" autocomplete="email"></div>
+      <div class="mrow2">
+        <div class="mfield"><input id="dCompany" placeholder="Company" autocomplete="organization"></div>
+        <div class="mfield"><select id="dTeam"><option value="" disabled selected data-i18n="demo.teamph">Team size…</option><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div>
+      </div>
+      <div class="mlabel" data-i18n="demo.topics">What would you like to see?</div>
+      <div class="chips" id="dTopics">
+        <button class="ch sel" data-topic="Operations">Operations</button>
+        <button class="ch" data-topic="Sales">Sales</button>
+        <button class="ch" data-topic="Finance">Finance</button>
+        <button class="ch" data-topic="Support">Support</button>
+        <button class="ch" data-topic="Recruiting">Recruiting</button>
+      </div>
+      <div class="mlabel" data-i18n="demo.date">Choose a day</div>
+      <div class="chips" id="dDates"></div>
+      <div class="mlabel" data-i18n="demo.time">Choose a time</div>
+      <div class="chips" id="dTimes"></div>
+      <button class="btn btn-primary btn-block btn-lg" id="dConfirm" style="margin-top:22px" data-i18n="demo.confirm">Confirm booking</button>
+    </div>
+    <div id="demoDone" class="done hidden"><div class="ok">✓</div><h3 data-i18n="demo.booked">Demo booked!</h3><div class="msub" id="demoWhen" style="margin-top:8px;font-weight:600;color:var(--ink)"></div><div class="msub" data-i18n="demo.bookedsub" style="margin-top:6px">Check your inbox for the calendar invite.</div></div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/avatars.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const t = k => (window.I18N ? I18N.t(k) : k);
+const lang = () => (window.I18N ? I18N.lang : 'en');
+const L = (obj) => (obj && (obj[lang()] || obj.en)) || '';
+const isLoggedIn = () => { try { return !!localStorage.getItem('nexa_user'); } catch(e){ return false; } };
+
+// localized fallback library (used when API offline)
+const FALLBACK = [
+  { id:'OM', code:'OM', dept:'Operations', price:499, installed:true,
+    role:{en:'Operations Manager',de:'Betriebsleiter',nl:'Operationeel manager'},
+    tagline:{en:'Email · Scheduling · Reporting · CRM',de:'E-Mail · Termine · Berichte · CRM',nl:'E-mail · Planning · Rapportage · CRM'},
+    skills:{en:['Email','Scheduling','Reporting','CRM','Workflows'],de:['E-Mail','Termine','Berichte','CRM','Workflows'],nl:['E-mail','Planning','Rapportage','CRM','Workflows']} },
+  { id:'SM', code:'SM', dept:'Sales', price:499, installed:true,
+    role:{en:'Sales Manager',de:'Vertriebsleiter',nl:'Salesmanager'},
+    tagline:{en:'Lead qualification · Follow-up · Proposals',de:'Lead-Qualifizierung · Follow-up · Angebote',nl:'Leadkwalificatie · Opvolging · Offertes'},
+    skills:{en:['Leads','Follow-up','Proposals','Pipeline','CRM'],de:['Leads','Follow-up','Angebote','Pipeline','CRM'],nl:['Leads','Opvolging','Offertes','Pipeline','CRM']} },
+  { id:'FM', code:'FM', dept:'Finance', price:499, installed:false,
+    role:{en:'Finance Manager',de:'Finanzmanager',nl:'Financieel manager'},
+    tagline:{en:'Invoices · Reminders · Cashflow reports',de:'Rechnungen · Mahnungen · Cashflow-Berichte',nl:'Facturen · Herinneringen · Cashflow-rapporten'},
+    skills:{en:['Invoices','Reminders','Cashflow','Forecasting'],de:['Rechnungen','Mahnungen','Cashflow','Prognosen'],nl:['Facturen','Herinneringen','Cashflow','Prognoses']} },
+  { id:'SA', code:'SA', dept:'Support', price:499, installed:false,
+    role:{en:'Support Agent',de:'Support-Agent',nl:'Supportmedewerker'},
+    tagline:{en:'Tickets · Customer comms · 24/7 support',de:'Tickets · Kundenkommunikation · 24/7-Support',nl:'Tickets · Klantcommunicatie · 24/7-support'},
+    skills:{en:['Tickets','Comms','Knowledge base','24/7'],de:['Tickets','Kommunikation','Wissensdatenbank','24/7'],nl:['Tickets','Communicatie','Kennisbank','24/7']} },
+  { id:'RA', code:'RA', dept:'Recruiting', price:499, installed:false,
+    role:{en:'Recruiting Agent',de:'Recruiting-Agent',nl:'Recruitmentmedewerker'},
+    tagline:{en:'Screening · Scheduling · Analytics',de:'Screening · Terminplanung · Analysen',nl:'Screening · Planning · Analyses'},
+    skills:{en:['Screening','Scheduling','Analytics'],de:['Screening','Termine','Analysen'],nl:['Screening','Planning','Analyses']} },
+  { id:'DOC', code:'DOC', dept:'Documents', price:599, installed:false,
+    role:{en:'Document Specialist',de:'Dokumentenspezialist',nl:'Documentspecialist'},
+    tagline:{en:'Excel · Word · PowerPoint · fully automated',de:'Excel · Word · PowerPoint · vollautomatisch',nl:'Excel · Word · PowerPoint · volledig geautomatiseerd'},
+    skills:{en:['Excel','Word','PowerPoint','Reports','Templates'],de:['Excel','Word','PowerPoint','Berichte','Vorlagen'],nl:['Excel','Word','PowerPoint','Rapporten','Sjablonen']} },
+  { id:'DA', code:'DA', dept:'Operations', price:499, installed:false,
+    role:{en:'Data Analyst',de:'Datenanalyst',nl:'Data-analist'},
+    tagline:{en:'Dashboards · Insights · Anomaly detection',de:'Dashboards · Insights · Anomalie-Erkennung',nl:'Dashboards · Inzichten · Anomaliedetectie'},
+    skills:{en:['Reporting','Trends','Anomalies','Forecasting'],de:['Berichte','Trends','Anomalien','Prognosen'],nl:['Rapportage','Trends','Anomalieën','Prognoses']} },
+  { id:'MM', code:'MM', dept:'Marketing', price:499, installed:false,
+    role:{en:'Marketing Manager',de:'Marketingmanager',nl:'Marketingmanager'},
+    tagline:{en:'Campaigns · Content · Lead gen',de:'Kampagnen · Content · Leadgenerierung',nl:'Campagnes · Content · Leadgeneratie'},
+    skills:{en:['Campaigns','Content','Lead gen','A/B testing'],de:['Kampagnen','Content','Leadgen.','A/B-Tests'],nl:['Campagnes','Content','Leadgen.','A/B-tests']} },
+  { id:'PM', code:'PM', dept:'Operations', price:499, installed:false,
+    role:{en:'Procurement Manager',de:'Einkaufsmanager',nl:'Inkoopmanager'},
+    tagline:{en:'Vendors · POs · Approvals',de:'Lieferanten · Bestellungen · Freigaben',nl:'Leveranciers · Bestellingen · Goedkeuringen'},
+    skills:{en:['Vendors','POs','Approvals','Spend'],de:['Lieferanten','Bestellungen','Freigaben','Ausgaben'],nl:['Leveranciers','Bestellingen','Goedkeuringen','Uitgaven']} },
+];
+
+let items = [];
+let filter = 'All';
+
+function toast(html){ const el=$('#toast'); el.innerHTML=html; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600); }
+
+function nameOf(e){ return (window.AINAMES&&AINAMES[e.id]) || L(e.role); }
+
+function render(){
+  const grid = $('#grid'); grid.innerHTML='';
+  const shown = items.filter(e => filter==='All' || e.dept===filter);
+  shown.forEach(e => {
+    const card = document.createElement('div');
+    card.className='app-card glass';
+    card.innerHTML = `
+      <div class="head"><div class="av" style="padding:0;overflow:hidden">${window.aiAvatar?aiAvatar(e.id,50):(window.aiInitial?aiInitial(e.id):e.code)}</div><div><div class="name">${nameOf(e)}</div><div class="dept">${L(e.role)} · ${t('dept.'+e.dept)}</div></div></div>
+      <div class="tag">${L(e.tagline)}</div>
+      <div class="skills">${L(e.skills).slice(0,5).map(s=>`<span>${s}</span>`).join('')}</div>
+      <div class="app-foot">
+        <div class="price"><b>€${e.price}</b><span style="color:var(--text-3)">${t('mk.permo')}</span></div>
+        ${e.installed
+          ? `<span class="installed-badge">✓ ${t('mk.installed')}</span>`
+          : `<button class="btn btn-primary btn-install" data-id="${e.id}">${t('mk.install')}</button>`}
+      </div>`;
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll('.btn-install').forEach(b => b.onclick = () => install(b.dataset.id));
+  gsap.from('#grid .app-card', { opacity:0, y:24, duration:.5, stagger:.05, ease:'power3.out' });
+}
+
+async function install(id){
+  if(!isLoggedIn()){ openPricing(); return; }
+  const e = items.find(x=>x.id===id);
+  if(NEXA.online){ await NEXA.install(id); }
+  e.installed = true;
+  toast(`<b>${nameOf(e)}</b> ${t('mk.hired')}`);
+  render();
+}
+
+function buildFilters(){
+  const depts = ['All', ...new Set(items.map(e=>e.dept))];
+  const f = $('#filters'); f.innerHTML='';
+  depts.forEach(d => { const b=document.createElement('button'); b.textContent=t('dept.'+d); if(d===filter)b.classList.add('active'); b.onclick=()=>{filter=d; buildFilters(); render();}; f.appendChild(b); });
+}
+
+function setApiFlag(){ $('#apiFlag').textContent = (items===FALLBACK || !NEXA.online) ? t('mk.demo') : t('mk.connected'); }
+
+/* ---------- pricing popup (shown when a logged-out user tries to install) ---------- */
+const POP_TIERS = [
+  { tier:'Starter', mo:499, yr:399, laptop:false },
+  { tier:'Growth', mo:1499, yr:1199, laptop:false, feat:true },
+  { tier:'Scale', mo:4999, yr:3999, laptop:true },
+  { tier:'Enterprise', mo:null, yr:null, laptop:false, custom:true },
+];
+let popBill='monthly';
+function buildPricingPopup(){
+  if($('#pricePop')) return;
+  const back=document.createElement('div'); back.className='modal-back'; back.id='pricePop';
+  back.innerHTML=`<div class="modal" style="max-width:760px">
+    <div class="mhead"><div><h3 data-i18n="pp.title">Choose a plan to install</h3><div class="msub" data-i18n="pp.sub"></div></div><button class="x" id="popClose" aria-label="Close">✕</button></div>
+    <div class="bill-toggle-pop" style="display:flex;gap:4px;padding:5px;border-radius:999px;border:1px solid var(--border);background:#fff;width:max-content;margin:4px auto 18px">
+      <button data-bill="monthly" class="pbt active" data-i18n="price.monthly">Monthly</button>
+      <button data-bill="yearly" class="pbt" data-i18n="price.yearly">Yearly · save 20%</button>
+    </div>
+    <div id="popGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+    <div style="text-align:center;margin-top:16px"><a href="signin.html" class="faint" style="font-size:13px;text-decoration:underline" data-i18n="pp.signin">Already have a plan? Sign in</a></div>
+  </div>`;
+  document.body.appendChild(back);
+  back.querySelector('#popClose').onclick=closePricing;
+  back.addEventListener('click',e=>{ if(e.target===back) closePricing(); });
+  back.querySelectorAll('.pbt').forEach(b=>b.onclick=()=>{ back.querySelectorAll('.pbt').forEach(x=>x.classList.remove('active')); b.classList.add('active'); popBill=b.dataset.bill; renderPop(); });
+  const st=document.createElement('style');
+  st.textContent='#popGrid .ptc{padding:16px 14px;border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;background:#fff}#popGrid .ptc.feat{border-color:var(--ink)}#popGrid .ptc .tn{font-size:13px;font-weight:600;color:var(--text-2)}#popGrid .ptc .pp{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:6px 0 2px}#popGrid .ptc .pp small{font-size:11px;color:var(--text-3);font-weight:500}#popGrid .ptc .eff{font-size:11px;color:var(--c-violet);font-weight:600;min-height:14px}#popGrid .ptc a{margin-top:14px;font-size:12.5px;padding:9px}@media(max-width:680px){#popGrid{grid-template-columns:repeat(2,1fr)!important}.pbt{font-size:12px}}.pbt{padding:9px 16px;border-radius:999px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer}.pbt.active{background:var(--black);color:#fff}';
+  back.appendChild(st);
+}
+function renderPop(){
+  const grid=$('#popGrid'); if(!grid) return; grid.innerHTML='';
+  const CUSTOM={en:'Custom',de:'Individuell',nl:'Op maat'};
+  POP_TIERS.forEach(p=>{
+    let price, eff='';
+    if(p.custom) price=`<div class="pp">${CUSTOM[lang()]||CUSTOM.en}</div>`;
+    else if(popBill==='monthly') price=`<div class="pp">€${p.mo.toLocaleString('en-US')}<small> ${t('price.mo')}</small></div>`;
+    else { const an=p.yr*12; price=`<div class="pp">€${an.toLocaleString('en-US')}<small> ${t('price.yr')}</small></div>`; eff=t('price.effmo').replace('{x}',p.yr.toLocaleString('en-US')); }
+    const laptopNote=(popBill==='yearly'&&p.laptop)?(({en:'+ Free MacBook or PC',de:'+ Gratis MacBook oder PC',nl:'+ Gratis MacBook of pc'})[lang()]):eff;
+    const c=document.createElement('div'); c.className='ptc'+(p.feat?' feat':'');
+    c.innerHTML=`<div class="tn">${p.tier}</div>${price}<div class="eff">${laptopNote||''}</div>
+      <a href="${p.custom?'#':'onboarding.html'}" class="btn ${p.feat?'btn-primary':'btn-ghost'}" ${p.custom?'data-demo':''}>${p.custom?t('price.contact'):t('pp.choose')}</a>`;
+    grid.appendChild(c);
+  });
+  if(window.I18N) I18N.apply($('#pricePop'));
+}
+function openPricing(){ buildPricingPopup(); renderPop(); const m=$('#pricePop'); if(window.I18N)I18N.apply(m); m.classList.add('open'); document.body.style.overflow='hidden'; }
+function closePricing(){ const m=$('#pricePop'); if(m){ m.classList.remove('open'); document.body.style.overflow=''; } }
+addEventListener('keydown',e=>{ if(e.key==='Escape') closePricing(); });
+
+async function boot(){
+  const data = await NEXA.marketplace();
+  if(data && data.marketplace){ items = data.marketplace.map(x=>({ ...x, role:x.role||{en:(x.name||'').replace('AI ','')}, tagline:x.tagline&&x.tagline.en?x.tagline:{en:x.tagline||''}, skills:x.skills&&x.skills.en?x.skills:{en:x.skills||[]} })); }
+  else { items = FALLBACK; }
+  buildFilters(); render(); setApiFlag();
+}
+window.addEventListener('nexa:lang', () => { buildFilters(); render(); setApiFlag(); renderPop(); });
+const _nav=document.getElementById("nav"); addEventListener("scroll",()=>_nav.classList.toggle("scrolled",scrollY>40));
+boot();
+</script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

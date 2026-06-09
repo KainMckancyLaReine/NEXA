@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXA — Workforce · Meet your AI employees</title>
+<meta name="description" content="Meet the NEXA AI employees: Emma (Operations), Liam (Sales), Sophie (Finance), Noah (Support) and Maya (Recruiting). Each owns a function and works 24/7." />
+<link rel="canonical" href="https://nexa.ai/workforce.html" />
+<meta property="og:title" content="NEXA Workforce — Meet your AI employees" />
+<meta property="og:description" content="Named AI specialists that own a function and never stop." />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+.sub-hero { padding:150px 0 56px; text-align:center; }
+.sub-hero .lead { max-width:600px; margin:18px auto 0; }
+.team-row { display:flex; justify-content:center; gap:0; margin-top:34px; }
+.team-row span { width:54px; height:54px; border-radius:50%; border:3px solid #fff; margin-left:-12px; display:grid; place-items:center; color:#fff; font-weight:800; font-size:18px; box-shadow:var(--shadow-card); }
+.emp-list { display:flex; flex-direction:column; gap:20px; }
+.emp-row { display:grid; grid-template-columns:300px 1fr; gap:30px; padding:30px; align-items:center; }
+@media (max-width:820px){ .emp-row { grid-template-columns:1fr; gap:20px; } }
+.emp-id { display:flex; align-items:center; gap:16px; }
+.emp-id .av { width:64px; height:64px; border-radius:18px; display:grid; place-items:center; color:#fff; font-weight:800; font-size:24px; flex:none; }
+.emp-id .nm { font-weight:800; font-size:22px; letter-spacing:-.02em; } .emp-id .rl { color:var(--text-2); font-size:13.5px; }
+.emp-body .resp { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px; } .emp-body .resp span { font-size:12.5px; padding:6px 11px; border-radius:999px; border:1px solid var(--border); color:var(--text-2); background:#fff; }
+.emp-body .day { font-size:14px; color:var(--text-2); } .emp-body .day b { color:var(--ink); }
+.emp-metrics { display:flex; gap:24px; margin-top:14px; } .emp-metrics .m .v { font-weight:800; font-size:18px; } .emp-metrics .m .k { font-size:11px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; }
+.statband { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; } @media(max-width:760px){ .statband{grid-template-columns:repeat(2,1fr);} }
+.statband .s { text-align:center; padding:26px; } .statband .s .v { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; letter-spacing:-.03em; } .statband .s:nth-child(1) .v{color:var(--c-indigo)} .statband .s:nth-child(2) .v{color:var(--c-green)} .statband .s:nth-child(3) .v{color:var(--c-amber)} .statband .s:nth-child(4) .v{color:var(--c-pink)} .statband .s .k{color:var(--text-2);font-size:13px;margin-top:6px}
+.cta-band { text-align:center; background:linear-gradient(rgba(10,12,24,.46),rgba(10,12,24,.6)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat #0A0A0A; color:#fff; border-radius:var(--radius-xl); padding:70px 28px; text-shadow:0 2px 14px rgba(0,0,0,.55); } .cta-band h2{color:#fff;}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<nav class="nav" id="nav">
+  <a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a>
+  <div class="nav-links">
+    <a href="platform.html" data-i18n="nav.platform">Platform</a>
+    <a href="workforce.html" style="color:var(--ink)" data-i18n="nav.workforce">Workforce</a>
+    <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+    <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+    <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  </div>
+  <div class="nav-actions">
+    <span data-lang-mount></span>
+    <a href="signin.html" class="btn btn-ghost" style="padding:10px 18px" data-i18n="nav.signin">Sign in</a>
+    <a href="onboarding.html" class="btn btn-primary" style="padding:10px 20px" data-i18n="nav.deploy">Deploy Workforce</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-backdrop" id="mBackdrop"></div>
+<div class="mobile-menu" id="mMenu">
+  <a href="platform.html" data-i18n="nav.platform">Platform</a>
+  <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+  <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+  <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+  <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  <a href="#" data-demo data-i18n="nav.demo">Book a demo</a>
+  <a href="signin.html" data-i18n="nav.signin">Sign in</a>
+  <a href="onboarding.html" class="btn btn-primary" style="margin-top:10px" data-i18n="nav.deploy">Deploy Workforce</a>
+</div>
+
+<header class="sub-hero">
+  <div class="container">
+    <span class="eyebrow" style="justify-content:center"><span class="dot" style="background:var(--c-indigo)"></span> <span data-i18n="wf.eyebrow2">Digital Workforce</span></span>
+    <h1 class="display" style="font-size:clamp(2.4rem,5.5vw,4.4rem); margin-top:18px" data-i18n="wfp.title">Meet your AI employees.</h1>
+    <p class="lead" data-i18n="wfp.sub">Five named specialists, each owning a function, reporting live metrics and working around the clock. Hire one, or the whole team.</p>
+    <div class="team-row" id="teamRow">
+      <span style="background:#6366F1">E</span><span style="background:#16A34A">L</span><span style="background:#F59E0B">S</span><span style="background:#EC4899">N</span><span style="background:#06B6D4">M</span><span style="background:#0EA5E9">A</span>
+    </div>
+  </div>
+</header>
+
+<!-- STAT BAND -->
+<section class="section" style="padding:30px 0 60px">
+  <div class="container statband">
+    <div class="s glass reveal"><div class="v">438</div><div class="k" data-i18n="wf.statactions">actions executed / day</div></div>
+    <div class="s glass reveal"><div class="v">33.2h</div><div class="k" data-i18n="wf.stattime">time saved / day</div></div>
+    <div class="s glass reveal"><div class="v">98%</div><div class="k" data-i18n="wf.statperf">average performance</div></div>
+    <div class="s glass reveal"><div class="v">24/7</div><div class="k" data-i18n="wf.staton">always on</div></div>
+  </div>
+</section>
+
+<!-- EMPLOYEE DETAIL LIST -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="emp-list" id="empList"></div>
+  </div>
+</section>
+
+<!-- PHOTO BAND -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="reveal" style="position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-lift)">
+      <div class="photo" style="height:360px"><img loading="lazy" src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1500&q=70" alt="Team at work" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,10,.8),transparent 65%);display:flex;align-items:center"><div style="padding:0 7%;max-width:560px;color:#fff"><h2 style="color:#fff;font-size:clamp(1.6rem,3.4vw,2.6rem)" data-i18n="wf.photoh">A full team, without a single new hire.</h2><p style="color:rgba(255,255,255,.82);margin-top:12px" data-i18n="wf.photop">Add specialists from the marketplace whenever you need more capacity.</p><a href="marketplace.html" class="btn btn-primary" style="margin-top:20px;background:#fff;color:#0A0A0A" data-i18n="wf.browse">Browse the marketplace →</a></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2 class="display" style="font-size:clamp(2rem,4.5vw,3.4rem)" data-i18n="wfp.cta">Hire your first AI employee today.</h2>
+      <p class="lead" style="color:rgba(255,255,255,.7);margin:16px auto 0;max-width:480px" data-i18n="wf.ctalead">From €499/month. Operational in minutes.</p>
+      <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="onboarding.html" class="btn btn-primary btn-lg" style="background:#fff;color:#0A0A0A" data-i18n="hero.cta1">Deploy Workforce</a>
+        <button class="btn btn-lg" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3)" data-demo data-i18n="nav.demo">Book a demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a><p class="faint" style="margin-top:14px;max-width:280px;font-size:14px">The operating system for autonomous companies.</p></div>
+      <div><h5 data-i18n="nav.platform">Platform</h5><a href="platform.html" data-i18n="nav.platform">Platform</a><a href="workforce.html" data-i18n="nav.workforce">Workforce</a><a href="integrations.html" data-i18n="nav.integrations">Integrations</a></div>
+      <div><h5>Company</h5><a href="pricing.html" data-i18n="nav.pricing">Pricing</a><a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a><a href="command-center.html" data-i18n="nav.command">Command Center</a></div>
+      <div><h5>Resources</h5><a href="#">Documentation</a><a href="#">Security</a><a href="#">Status</a></div>
+    </div>
+    <p class="faint" style="margin-top:46px;font-size:13px">© 2026 NEXA · SOC 2 Type II · GDPR · Dev by <a href="https://www.kainlareine.nl" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">Kain Mckancy</a></p>
+  </div>
+</footer>
+
+<div class="modal-back" id="demoModal">
+  <div class="modal">
+    <div class="mhead"><div><h3 data-i18n="demo.title">Book your NEXA demo</h3><div class="msub" data-i18n="demo.sub">Pick a slot — we walk you through deploying your first AI workforce.</div></div><button class="x" data-demo-close aria-label="Close">✕</button></div>
+    <div id="demoForm">
+      <div class="mlabel" data-i18n="demo.name">Your details</div>
+      <div class="mfield"><input id="dName" placeholder="Full name" autocomplete="name"></div>
+      <div class="mfield"><input id="dEmail" type="email" placeholder="Work email" autocomplete="email"></div>
+      <div class="mrow2">
+        <div class="mfield"><input id="dCompany" placeholder="Company" autocomplete="organization"></div>
+        <div class="mfield"><select id="dTeam"><option value="" disabled selected data-i18n="demo.teamph">Team size…</option><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div>
+      </div>
+      <div class="mlabel" data-i18n="demo.topics">What would you like to see?</div>
+      <div class="chips" id="dTopics">
+        <button class="ch sel" data-topic="Operations">Operations</button>
+        <button class="ch" data-topic="Sales">Sales</button>
+        <button class="ch" data-topic="Finance">Finance</button>
+        <button class="ch" data-topic="Support">Support</button>
+        <button class="ch" data-topic="Recruiting">Recruiting</button>
+      </div>
+      <div class="mlabel" data-i18n="demo.date">Choose a day</div>
+      <div class="chips" id="dDates"></div>
+      <div class="mlabel" data-i18n="demo.time">Choose a time</div>
+      <div class="chips" id="dTimes"></div>
+      <button class="btn btn-primary btn-block btn-lg" id="dConfirm" style="margin-top:22px" data-i18n="demo.confirm">Confirm booking</button>
+    </div>
+    <div id="demoDone" class="done hidden"><div class="ok">✓</div><h3 data-i18n="demo.booked">Demo booked!</h3><div class="msub" id="demoWhen" style="margin-top:8px;font-weight:600;color:var(--ink)"></div><div class="msub" data-i18n="demo.bookedsub" style="margin-top:6px">Check your inbox for the calendar invite.</div></div>
+  </div>
+</div>
+
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/avatars.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+(function(){
+  const t = k => (window.I18N ? I18N.t(k) : k);
+  const lang = () => (window.I18N ? I18N.lang : 'en');
+  const L = o => (o && (o[lang()]||o.en)) || '';
+  const EMP_DATA = [
+    { id:'OM', color:'#6366F1', initial:'E', person:'Emma',
+      role:{en:'AI Operations Manager',de:'KI-Betriebsleiterin',nl:'AI Operationeel manager'},
+      resp:{en:['Email management','Scheduling','Documentation','Reporting','CRM updates','Workflow execution'],de:['E-Mail-Management','Terminplanung','Dokumentation','Berichte','CRM-Updates','Workflow-Ausführung'],nl:['E-mailbeheer','Planning','Documentatie','Rapportage','CRM-updates','Workflow-uitvoering']},
+      day:{en:'clears the shared inbox, books five meetings, updates nine CRM records and ships the weekly operations report before the team logs on.',de:'leert das gemeinsame Postfach, bucht fünf Meetings, aktualisiert neun CRM-Datensätze und liefert den wöchentlichen Betriebsbericht, bevor das Team online ist.',nl:'leegt de gedeelde inbox, plant vijf meetings, werkt negen CRM-records bij en levert het wekelijkse operationele rapport voordat het team inlogt.'},
+      metrics:[['112','m.taskstoday'],['6.4h','m.timesaved'],['99%','m.performance']] },
+    { id:'SM', color:'#16A34A', initial:'L', person:'Liam',
+      role:{en:'AI Sales Manager',de:'KI-Vertriebsleiter',nl:'AI Salesmanager'},
+      resp:{en:['Lead qualification','Follow-up','Proposals','Pipeline management','CRM updates','Meeting scheduling'],de:['Lead-Qualifizierung','Follow-up','Angebote','Pipeline-Management','CRM-Updates','Terminplanung'],nl:['Leadkwalificatie','Opvolging','Offertes','Pipelinebeheer','CRM-updates','Afspraken plannen']},
+      day:{en:'re-engages inactive leads, sends three tailored proposals, moves four deals to “Proposal sent” and books eleven discovery calls.',de:'reaktiviert inaktive Leads, sendet drei maßgeschneiderte Angebote, verschiebt vier Deals auf „Angebot gesendet“ und bucht elf Erstgespräche.',nl:'heractiveert inactieve leads, stuurt drie offertes op maat, verplaatst vier deals naar “Offerte verstuurd” en plant elf kennismakingsgesprekken.'},
+      metrics:[['64','m.followups'],['4.1h','m.timesaved'],['97%','m.performance']] },
+    { id:'FM', color:'#F59E0B', initial:'S', person:'Sophie',
+      role:{en:'AI Finance Manager',de:'KI-Finanzmanagerin',nl:'AI Financieel manager'},
+      resp:{en:['Invoices','Expense monitoring','Payment reminders','Cashflow reports','Financial forecasting'],de:['Rechnungen','Ausgabenüberwachung','Zahlungserinnerungen','Cashflow-Berichte','Finanzprognosen'],nl:['Facturen','Uitgavenbewaking','Betalingsherinneringen','Cashflow-rapporten','Financiële prognoses']},
+      day:{en:'reconciles twelve invoices, chases six overdue payments, flags one account for escalation and refreshes the cashflow forecast.',de:'gleicht zwölf Rechnungen ab, mahnt sechs überfällige Zahlungen an, markiert ein Konto zur Eskalation und aktualisiert die Cashflow-Prognose.',nl:'verwerkt twaalf facturen, maant zes achterstallige betalingen aan, markeert één account voor escalatie en vernieuwt de cashflowprognose.'},
+      metrics:[['38','m.invoices'],['3.2h','m.timesaved'],['98%','m.performance']] },
+    { id:'SA', color:'#EC4899', initial:'N', person:'Noah',
+      role:{en:'AI Support Agent',de:'KI-Support-Agent',nl:'AI Supportmedewerker'},
+      resp:{en:['Ticket resolution','Customer communication','Knowledge base','Escalation handling','24/7 support'],de:['Ticket-Lösung','Kundenkommunikation','Wissensdatenbank','Eskalationen','24/7-Support'],nl:['Ticketafhandeling','Klantcommunicatie','Kennisbank','Escalatiebeheer','24/7-support']},
+      day:{en:'resolves eighteen tickets at a 4.8 CSAT, writes two knowledge-base articles and escalates only the two cases that truly need a human.',de:'löst achtzehn Tickets bei 4,8 CSAT, schreibt zwei Wissensdatenbank-Artikel und eskaliert nur die zwei Fälle, die wirklich einen Menschen brauchen.',nl:'lost achttien tickets op met een CSAT van 4,8, schrijft twee kennisbankartikelen en escaleert alleen de twee zaken die echt een mens nodig hebben.'},
+      metrics:[['124','m.tickets'],['8.9h','m.timesaved'],['96%','m.performance']] },
+    { id:'RA', color:'#06B6D4', initial:'M', person:'Maya',
+      role:{en:'AI Recruiting Agent',de:'KI-Recruiting-Agent',nl:'AI Recruitmentmedewerker'},
+      resp:{en:['Candidate screening','Interview scheduling','Application review','Follow-up','Recruitment analytics'],de:['Kandidaten-Screening','Interview-Planung','Bewerbungsprüfung','Follow-up','Recruiting-Analysen'],nl:['Kandidaatscreening','Interviews plannen','Sollicitatiebeoordeling','Opvolging','Recruitmentanalyses']},
+      day:{en:'screens forty-two applications, shortlists seven candidates, books four interview slots and keeps every applicant warm with timely follow-ups.',de:'prüft zweiundvierzig Bewerbungen, wählt sieben Kandidaten aus, bucht vier Interviewtermine und hält jeden Bewerber mit zeitnahen Follow-ups warm.',nl:'screent tweeënveertig sollicitaties, selecteert zeven kandidaten, plant vier interviewmomenten en houdt elke sollicitant warm met tijdige opvolging.'},
+      metrics:[['53','m.screened'],['5.0h','m.timesaved'],['95%','m.performance']] },
+    { id:'DOC', color:'#0EA5E9', initial:'A', person:'Ava',
+      role:{en:'AI Document Specialist',de:'KI-Dokumentenspezialistin',nl:'AI Documentspecialist'},
+      resp:{en:['Excel spreadsheets','Word documents','PowerPoint decks','Report generation','Template automation'],de:['Excel-Tabellen','Word-Dokumente','PowerPoint-Präsentationen','Berichterstellung','Vorlagen-Automatisierung'],nl:['Excel-spreadsheets','Word-documenten','PowerPoint-presentaties','Rapportgeneratie','Sjabloonautomatisering']},
+      day:{en:'builds the Q1 financial model in Excel, writes the weekly operations report in Word and assembles a five-slide pitch deck — all generated automatically and ready to download.',de:'erstellt das Q1-Finanzmodell in Excel, schreibt den wöchentlichen Betriebsbericht in Word und baut ein fünfseitiges Pitch-Deck — alles automatisch erstellt und sofort herunterladbar.',nl:'bouwt het Q1-financieel model in Excel, schrijft het wekelijkse operationele rapport in Word en stelt een pitch-deck van vijf slides samen — allemaal automatisch gegenereerd en klaar om te downloaden.'},
+      metrics:[['47','m.documents'],['5.6h','m.timesaved'],['99%','m.performance']] },
+  ];
+  function render(){
+    const tr=document.getElementById('teamRow');
+    if(tr && window.aiAvatar) tr.innerHTML=EMP_DATA.map(e=>`<span style="padding:0;overflow:hidden;background:${e.color}">${aiAvatar(e.id,54)}</span>`).join('');
+    const list=document.getElementById('empList'); if(!list) return;
+    list.innerHTML=EMP_DATA.map(e=>`
+      <div class="emp-row glass">
+        <div class="emp-id"><div class="av" style="background:${e.color};padding:0;overflow:hidden">${window.aiAvatar?aiAvatar(e.id,64):e.initial}</div><div><div class="nm">${e.person}</div><div class="rl">${L(e.role)}</div></div></div>
+        <div class="emp-body">
+          <div class="resp">${L(e.resp).map(r=>`<span>${r}</span>`).join('')}</div>
+          <p class="day"><b>${t('wf.daywith')} ${e.person}:</b> ${L(e.day)}</p>
+          <div class="emp-metrics">${e.metrics.map(m=>`<div class="m"><div class="v">${m[0]}</div><div class="k">${t(m[1])}</div></div>`).join('')}</div>
+          <a href="agent.html?id=${e.id}" class="btn btn-ghost" style="margin-top:16px;padding:9px 16px">${t('wf.viewprofile').replace('{x}', e.person)}</a>
+        </div>
+      </div>`).join('');
+  }
+  document.addEventListener('DOMContentLoaded', render);
+  window.addEventListener('nexa:lang', render);
+})();
+</script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

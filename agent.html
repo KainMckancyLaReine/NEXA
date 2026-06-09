@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXA — AI Employee</title>
+<meta name="description" content="Meet your NEXA AI employees — what each one does, how it works, and a live demo of it in action." />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+.ag-main{max-width:1120px;margin:0 auto;padding:0 24px}
+.ag-top{padding-top:104px}
+.ag-back{display:inline-block;margin:6px 0 4px;color:var(--text-2);font-size:14px}
+.ag-back:hover{color:var(--ink)}
+.ag-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+.ag-eyebrow .dot{width:8px;height:8px;border-radius:50%}
+.sec{padding:34px 0}
+.sec h2{font-size:clamp(1.5rem,3.4vw,2.2rem);letter-spacing:-.02em}
+.sec .sub{color:var(--text-3);margin-top:6px;max-width:620px}
+.hero-av{width:104px;height:104px;border-radius:26px;overflow:hidden;box-shadow:var(--shadow-card);flex:none}
+.hero-name{font-size:clamp(2.1rem,5.5vw,3.4rem);letter-spacing:-.03em;font-weight:800;margin-top:18px}
+.hero-role{font-weight:600;margin-top:2px}
+.hero-intro{color:var(--text-2);margin-top:14px;font-size:16px;line-height:1.65;max-width:540px}
+.hero-cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+.chips-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.chip2{font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid var(--border);color:var(--text-2);background:#fff}
+.hero-split{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;padding:18px 0 40px}
+@media(max-width:900px){.hero-split{grid-template-columns:1fr;gap:28px}}
+.hero-dark{border-radius:30px;color:#fff;padding:56px 40px;text-align:center;position:relative;overflow:hidden}
+.hero-dark .hero-name{color:#fff}.hero-dark .hero-role{color:rgba(255,255,255,.85)}
+.hero-dark .hero-intro{color:rgba(255,255,255,.82);margin:14px auto 0}
+.hero-dark .hero-cta{justify-content:center}
+.hero-dark .hero-av{margin:0 auto}
+.ude{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
+@media(max-width:760px){.ude{grid-template-columns:1fr}}
+.ude .step{padding:22px;border-radius:16px;border:1px solid var(--border);background:#fff}
+.ude .step .n{font-weight:800;font-size:13px}
+.ude .step h4{font-size:17px;margin:8px 0 6px}
+.ude .step p{font-size:13.5px;color:var(--text-2)}
+.cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:760px){.cap-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.cap-grid{grid-template-columns:1fr}}
+.cap{padding:18px;border:1px solid var(--border);border-radius:14px;background:#fff;display:flex;gap:12px;align-items:flex-start;font-size:14px;font-weight:500}
+.cap .d{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.cap-check{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}@media(max-width:680px){.cap-check{grid-template-columns:1fr}}
+.cap-check .ci{display:flex;gap:10px;align-items:center;font-size:14.5px;padding:9px 0;border-bottom:1px solid var(--border)}
+.cap-check .ci::before{content:'✓';font-weight:800}
+.zig .row{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center;margin-bottom:24px}
+@media(max-width:760px){.zig .row{grid-template-columns:1fr}}
+.zig .row:nth-child(even) .ztext{order:2}
+.steps-h{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}@media(max-width:760px){.steps-h{grid-template-columns:1fr 1fr}}
+.steps-h .sh{padding:18px;border:1px solid var(--border);border-radius:14px;background:#fff}
+.steps-h .sh .n{width:30px;height:30px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+.photoband{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-lift)}
+.photoband .photo{height:340px}
+.photoband .ov{position:absolute;inset:0;display:flex;align-items:center}
+.photoband .ov .in{padding:0 7%;max-width:560px;color:#fff}
+.ctaband{text-align:center;color:#fff;border-radius:28px;padding:64px 28px}
+.ctaband h2{color:#fff}
+/* demo */
+.demo-card{border:1px solid var(--border);border-radius:18px;background:var(--card);padding:18px;box-shadow:var(--shadow-soft)}
+.demo-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2);margin-bottom:14px}
+.dot-live{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 1.4s infinite}
+.demo-count{margin-left:auto;font-weight:700;color:var(--ink)}
+.mailrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:13px;transition:.4s;background:#fff}
+.mailrow.done{opacity:.55;background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.3)}
+.mailrow .chk{margin-left:auto;color:var(--success);font-weight:700;opacity:0;transition:.3s}.mailrow.done .chk{opacity:1}
+.kb{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kb .col{background:rgba(15,23,42,.03);border:1px solid var(--border);border-radius:12px;padding:10px;min-height:150px}
+.kb .col h5{font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;justify-content:space-between}
+.kb .card{background:#fff;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:12px;margin-bottom:8px;box-shadow:var(--shadow-card);transition:.4s}
+.bar{height:12px;border-radius:7px;background:#e5e7eb;overflow:hidden}.bar i{display:block;height:100%;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.chat .b{max-width:80%;padding:10px 13px;border-radius:14px;font-size:13px;margin-bottom:9px;opacity:0;transform:translateY(6px);transition:.4s}
+.chat .b.in{opacity:1;transform:none}
+.chat .cust{background:rgba(15,23,42,.05);border-bottom-left-radius:4px}
+.chat .agent{margin-left:auto;color:#fff;border-bottom-right-radius:4px}
+.stars{font-size:18px;letter-spacing:2px}
+.funnel .f{margin-bottom:12px}
+.funnel .lab{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;color:var(--text-2)}
+.bignum{font-size:36px;font-weight:800;letter-spacing:-.03em}
+.statband2{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:680px){.statband2{grid-template-columns:1fr}}
+.statband2 .s{padding:22px;text-align:center;border:1px solid var(--border);border-radius:16px;background:#fff}
+.docgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:680px){.docgrid{grid-template-columns:1fr}}
+.doctile{border:1px solid var(--border);border-radius:14px;padding:18px;background:#fff;text-align:center}
+.doctile .ic{font-size:26px}
+.doctile .gen{margin-top:12px;width:100%}
+.filechip{display:none;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--success);justify-content:center}
+.filechip.show{display:flex}
+@media(max-width:680px){
+  .ag-main{padding:0 16px}
+  .ag-top{padding-top:88px}
+  .kb{grid-template-columns:1fr 1fr;gap:8px}
+  .kb .col{min-height:auto;padding:8px}
+  .hero-dark{padding:40px 22px}
+  .statband2{grid-template-columns:1fr 1fr}
+  .ctaband{padding:48px 20px}
+  .hero-split{gap:24px}
+}
+@media(max-width:520px){ .statband2{grid-template-columns:1fr} }
+.two-col{display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center}
+@media(max-width:760px){ .two-col{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<nav class="nav" id="nav">
+  <a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a>
+  <div class="nav-links">
+    <a href="platform.html" data-i18n="nav.platform">Platform</a>
+    <a href="workforce.html" style="color:var(--ink)" data-i18n="nav.workforce">Workforce</a>
+    <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+    <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+    <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  </div>
+  <div class="nav-actions">
+    <span data-lang-mount></span>
+    <a href="signin.html" class="btn btn-ghost" style="padding:10px 18px" data-i18n="nav.signin">Sign in</a>
+    <a href="onboarding.html" class="btn btn-primary" style="padding:10px 20px" data-i18n="nav.deploy">Deploy Workforce</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-backdrop" id="mBackdrop"></div>
+<div class="mobile-menu" id="mMenu">
+  <a href="platform.html" data-i18n="nav.platform">Platform</a>
+  <a href="workforce.html" data-i18n="nav.workforce">Workforce</a>
+  <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
+  <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
+  <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
+  <a href="signin.html" data-i18n="nav.signin">Sign in</a>
+  <a href="onboarding.html" class="btn btn-primary" style="margin-top:10px" data-i18n="nav.deploy">Deploy Workforce</a>
+</div>
+
+<main class="ag-main ag-top" id="stage"></main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><span class="logo"></span> <span class="wm">NEXA<b>.</b></span></a><p class="faint" style="margin-top:14px;max-width:280px;font-size:14px">The operating system for autonomous companies.</p></div>
+      <div><h5 data-i18n="nav.platform">Platform</h5><a href="platform.html" data-i18n="nav.platform">Platform</a><a href="workforce.html" data-i18n="nav.workforce">Workforce</a><a href="integrations.html" data-i18n="nav.integrations">Integrations</a></div>
+      <div><h5>Company</h5><a href="pricing.html" data-i18n="nav.pricing">Pricing</a><a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a></div>
+      <div><h5>Resources</h5><a href="#">Documentation</a><a href="#">Security</a><a href="#">Status</a></div>
+    </div>
+    <p class="faint" style="margin-top:46px;font-size:13px">© 2026 NEXA · SOC 2 Type II · GDPR · Dev by <a href="https://www.kainlareine.nl" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">Kain Mckancy</a></p>
+  </div>
+</footer>
+
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/avatars.js"></script>
+<script src="assets/js/vendor/xlsx.full.min.js"></script>
+<script src="assets/js/vendor/pptxgen.bundle.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/site.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const t=k=>(window.I18N?I18N.t(k):k);
+const lang=()=>(window.I18N?I18N.lang:'en');
+const L=o=>(o&&(o[lang()]||o.en))||'';
+const ID=(new URLSearchParams(location.search).get('id')||'OM').toUpperCase();
+let demoTimers=[];
+function clearDemos(){ demoTimers.forEach(t=>clearInterval(t)); demoTimers=[]; }
+function shade(hex,a){ const n=parseInt(hex.slice(1),16); const r=Math.round(((n>>16)&255)*(1-a)),g=Math.round(((n>>8)&255)*(1-a)),b=Math.round((n&255)*(1-a)); return 'rgb('+r+','+g+','+b+')'; }
+function darkBg(c){ return 'background:linear-gradient(140deg,'+c+','+shade(c,0.62)+')'; }
+function countTo(el,target,dur,suf){ if(!el)return; const start=0,t0=performance.now(); suf=suf||''; (function step(now){ const p=Math.min(1,(now-t0)/dur); el.textContent=Math.round(start+(target-start)*(1-Math.pow(1-p,3)))+suf; if(p<1)requestAnimationFrame(step); })(t0); }
+
+const AGENTS = {
+ OM:{ color:'#6366F1', person:'Emma', demo:'inbox', layout:'split',
+   photo:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=70',
+   role:{en:'AI Operations Manager',de:'KI-Betriebsleiterin',nl:'AI Operationeel manager'},
+   intro:{en:'Emma runs the day-to-day. She clears the shared inbox, books meetings, keeps the CRM tidy and ships the weekly report — before your team even logs on.',de:'Emma erledigt das Tagesgeschäft: leert das gemeinsame Postfach, bucht Meetings, hält das CRM sauber und liefert den Wochenbericht — bevor dein Team online ist.',nl:'Emma runt de dagelijkse gang van zaken: leegt de gedeelde inbox, plant meetings, houdt het CRM netjes en levert het weekrapport — voordat je team inlogt.'},
+   resp:{en:['Email management','Scheduling','Documentation','Reporting','CRM updates','Workflow execution'],de:['E-Mail-Management','Terminplanung','Dokumentation','Berichte','CRM-Updates','Workflow-Ausführung'],nl:['E-mailbeheer','Planning','Documentatie','Rapportage','CRM-updates','Workflow-uitvoering']},
+   day:{en:'clears the shared inbox, books five meetings, updates nine CRM records and ships the weekly operations report before the team logs on.',de:'leert das gemeinsame Postfach, bucht fünf Meetings, aktualisiert neun CRM-Datensätze und liefert den wöchentlichen Betriebsbericht, bevor das Team online ist.',nl:'leegt de gedeelde inbox, plant vijf meetings, werkt negen CRM-records bij en levert het wekelijkse operationele rapport voordat het team inlogt.'} },
+ SM:{ color:'#16A34A', person:'Liam', demo:'pipeline', layout:'dark',
+   photo:'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=70',
+   role:{en:'AI Sales Manager',de:'KI-Vertriebsleiter',nl:'AI Salesmanager'},
+   intro:{en:'Liam never lets a lead go cold. He qualifies, follows up, writes tailored proposals and moves deals down the pipeline — then books the call.',de:'Liam lässt keinen Lead kalt werden. Er qualifiziert, folgt nach, schreibt maßgeschneiderte Angebote und bewegt Deals durch die Pipeline — und bucht das Gespräch.',nl:'Liam laat geen lead koud worden. Hij kwalificeert, volgt op, schrijft offertes op maat en verplaatst deals door de pipeline — en plant het gesprek.'},
+   resp:{en:['Lead qualification','Follow-up','Proposals','Pipeline management','CRM updates','Meeting scheduling'],de:['Lead-Qualifizierung','Follow-up','Angebote','Pipeline-Management','CRM-Updates','Terminplanung'],nl:['Leadkwalificatie','Opvolging','Offertes','Pipelinebeheer','CRM-updates','Afspraken plannen']},
+   day:{en:'re-engages inactive leads, sends three tailored proposals, moves four deals to “Proposal sent” and books eleven discovery calls.',de:'reaktiviert inaktive Leads, sendet drei Angebote, verschiebt vier Deals auf „Angebot gesendet“ und bucht elf Erstgespräche.',nl:'heractiveert inactieve leads, stuurt drie offertes, verplaatst vier deals naar “Offerte verstuurd” en plant elf kennismakingsgesprekken.'} },
+ FM:{ color:'#F59E0B', person:'Sophie', demo:'finance', layout:'dashboard',
+   photo:'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=70',
+   role:{en:'AI Finance Manager',de:'KI-Finanzmanagerin',nl:'AI Financieel manager'},
+   intro:{en:'Sophie keeps the cash flowing. She reconciles invoices, chases overdue payments, flags risk and refreshes the cashflow forecast — every single day.',de:'Sophie hält den Cashflow am Laufen: gleicht Rechnungen ab, mahnt überfällige Zahlungen an, markiert Risiken und aktualisiert die Cashflow-Prognose — täglich.',nl:'Sophie houdt de cashflow op gang: verwerkt facturen, maant achterstallige betalingen, markeert risico’s en vernieuwt de cashflowprognose — elke dag.'},
+   resp:{en:['Invoices','Expense monitoring','Payment reminders','Cashflow reports','Financial forecasting'],de:['Rechnungen','Ausgabenüberwachung','Zahlungserinnerungen','Cashflow-Berichte','Finanzprognosen'],nl:['Facturen','Uitgavenbewaking','Betalingsherinneringen','Cashflow-rapporten','Financiële prognoses']},
+   day:{en:'reconciles twelve invoices, chases six overdue payments, flags one account for escalation and refreshes the cashflow forecast.',de:'gleicht zwölf Rechnungen ab, mahnt sechs Zahlungen an, markiert ein Konto zur Eskalation und aktualisiert die Cashflow-Prognose.',nl:'verwerkt twaalf facturen, maant zes betalingen aan, markeert één account voor escalatie en vernieuwt de cashflowprognose.'} },
+ SA:{ color:'#EC4899', person:'Noah', demo:'support', layout:'support',
+   photo:'https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=1200&q=70',
+   role:{en:'AI Support Agent',de:'KI-Support-Agent',nl:'AI Supportmedewerker'},
+   intro:{en:'Noah answers customers around the clock. He resolves tickets at a 4.8 CSAT, writes knowledge-base articles, and escalates only the cases that truly need a human.',de:'Noah antwortet Kunden rund um die Uhr. Er löst Tickets bei 4,8 CSAT, schreibt Wissensartikel und eskaliert nur, was wirklich einen Menschen braucht.',nl:'Noah helpt klanten 24/7. Hij lost tickets op met een CSAT van 4,8, schrijft kennisbankartikelen en escaleert alleen wat echt een mens nodig heeft.'},
+   resp:{en:['Ticket resolution','Customer communication','Knowledge base','Escalation handling','24/7 support'],de:['Ticket-Lösung','Kundenkommunikation','Wissensdatenbank','Eskalationen','24/7-Support'],nl:['Ticketafhandeling','Klantcommunicatie','Kennisbank','Escalatiebeheer','24/7-support']},
+   day:{en:'resolves eighteen tickets at a 4.8 CSAT, writes two knowledge-base articles and escalates only the two cases that truly need a human.',de:'löst achtzehn Tickets bei 4,8 CSAT, schreibt zwei Wissensartikel und eskaliert nur die zwei Fälle, die wirklich einen Menschen brauchen.',nl:'lost achttien tickets op met CSAT 4,8, schrijft twee kennisbankartikelen en escaleert alleen de twee zaken die echt een mens nodig hebben.'} },
+ RA:{ color:'#06B6D4', person:'Maya', demo:'funnel', layout:'dark',
+   photo:'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=70',
+   role:{en:'AI Recruiting Agent',de:'KI-Recruiting-Agent',nl:'AI Recruitmentmedewerker'},
+   intro:{en:'Maya runs your hiring funnel. She screens applications, shortlists the best, books interview slots and keeps every candidate warm with timely follow-ups.',de:'Maya steuert deinen Hiring-Funnel: prüft Bewerbungen, wählt die Besten aus, bucht Interviewtermine und hält jeden Kandidaten mit Follow-ups warm.',nl:'Maya runt je hiring-funnel: screent sollicitaties, selecteert de besten, plant interviews en houdt elke kandidaat warm met tijdige opvolging.'},
+   resp:{en:['Candidate screening','Interview scheduling','Application review','Follow-up','Recruitment analytics'],de:['Kandidaten-Screening','Interview-Planung','Bewerbungsprüfung','Follow-up','Recruiting-Analysen'],nl:['Kandidaatscreening','Interviews plannen','Sollicitatiebeoordeling','Opvolging','Recruitmentanalyses']},
+   day:{en:'screens forty-two applications, shortlists seven candidates, books four interview slots and keeps every applicant warm with timely follow-ups.',de:'prüft zweiundvierzig Bewerbungen, wählt sieben Kandidaten aus, bucht vier Interviewtermine und hält jeden Bewerber warm.',nl:'screent tweeënveertig sollicitaties, selecteert zeven kandidaten, plant vier interviews en houdt elke sollicitant warm.'} },
+ DOC:{ color:'#0EA5E9', person:'Ava', demo:'docs', layout:'docs',
+   photo:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=70',
+   role:{en:'AI Document Specialist',de:'KI-Dokumentenspezialistin',nl:'AI Documentspecialist'},
+   intro:{en:'Ava turns your data into finished documents. She builds Excel models, writes Word reports and assembles PowerPoint decks automatically — try it below, the files are real.',de:'Ava macht aus deinen Daten fertige Dokumente: baut Excel-Modelle, schreibt Word-Berichte und erstellt PowerPoint-Decks automatisch — probier es unten, die Dateien sind echt.',nl:'Ava maakt van je data afgewerkte documenten: bouwt Excel-modellen, schrijft Word-rapporten en stelt PowerPoint-decks automatisch samen — probeer het hieronder, de bestanden zijn echt.'},
+   resp:{en:['Excel spreadsheets','Word documents','PowerPoint decks','Report generation','Template automation'],de:['Excel-Tabellen','Word-Dokumente','PowerPoint-Präsentationen','Berichterstellung','Vorlagen-Automatisierung'],nl:['Excel-spreadsheets','Word-documenten','PowerPoint-presentaties','Rapportgeneratie','Sjabloonautomatisering']},
+   day:{en:'builds the Q1 financial model in Excel, writes the weekly operations report in Word and assembles a five-slide pitch deck — all generated automatically.',de:'erstellt das Q1-Finanzmodell in Excel, schreibt den Wochenbericht in Word und baut ein fünfseitiges Pitch-Deck — alles automatisch.',nl:'bouwt het Q1-financieel model in Excel, schrijft het weekrapport in Word en stelt een pitch-deck van vijf slides samen — allemaal automatisch.'} },
+};
+
+function avatarBig(a){ return window.aiAvatar?aiAvatar(a.id,104):''; }
+function nameOf(a){ return (window.AINAMES&&AINAMES[a.id])||a.person; }
+function backLink(){ return `<a class="ag-back" href="workforce.html" data-i18n="ag.back">← All agents</a>`; }
+function eyebrow(a){ return `<span class="ag-eyebrow" style="color:${a.color}"><span class="dot" style="background:${a.color}"></span> ${L(a.role)}</span>`; }
+function chips(){ return `<div class="chips-row"><span class="chip2" data-i18n="ag.247">Works 24/7</span><span class="chip2" data-i18n="ag.super">Supervised or autonomous</span><span class="chip2" data-i18n="ag.audit">Every action audited</span></div>`; }
+function udeStrip(a){ const c=a.color; return `<div class="ude">
+  <div class="step"><div class="n" style="color:${c}">01</div><h4 data-i18n="ag.step.u">Understands</h4><p>Reads email, CRM, finance and chat to grasp the real situation.</p></div>
+  <div class="step"><div class="n" style="color:${c}">02</div><h4 data-i18n="ag.step.d">Decides</h4><p>Chooses the next best action against your goals and policies.</p></div>
+  <div class="step"><div class="n" style="color:${c}">03</div><h4 data-i18n="ag.step.e">Executes</h4><p>Carries it out in your live tools — and logs every step.</p></div></div>`; }
+function capGrid(a){ return `<div class="cap-grid">${L(a.resp).map(r=>`<div class="cap"><span class="d" style="background:${a.color}"></span>${r}</div>`).join('')}</div>`; }
+function capCheck(a){ return `<div class="cap-check" style="--c:${a.color}">${L(a.resp).map(r=>`<div class="ci" style="color:var(--ink)">${r}</div>`).join('')}</div>`; }
+function dayLine(a){ return `<p style="font-size:15px;color:var(--text-2);line-height:1.6"><b style="color:var(--ink)">${t('wf.daywith')} ${nameOf(a)}:</b> ${L(a.day)}</p>`; }
+function photoBand(a){ return `<div class="photoband"><div class="photo" style="height:340px"><img loading="lazy" src="${a.photo}" alt="" onerror="this.closest('.photo').classList.add('imgfail')"></div>
+  <div class="ov" style="background:linear-gradient(90deg,rgba(10,10,10,.82),transparent 70%)"><div class="in"><h2 style="color:#fff;font-size:clamp(1.5rem,3.2vw,2.3rem)">${L(a.day).charAt(0).toUpperCase()+L(a.day).slice(1)}</h2></div></div></div>`; }
+function ctaBand(a){ return `<section class="sec"><div class="ctaband" style="${darkBg(a.color)}">
+  <h2 class="display" style="font-size:clamp(1.8rem,4vw,2.8rem)">${t('ag.hire').replace('{x}',nameOf(a))}</h2>
+  <p class="lead" style="color:rgba(255,255,255,.82);margin:14px auto 0;max-width:460px">From €499/month · operational in minutes.</p>
+  <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="marketplace.html" class="btn btn-primary btn-lg" style="background:#fff;color:#0A0A0A" data-i18n="nav.deploy">Deploy Workforce</a>
+    <a href="workforce.html" class="btn btn-lg" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)" data-i18n="ag.meet">Meet the whole team →</a>
+  </div></div></section>`; }
+function demoCard(a,label,inner){ return `<div class="demo-card"><div class="demo-head"><span class="dot-live"></span> ${label} <span class="demo-count" id="dcount"></span></div>${inner}</div>`; }
+function heroCTA(a){ return `<div class="hero-cta"><a href="marketplace.html" class="btn btn-primary" style="background:${a.color};border-color:${a.color}">${t('ag.hire').replace('{x}',nameOf(a))}</a><a href="workforce.html" class="btn btn-ghost" data-i18n="ag.meet">Meet the whole team →</a></div>`; }
+
+/* ---------- demos ---------- */
+function demoInbox(c){ const root=$('#demoArea'); if(!root)return; const subs=['Re: Q2 partnership','Invoice question — Northwind','Reschedule Thursday sync','New lead from website','Contract review request','Weekly report due']; root.innerHTML=subs.map(s=>`<div class="mailrow"><span style="width:9px;height:9px;border-radius:50%;background:${c}"></span>${s}<span class="chk">✓ handled</span></div>`).join(''); const rows=[...root.querySelectorAll('.mailrow')]; let i=0,n=0; const cnt=$('#dcount'); const tk=setInterval(()=>{ if(i>=rows.length){ rows.forEach(r=>r.classList.remove('done')); i=0; return; } rows[i].classList.add('done'); i++; n++; if(cnt)cnt.textContent=n+' cleared'; },900); demoTimers.push(tk); }
+function demoPipeline(c){ const root=$('#demoArea'); if(!root)return; const cols=['New','Contacted','Proposal','Won']; root.innerHTML=`<div class="kb">${cols.map((h,ci)=>`<div class="col"><h5>${h}<span>${ci===0?4:ci===3?2:1}</span></h5><div class="cstack" data-col="${ci}">${ci===0?'<div class="card">Acme Co</div><div class="card">Globex</div><div class="card">Initech</div><div class="card">Umbrella</div>':ci===3?'<div class="card">Soylent</div><div class="card">Stark</div>':'<div class="card">Wayne Ent</div>'}</div></div>`).join('')}</div>`; let n=0; const cnt=$('#dcount'); const tk=setInterval(()=>{ const stacks=[...root.querySelectorAll('.cstack')]; for(let i=2;i>=0;i--){ const from=stacks[i], to=stacks[i+1]; if(from.firstChild){ const card=from.firstChild; card.style.opacity=0; setTimeout(()=>{ to.appendChild(card); card.style.opacity=1; },200); if(i===0){ n++; if(cnt)cnt.textContent=n+' moved'; } break; } } // refill New
+    const ncol=stacks[0]; if(ncol.children.length<2){ const d=document.createElement('div'); d.className='card'; d.textContent=['Nova','Helix','Vertex','Orbit'][Math.floor(Math.random()*4)]; d.style.opacity=0; ncol.appendChild(d); setTimeout(()=>d.style.opacity=1,200); }
+    [...root.querySelectorAll('.col h5 span')].forEach((s,i)=>s.textContent=stacks[i].children.length); },1100); demoTimers.push(tk); }
+function demoFinance(c){ const root=$('#demoArea'); if(!root)return; root.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px"><div><div class="bignum" id="inv" style="color:${c}">0</div><div style="font-size:12px;color:var(--text-3)">invoices reconciled</div></div><div><div class="bignum" id="eur" style="color:${c}">€0</div><div style="font-size:12px;color:var(--text-3)">cleared today</div></div></div><svg id="fchart" viewBox="0 0 300 90" width="100%" height="90"></svg>`; const data=[18,22,20,27,25,31,29,34]; const max=Math.max(...data),w=300,h=90; const pts=data.map((v,i)=>[i*(w/(data.length-1)),h-12-(v/max)*(h-26)]); const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' '); const svg=$('#fchart'); svg.innerHTML=`<path d="${path}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"></path>${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${c}"/>`).join('')}`; function run(){ countTo($('#inv'),38,1400,''); const e=$('#eur'); const t0=performance.now(); (function st(now){ const p=Math.min(1,(now-t0)/1600); e.textContent='€'+Math.round(48000*(1-Math.pow(1-p,3))).toLocaleString('en-US'); if(p<1)requestAnimationFrame(st); })(t0); const pth=svg.querySelector('path'); pth.style.transition='none'; pth.style.strokeDashoffset=1; requestAnimationFrame(()=>{ pth.style.transition='stroke-dashoffset 1.4s ease'; pth.style.strokeDashoffset=0; }); } run(); const tk=setInterval(run,4200); demoTimers.push(tk); }
+function demoSupport(c){ const root=$('#demoArea'); if(!root)return; root.innerHTML=`<div class="chat" id="chat" style="min-height:200px"></div><div style="display:flex;align-items:center;gap:10px;margin-top:10px"><span class="stars" style="color:#F59E0B">★★★★★</span><span style="font-size:13px;color:var(--text-2)">CSAT 4.8</span></div>`; const convo=[['cust','My invoice didn’t arrive — can you resend it?'],['agent','Of course! I’ve re-sent invoice INV-2231 to your inbox just now. ✅'],['cust','Also, can I change my plan?'],['agent','Done — switched you to Growth, effective today. Anything else?']]; const chat=$('#chat'); let i=0,n=0; const cnt=$('#dcount'); function step(){ if(i>=convo.length){ setTimeout(()=>{ chat.innerHTML=''; i=0; },1400); return; } const [who,txt]=convo[i]; const b=document.createElement('div'); b.className='b '+(who==='cust'?'cust':'agent'); if(who==='agent')b.style.background=c; b.textContent=txt; chat.appendChild(b); requestAnimationFrame(()=>b.classList.add('in')); if(who==='agent'){ n++; if(cnt)cnt.textContent=n+' resolved'; } i++; } step(); const tk=setInterval(step,1300); demoTimers.push(tk); }
+function demoFunnel(c){ const root=$('#demoArea'); if(!root)return; const stages=[['Applications',42,100],['Screened',24,57],['Shortlisted',7,17],['Interviews',4,10]]; root.innerHTML=stages.map((s,i)=>`<div class="f"><div class="lab"><span>${s[0]}</span><span class="fv" data-v="${s[1]}">0</span></div><div class="bar"><i data-w="${s[2]}" style="background:${i===3?c:shade(c,i*0.12)}"></i></div></div>`).join(''); function run(){ root.querySelectorAll('.bar i').forEach(b=>{ b.style.width='0'; requestAnimationFrame(()=>b.style.width=b.dataset.w+'%'); }); root.querySelectorAll('.fv').forEach(v=>countTo(v,+v.dataset.v,1400,'')); } run(); const tk=setInterval(run,4000); demoTimers.push(tk); }
+
+/* Ava — real document generation */
+function genDoc(type){ const date=new Date().toISOString().slice(0,10); try{
+  if(type==='xlsx'&&window.XLSX){ const wb=XLSX.utils.book_new(); const rows=[['NEXA — Financial Model','','',''],['Month','Revenue (€)','Costs (€)','Cashflow (€)'],['Jan',124000,68000,{t:'n',f:'B3-C3'}],['Feb',138000,71000,{t:'n',f:'B4-C4'}],['Mar',151000,74000,{t:'n',f:'B5-C5'}],['Q1 Total',{t:'n',f:'SUM(B3:B5)'},{t:'n',f:'SUM(C3:C5)'},{t:'n',f:'SUM(D3:D5)'}]]; const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:14},{wch:14},{wch:14},{wch:14}]; XLSX.utils.book_append_sheet(wb,ws,'Model'); const fn='NEXA-Financial-Model-'+date+'.xlsx'; XLSX.writeFile(wb,fn); return fn; }
+  if(type==='docx'){ const html=`<html xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body style="font-family:Calibri,Arial"><h1 style="color:#2563EB">NEXA — Operations Report</h1><p><b>Generated:</b> ${date} by Ava</p><h2>Summary</h2><p>The workforce executed 318 actions today, saving 27.6 hours at 98% performance.</p><ul><li>Emma cleared the inbox and updated 9 CRM records.</li><li>Sophie reconciled 12 invoices (€48k cleared).</li><li>Noah resolved 18 tickets at 4.8 CSAT.</li></ul></body></html>`; const fn='NEXA-Business-Report-'+date+'.doc'; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+html],{type:'application/msword'})); a.download=fn; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1500); return fn; }
+  if(type==='pptx'&&window.PptxGenJS){ const p=new PptxGenJS(); p.layout='LAYOUT_WIDE'; let s=p.addSlide(); s.background={color:'F4F7FB'}; s.addText('NEXA',{x:0.6,y:2.2,fontSize:54,bold:true,color:'2563EB'}); s.addText('Your first digital workforce',{x:0.6,y:3.2,fontSize:22}); s=p.addSlide(); s.addText('Traction',{x:0.6,y:0.5,fontSize:30,bold:true}); s.addText('318 actions/day · 27.6h saved · 98% performance',{x:0.6,y:2.4,fontSize:20,color:'2563EB'}); const fn='NEXA-Pitch-Deck-'+date+'.pptx'; p.writeFile({fileName:fn}); return fn; }
+}catch(e){} const fn='NEXA-'+type+'-'+date+'.txt'; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['NEXA document'],{type:'text/plain'})); a.download=fn; a.click(); return fn; }
+
+/* ---------- layouts ---------- */
+function layoutSplit(a){ // Emma
+  return `${backLink()}
+  <div class="hero-split">
+    <div>${eyebrow(a)}<div style="display:flex;align-items:center;gap:18px;margin-top:10px"><div class="hero-av">${avatarBig(a)}</div><div class="hero-name">${nameOf(a)}</div></div>
+      <p class="hero-intro">${L(a.intro)}</p>${chips()}${heroCTA(a)}</div>
+    <div>${demoCard(a, t('ag.demo'), `<div id="demoArea"></div>`)}</div>
+  </div>
+  <section class="sec"><h2 data-i18n="ag.how">How it works</h2>${udeStrip(a)}</section>
+  <section class="sec"><h2>${t('ag.does').replace('{x}',nameOf(a))}</h2><p class="sub" data-i18n="ag.caps">Capabilities</p>${capGrid(a)}<div style="margin-top:22px">${dayLine(a)}</div></section>
+  <section class="sec">${photoBand(a)}</section>
+  ${ctaBand(a)}`;
+}
+function layoutDark(a){ // Liam, Maya
+  return `${backLink()}
+  <section class="sec"><div class="hero-dark" style="${darkBg(a.color)}"><div class="hero-av">${avatarBig(a)}</div>
+    <div class="hero-name">${nameOf(a)}</div><div class="hero-role">${L(a.role)}</div>
+    <p class="hero-intro">${L(a.intro)}</p>${heroCTA(a)}</div></section>
+  <section class="sec"><h2 data-i18n="ag.demo">Live demo</h2><p class="sub">${t('ag.demosub').replace('{x}',nameOf(a))}</p><div style="margin-top:16px">${demoCard(a, L(a.role), `<div id="demoArea"></div>`)}</div></section>
+  <section class="sec"><h2 data-i18n="ag.how">How it works</h2>${udeStrip(a)}</section>
+  <section class="sec"><h2>${t('ag.does').replace('{x}',nameOf(a))}</h2>
+    <div class="zig" style="margin-top:18px"><div class="row"><div class="ztext"><h3 style="font-size:20px">${t('ag.caps')}</h3><div style="margin-top:12px">${capCheck(a)}</div></div><div><div class="photoband" style="box-shadow:var(--shadow-card)"><div class="photo" style="height:240px"><img loading="lazy" src="${a.photo}" onerror="this.closest('.photo').classList.add('imgfail')"></div></div></div></div></div>
+    <div style="margin-top:8px">${dayLine(a)}</div></section>
+  ${ctaBand(a)}`;
+}
+function layoutDashboard(a){ // Sophie
+  return `${backLink()}
+  <div class="hero-split">
+    <div>${eyebrow(a)}<div class="hero-name">${nameOf(a)}</div><p class="hero-intro">${L(a.intro)}</p>${chips()}${heroCTA(a)}</div>
+    <div>${demoCard(a, t('ag.demo'), `<div id="demoArea"></div>`)}</div>
+  </div>
+  <section class="sec"><h2>${t('ag.does').replace('{x}',nameOf(a))}</h2><p class="sub" data-i18n="ag.caps">Capabilities</p>
+    <div class="two-col" style="margin-top:14px">
+      <div>${capCheck(a)}</div>
+      <div class="photoband" style="box-shadow:var(--shadow-card)"><div class="photo" style="height:260px"><img loading="lazy" src="${a.photo}" onerror="this.closest('.photo').classList.add('imgfail')"></div></div>
+    </div></section>
+  <section class="sec"><h2 data-i18n="ag.how">How it works</h2>${udeStrip(a)}<div style="margin-top:18px">${dayLine(a)}</div></section>
+  ${ctaBand(a)}`;
+}
+function layoutSupport(a){ // Noah
+  return `${backLink()}
+  <div class="hero-split">
+    <div>${eyebrow(a)}<div style="display:flex;align-items:center;gap:18px;margin-top:10px"><div class="hero-av">${avatarBig(a)}</div><div class="hero-name">${nameOf(a)}</div></div>
+      <p class="hero-intro">${L(a.intro)}</p>${chips()}${heroCTA(a)}</div>
+    <div>${demoCard(a, t('ag.demo'), `<div id="demoArea"></div>`)}</div>
+  </div>
+  <section class="sec"><div class="statband2">
+    <div class="s"><div class="bignum" style="color:${a.color}">124</div><div style="font-size:13px;color:var(--text-3)">tickets / day</div></div>
+    <div class="s"><div class="bignum" style="color:${a.color}">4.8</div><div style="font-size:13px;color:var(--text-3)">CSAT</div></div>
+    <div class="s"><div class="bignum" style="color:${a.color}">24/7</div><div style="font-size:13px;color:var(--text-3)">always on</div></div>
+  </div></section>
+  <section class="sec"><h2>${t('ag.does').replace('{x}',nameOf(a))}</h2><p class="sub" data-i18n="ag.caps">Capabilities</p>${capGrid(a)}</section>
+  <section class="sec"><h2 data-i18n="ag.how">How it works</h2>${udeStrip(a)}</section>
+  <section class="sec">${photoBand(a)}</section>
+  ${ctaBand(a)}`;
+}
+function layoutDocs(a){ // Ava
+  return `${backLink()}
+  <div class="hero-split">
+    <div>${eyebrow(a)}<div style="display:flex;align-items:center;gap:18px;margin-top:10px"><div class="hero-av">${avatarBig(a)}</div><div class="hero-name">${nameOf(a)}</div></div>
+      <p class="hero-intro">${L(a.intro)}</p>${chips()}${heroCTA(a)}</div>
+    <div class="demo-card"><div class="demo-head"><span class="dot-live"></span> ${t('ag.try')}</div>
+      <div class="docgrid">
+        ${[['⊞','Excel','xlsx'],['¶','Word','docx'],['▦','PowerPoint','pptx']].map(d=>`<div class="doctile"><div class="ic" style="color:${a.color}">${d[0]}</div><div style="font-weight:700;margin-top:6px">${d[1]}</div><div class="bar" style="margin-top:10px"><i data-bar style="background:${a.color}"></i></div><button class="btn btn-primary gen" data-type="${d[2]}" style="background:${a.color};border-color:${a.color}" data-i18n="doc.generate">Generate</button><div class="filechip"><span class="status-dot live"></span> <span class="fn"></span></div></div>`).join('')}
+      </div></div>
+  </div>
+  <section class="sec"><h2 data-i18n="ag.how">How it works</h2>${udeStrip(a)}</section>
+  <section class="sec"><h2>${t('ag.does').replace('{x}',nameOf(a))}</h2><p class="sub" data-i18n="ag.caps">Capabilities</p>${capGrid(a)}<div style="margin-top:22px">${dayLine(a)}</div></section>
+  <section class="sec">${photoBand(a)}</section>
+  ${ctaBand(a)}`;
+}
+
+const LAYOUTS={ split:layoutSplit, dark:layoutDark, dashboard:layoutDashboard, support:layoutSupport, docs:layoutDocs };
+
+function initDemo(a){
+  clearDemos();
+  if(a.demo==='docs'){
+    document.querySelectorAll('.doctile .gen').forEach(btn=>{ btn.onclick=()=>{ const tile=btn.closest('.doctile'); const bar=tile.querySelector('[data-bar]'); const chip=tile.querySelector('.filechip'); const old=btn.textContent; btn.disabled=true; btn.textContent=t('doc.generating'); bar.style.width='0'; requestAnimationFrame(()=>bar.style.width='100%'); setTimeout(()=>{ const fn=genDoc(btn.dataset.type); btn.disabled=false; btn.textContent=old; tile.querySelector('.fn').textContent=fn; chip.classList.add('show'); setTimeout(()=>bar.style.width='0',600); },1100); }; });
+    return;
+  }
+  const fn={inbox:demoInbox,pipeline:demoPipeline,finance:demoFinance,support:demoSupport,funnel:demoFunnel}[a.demo];
+  if(fn) fn(a.color);
+}
+
+function render(){
+  const a = AGENTS[ID] || AGENTS.OM; a.id=ID in AGENTS?ID:'OM';
+  document.title = 'NEXA — ' + nameOf(a) + ', ' + L(a.role);
+  const layout = LAYOUTS[a.layout] || layoutSplit;
+  $('#stage').innerHTML = layout(a);
+  if(window.I18N) I18N.apply($('#stage'));
+  initDemo(a);
+}
+render();
+window.addEventListener('nexa:lang', render);
+const _nav=document.getElementById('nav'); addEventListener('scroll',()=>_nav.classList.toggle('scrolled',scrollY>40));
+</script>
+</body>
+</html>

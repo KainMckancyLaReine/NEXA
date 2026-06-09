@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>/* auth guard — no dashboard without login */try{if(!localStorage.getItem('nexa_user'))location.replace('signin.html');}catch(e){}</script>
+<title>NEXA — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="assets/js/preload.js"></script>
+<link rel="stylesheet" href="assets/css/nexa.css" />
+<style>
+body { height: 100vh; overflow: hidden; }
+.app { display: grid; grid-template-columns: 252px 1fr; height: 100vh; }
+@media (max-width: 1000px){ .app { grid-template-columns: 76px 1fr; } }
+@media (max-width: 680px){
+  html, body { height: auto; overflow: auto; }
+  .app { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+  /* sidebar becomes a horizontal, scrollable tab bar at the top */
+  .side { flex-direction: row; align-items: center; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+          border-right: none; border-bottom: 1px solid var(--border); padding: 10px 12px;
+          position: sticky; top: 0; z-index: 40; background: var(--surface); }
+  .side .brand, .side .grp-label, .side .user { display: none; }
+  .side .nav-i { flex: 0 0 auto; padding: 8px 13px; }
+  .side .nav-i span:not(.ic):not(.badge) { display: inline; }   /* show labels in the bar */
+  .center-col { height: auto; }
+  .view-scroll { height: auto; overflow: visible; padding: 18px 16px; }
+  .cmdbar { padding: 14px 16px; }
+  .dash { grid-template-columns: 1fr; }
+}
+
+/* Sidebar */
+.side { border-right: 1px solid var(--border); padding: 22px 16px; display: flex; flex-direction: column; gap: 4px; background: var(--surface); overflow-y: auto; }
+.side .brand { padding: 4px 8px 18px; }
+.side .grp-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-3); padding: 16px 12px 6px; }
+.nav-i { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 11px; color: var(--text-2); font-size: 14px; cursor: pointer; transition: .18s; font-weight: 500; text-decoration: none; }
+.nav-i:hover { background: rgba(15,23,42,0.04); color: var(--text); }
+.nav-i.active { background: linear-gradient(100deg, rgba(59,130,246,0.2), rgba(37,99,235,0.06)); color: var(--accent-2); box-shadow: inset 0 0 0 1px rgba(59,130,246,0.25); }
+.nav-i .ic { width: 18px; text-align: center; flex: none; font-size: 15px; }
+.nav-i .badge { margin-left: auto; font-size: 11px; background: var(--accent); color:#fff; padding: 1px 7px; border-radius: 999px; }
+.side .user { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+.side .user .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--sunset)); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.side .user .logout { margin-left:auto; width:30px; height:30px; border-radius:9px; display:grid; place-items:center; color:var(--text-2); border:1px solid var(--border); font-size:15px; text-decoration:none; transition:.2s; }
+.side .user .logout:hover { color:var(--error); border-color:rgba(220,38,38,0.4); background:rgba(220,38,38,0.06); }
+@media (max-width: 1000px){ .nav-i span:not(.ic):not(.badge), .grp-label, .side .brand span:last-child, .side .user div { display: none; } .side { align-items: center; } .nav-i { justify-content: center; } }
+
+/* Center column */
+.center-col { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
+.cmdbar { padding: 16px 26px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.72); backdrop-filter: blur(10px); flex: none; }
+.cmd-input { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); transition: border-color .2s, box-shadow .2s; }
+.cmd-input:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59,130,246,0.12); }
+.cmd-input .pre { color: var(--sunset); font-weight: 700; }
+.cmd-input input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 15px; font-family: inherit; }
+.cmd-input input::placeholder { color: var(--text-3); }
+.cmd-input .send { background: linear-gradient(135deg,var(--accent),#2563EB); color:#fff; border:none; border-radius: 10px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.cmd-input .mic { width:40px; height:40px; border-radius:10px; border:1px solid var(--border); background:#fff; cursor:pointer; font-size:16px; display:grid; place-items:center; transition:.2s; flex:none; }
+.cmd-input .mic:hover { border-color:var(--ink); }
+.cmd-input .mic.rec { background:#EF4444; color:#fff; border-color:#EF4444; animation:pulse 1.1s infinite; }
+.cmd-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.cmd-head .hi { font-size:14px; color:var(--text-2); }
+.cmd-head .hi b { color:var(--ink); }
+.suggestions { display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap; }
+.suggestion { font-size: 12.5px; color: var(--text-2); padding: 7px 13px; border-radius: 999px; border: 1px solid var(--border); background: rgba(15,23,42,0.02); cursor: pointer; transition: .2s; }
+.suggestion:hover { border-color: var(--accent); color: var(--accent-2); }
+
+.view-scroll { flex: 1; overflow-y: auto; padding: 24px 26px; }
+.view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.view-head h2 { font-size: 22px; letter-spacing: -.03em; } .view-head p { color: var(--text-3); font-size: 13.5px; margin-top: 4px; }
+
+/* Dashboard */
+.dash { display: grid; grid-template-columns: 1fr 320px; gap: 22px; align-items: start; }
+@media (max-width: 1100px){ .dash { grid-template-columns: 1fr; } }
+.metrics-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+@media (max-width: 900px){ .metrics-row { grid-template-columns: repeat(2,1fr); } }
+.metric { padding: 18px; } .metric .v { font-size: 25px; font-weight: 800; letter-spacing: -.03em; } .metric .k { font-size: 12px; color: var(--text-3); margin-top: 4px; } .metric .d { font-size: 12px; margin-top: 6px; } .metric .d.up { color: var(--success); }
+.feed-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.feed-title h3 { font-size: 16px; } .feed-title .live-tag { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-2); }
+.activity { display: flex; flex-direction: column; gap: 10px; }
+.act { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); }
+.act .av { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,var(--accent),#1e40af); display: grid; place-items: center; font-size: 12px; font-weight: 700; flex: none; color:#fff; text-decoration:none; }
+.act .txt { flex: 1; min-width: 0; } .act .txt .who { font-weight: 600; font-size: 14px; text-decoration:none; } .act .txt .what { color: var(--text-2); font-size: 13.5px; }
+.act .time { color: var(--text-3); font-size: 12px; white-space: nowrap; }
+.act .tag { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-2); }
+.act .tag.exec { color: var(--success); border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.08); }
+
+.intel { padding: 4px 0; }
+.intel h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-3); margin: 18px 0 12px; } .intel h4:first-child { margin-top: 0; }
+.ibox { padding: 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); margin-bottom: 12px; }
+.ibox .top { display: flex; justify-content: space-between; align-items: baseline; } .ibox .lbl { font-size: 12.5px; color: var(--text-2); } .ibox .big { font-size: 20px; font-weight: 800; letter-spacing: -.03em; margin-top: 6px; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; } .pill.good { color: var(--success); background: rgba(34,197,94,0.1); } .pill.warn { color: var(--warm); background: rgba(245,158,11,0.12); } .pill.bad { color: var(--error); background: rgba(239,68,68,0.1); }
+.rec { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; background: rgba(59,130,246,0.05); } .rec .ai { color: var(--sunset); font-size: 12px; font-weight: 700; flex: none; } .rec .body { font-size: 13px; color: var(--text-2); }
+.perfbar { height: 6px; border-radius: 6px; background: #DBE4F0; overflow: hidden; margin-top: 8px; } .perfbar i { display: block; height: 100%; background: linear-gradient(90deg,var(--accent),var(--sunset)); }
+
+/* Generic cards grid */
+.cards { display: grid; gap: 16px; }
+.g3 { grid-template-columns: repeat(3,1fr); } .g4 { grid-template-columns: repeat(4,1fr); }
+@media (max-width: 1100px){ .g4 { grid-template-columns: repeat(2,1fr); } .g3 { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 640px){ .g3,.g4 { grid-template-columns: 1fr; } }
+
+/* Workforce cards */
+.wf-card { padding: 22px; transition: transform .3s, border-color .3s; }
+.wf-card:hover { transform: translateY(-4px); border-color: var(--border-strong); }
+.wf-card .top { display: flex; align-items: center; gap: 13px; }
+.wf-card .av { width: 46px; height: 46px; border-radius: 13px; background: linear-gradient(135deg,var(--accent),#1e40af); display: grid; place-items: center; font-weight: 700; box-shadow: 0 0 22px -8px var(--accent-glow); color:#fff; }
+.wf-card .nm { font-weight: 700; font-size: 15.5px; } .wf-card .dp { font-size: 12px; color: var(--sunset); }
+.wf-card .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 14px; }
+.wf-card .m { padding: 11px; border-radius: 11px; background: rgba(15,23,42,0.025); border: 1px solid var(--border); } .wf-card .m .v { font-size: 17px; font-weight: 700; } .wf-card .m .k { font-size: 10.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: .07em; }
+.wf-card .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.wf-card .foot a { font-size: 13px; color: var(--accent-2); } .wf-card .foot a:hover { color: var(--text); }
+
+/* Operations board */
+.ops-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; } @media(max-width:900px){.ops-stats{grid-template-columns:repeat(2,1fr);}}
+.ops-stat { padding: 16px; } .ops-stat .v { font-size: 22px; font-weight: 800; } .ops-stat .k { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+.board { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; } @media(max-width:800px){.board{grid-template-columns:1fr;}}
+.col { padding: 16px; min-height: 200px; }
+.col h4 { font-size: 13px; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; } .col h4 .ct { margin-left: auto; font-size: 11px; color: var(--text-3); background: rgba(15,23,42,0.05); padding: 1px 8px; border-radius: 999px; }
+.task { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: rgba(15,23,42,0.02); margin-bottom: 10px; font-size: 13px; }
+.task .who { font-size: 11px; color: var(--accent-2); font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.task.exec { border-color: rgba(245,158,11,0.3); } .task.done { border-color: rgba(34,197,94,0.25); opacity: .85; }
+
+/* Integrations */
+.cat-row { margin-bottom: 26px; } .cat-row .cat-label { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-3); margin-bottom: 12px; }
+.int-card { padding: 18px; display: flex; align-items: center; gap: 14px; }
+.int-card .lg { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; font-weight: 700; font-size: 15px; background: #fff; border: 1px solid var(--border); flex: none; }
+.int-card .nm { font-weight: 600; font-size: 14.5px; } .int-card .st { font-size: 12px; margin-top: 2px; }
+.int-card .st.on { color: var(--success); } .int-card .st.off { color: var(--text-3); }
+.int-toggle { margin-left: auto; padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-strong); background: #fff; color: var(--text); font-family: inherit; transition: .2s; }
+.int-toggle.on { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.4); color: var(--success); }
+
+/* Reports */
+.rep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; } @media(max-width:900px){.rep-grid{grid-template-columns:1fr;}}
+.chart-card { padding: 20px; } .chart-card h4 { font-size: 14px; margin-bottom: 4px; } .chart-card .sub { font-size: 12px; color: var(--text-3); margin-bottom: 14px; }
+.rep-list .rep { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; background: var(--card); }
+.rep .ric { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: rgba(59,130,246,0.12); color: var(--accent-2); font-size: 15px; flex: none; }
+.rep .nm { font-weight: 600; font-size: 14px; } .rep .meta { font-size: 12px; color: var(--text-3); }
+.rep .gen { margin-left: auto; padding: 8px 16px; border-radius: 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(135deg,var(--accent),#2563EB); color: #fff; font-family: inherit; }
+.recent-list .r { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 10px 0; border-bottom: 1px solid var(--border); color: var(--text-2); } .recent-list .r:last-child { border: none; }
+
+/* Toast */
+.toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: 13px 20px; font-size: 13.5px; box-shadow: var(--shadow-soft); z-index: 100; transition: .3s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } .toast b { color: var(--sunset); }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <a class="brand" href="index.html"><span class="logo"></span> <span>NEXA</span></a>
+    <a class="nav-i active" data-view="dashboard" href="#dashboard"><span class="ic">◎</span><span data-i18n="cc.dashboard">Command Center</span></a>
+    <a class="nav-i" data-view="workforce" href="#workforce"><span class="ic">⚏</span><span data-i18n="cc.workforce">Workforce</span><span class="badge" id="wfBadge">5</span></a>
+    <a class="nav-i" data-view="operations" href="#operations"><span class="ic">⇄</span><span data-i18n="cc.operations">Operations</span></a>
+    <a class="nav-i" data-view="approvals" href="#approvals"><span class="ic">✔</span><span data-i18n="cc.approvals">Approvals</span><span class="badge" id="apBadge" style="display:none">0</span></a>
+    <a class="nav-i" data-view="audit" href="#audit"><span class="ic">❑</span><span data-i18n="cc.audit">Audit log</span></a>
+    <div class="grp-label">Configure</div>
+    <a class="nav-i" data-view="integrations" href="#integrations"><span class="ic">⊞</span><span data-i18n="cc.integrations">Integrations</span></a>
+    <a class="nav-i" data-view="reports" href="#reports"><span class="ic">◷</span><span data-i18n="cc.reports">Reports</span></a>
+    <a class="nav-i" data-view="documents" href="#documents"><span class="ic">▤</span><span data-i18n="cc.documents">Documents</span></a>
+    <a class="nav-i" href="marketplace.html"><span class="ic">⊕</span><span data-i18n="cc.marketplace">Marketplace</span></a>
+    <div class="user"><span class="av">K</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Kain</div><div style="font-size:11px;color:var(--text-3)">Admin · Acme Inc.</div></div><a class="logout" href="signin.html" title="Sign out" onclick="try{localStorage.removeItem('nexa_user');}catch(e){}">⏻</a></div>
+  </aside>
+
+  <!-- CENTER -->
+  <main class="center-col">
+    <div class="cmdbar">
+      <div class="cmd-head"><div class="hi">Welcome back, <b>Kain</b> · Admin</div><span data-lang-mount></span></div>
+      <div class="cmd-input">
+        <span class="pre">⌘</span>
+        <input id="cmd" type="text" placeholder="Tell your workforce what to accomplish…" />
+        <button class="mic" id="micBtn" title="Voice command" aria-label="Voice command">🎙</button><button class="send" id="cmdSend" data-i18n="cc.execute">Execute</button>
+      </div>
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+    <div class="view-scroll" id="view"><!-- routed view --></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="assets/js/vendor/xlsx.full.min.js"></script>
+<script src="assets/js/vendor/pptxgen.bundle.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/logos.js"></script>
+<script src="assets/js/avatars.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const t = k => (window.I18N ? I18N.t(k) : k);
+const lang = () => (window.I18N ? I18N.lang : 'en');
+const view = $('#view');
+let timers = [];                       // per-view intervals/timeouts, cleared on nav
+function clearTimers(){ timers.forEach(t => { clearInterval(t); clearTimeout(t); }); timers = []; }
+function every(fn, ms){ const t = setInterval(fn, ms); timers.push(t); return t; }
+function later(fn, ms){ const t = setTimeout(fn, ms); timers.push(t); return t; }
+function toast(html){ const t=$('#toast'); t.innerHTML=html; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600); }
+
+/* ---------- shared data / fallbacks ---------- */
+const EMP = { OM:['E','Emma'], SM:['L','Liam'], FM:['S','Sophie'], SA:['N','Noah'], RA:['M','Maya'], DA:['L','Lucas'], MM:['O','Olivia'], PM:['D','Daniel'], DOC:['A','Ava'] };
+const WF_FALLBACK = [
+  {id:'OM',code:'OM',name:'AI Operations Manager',dept:'Operations',status:'live',tasksToday:112,timeSavedToday:6.4,performance:99},
+  {id:'SM',code:'SM',name:'AI Sales Manager',dept:'Sales',status:'live',tasksToday:64,timeSavedToday:4.1,performance:97},
+  {id:'FM',code:'FM',name:'AI Finance Manager',dept:'Finance',status:'busy',tasksToday:38,timeSavedToday:3.2,performance:98},
+  {id:'SA',code:'SA',name:'AI Support Agent',dept:'Support',status:'live',tasksToday:124,timeSavedToday:8.9,performance:96},
+  {id:'RA',code:'RA',name:'AI Recruiting Agent',dept:'Recruiting',status:'live',tasksToday:53,timeSavedToday:5.0,performance:95},
+  {id:'DOC',code:'DOC',name:'AI Document Specialist',dept:'Documents',status:'live',tasksToday:47,timeSavedToday:5.6,performance:99},
+];
+
+/* ============================================================
+   GLOBAL COMMAND BAR
+   ============================================================ */
+const suggestions = ['Follow up all inactive leads','Generate weekly operational report','Create invoices for all pending deals','Schedule onboarding meetings','Review overdue invoices'];
+const sugEl = $('#suggestions');
+suggestions.forEach(s => { const b=document.createElement('div'); b.className='suggestion'; b.textContent=s; b.onclick=()=>runCommand(s); sugEl.appendChild(b); });
+$('#cmdSend').onclick = () => { const v=$('#cmd').value.trim(); if(v) runCommand(v); };
+$('#cmd').addEventListener('keydown', e => { if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) runCommand(v); } });
+
+/* ============================================================
+   UNIFIED TASK ENGINE
+   Uses the live server when online; otherwise a localStorage-backed
+   client engine so approvals/audit/autonomy work in file:// demos too.
+   ============================================================ */
+const ENG = (function(){
+  const LS='nexa_cc_v1';
+  function base(){ return { tasks:[], audit:[], autonomy:{OM:'supervised',SM:'supervised',FM:'supervised',SA:'auto',RA:'supervised',DOC:'supervised',DA:'auto',MM:'supervised',PM:'supervised'}, tseq:1, aseq:1 }; }
+  let st; try{ st=JSON.parse(localStorage.getItem(LS))||base(); }catch(e){ st=base(); }
+  function save(){ try{ localStorage.setItem(LS,JSON.stringify(st)); }catch(e){} }
+  const NM = ()=>window.AINAMES||{};
+  function route(t){ t=t.toLowerCase();
+    if(/excel|spreadsheet|powerpoint|\bdeck\b|slides|presentation|word doc|\.xlsx|\.docx|\.pptx|generate (a |the )?(report|document|deck|model)|build (a |the )?(report|deck|model|workbook)/.test(t)) return 'DOC';
+    if(/invoice|payment|finance|cashflow|overdue|reminder|expense|billing/.test(t)) return 'FM';
+    if(/ticket|support|customer|csat|escalat/.test(t)) return 'SA';
+    if(/lead|follow.?up|prospect|outreach|deal|pipeline|proposal/.test(t)) return 'SM';
+    if(/candidate|recruit|interview|applicant|hire/.test(t)) return 'RA';
+    return 'OM'; }
+  function docType(t){ t=(t||'').toLowerCase(); if(/excel|spreadsheet|\.xlsx|workbook|model|cashflow|financial|budget/.test(t))return'xlsx'; if(/powerpoint|\bdeck\b|slides|presentation|\.pptx|pitch/.test(t))return'pptx'; return'docx'; }
+  function docDesc(dt){ const m={xlsx:'Financial-Model',docx:'Business-Report',pptx:'Pitch-Deck'}; const d=new Date().toISOString().slice(0,10); return {type:dt,filename:'NEXA-'+(m[dt]||'Document')+'-'+d+'.'+dt}; }
+  function steps(emp,t){ switch(emp){
+    case 'DOC':{ const dt=docType(t); const k=dt==='xlsx'?'Excel workbook':dt==='pptx'?'PowerPoint deck':'Word document'; return ['pulled the latest figures from connected systems','drafted and formatted the '+k,'generated the file','shared it with the team']; }
+    case 'FM': return ['reviewed overdue invoices','sent payment reminders','flagged 1 account for escalation','updated cashflow forecast'];
+    case 'SM': return ['identified matching leads','sent personalized follow-ups','updated CRM · stage Re-engaged','scheduled follow-up sequence'];
+    case 'SA': return ['triaged the open ticket queue','resolved tickets autonomously','updated knowledge base','escalated 1 ticket to human review'];
+    case 'RA': return ['screened applications','shortlisted candidates','scheduled interview slots','sent follow-up emails'];
+    default:   return ['parsed the request and gathered context','executed: "'+t+'"','updated CRM and internal docs','notified management with a summary']; } }
+  function aud(type,empId,summary){ st.audit.unshift({id:'aud_'+(st.aseq++),ts:Date.now(),empId,empCode:empId,type,summary}); if(st.audit.length>200)st.audit.length=200; }
+  function exec(task){ task.steps=steps(task.empId,task.text); task.status='done'; task.resolvedAt=Date.now(); if(task.empId==='DOC')task.document=docDesc(docType(task.text)); aud('execute',task.empId,'executed: "'+task.text+'"'); }
+  return {
+    online(){ return !!(window.NEXA && NEXA.online); },
+    async submit(text){
+      if(this.online()){ const r=await NEXA.submitTask(text); if(r) return r; }
+      const emp=route(text), mode=st.autonomy[emp]||'supervised';
+      const task={id:'task_'+(st.tseq++),empId:emp,empCode:emp,empName:NM()[emp]||emp,text,steps:[],status:mode==='auto'?'executing':'pending_approval',mode,createdAt:Date.now(),resolvedAt:null,document:null};
+      st.tasks.unshift(task); aud('command',emp,'received command: "'+text+'"'); if(mode==='auto')exec(task); save();
+      return {task,executed:mode==='auto',actions:[]};
+    },
+    async list(status){ if(this.online()){ const r=await NEXA.tasks(status); if(r) return r; } let t=st.tasks; if(status)t=t.filter(x=>x.status===status); return {tasks:t,pending:st.tasks.filter(x=>x.status==='pending_approval').length}; },
+    async approve(id){ if(this.online()){ const r=await NEXA.approveTask(id); if(r) return r; } const t=st.tasks.find(x=>x.id===id); if(t&&t.status==='pending_approval'){t.status='executing';exec(t);aud('approve',t.empId,'approved & executed: "'+t.text+'"');save();} return {task:t}; },
+    async reject(id){ if(this.online()){ const r=await NEXA.rejectTask(id); if(r) return r; } const t=st.tasks.find(x=>x.id===id); if(t){t.status='rejected';t.resolvedAt=Date.now();aud('reject',t.empId,'rejected: "'+t.text+'"');save();} return {task:t}; },
+    async auditLog(){ if(this.online()){ const r=await NEXA.audit(); if(r&&r.audit) return r.audit; } return st.audit; },
+    async pending(){ const r=await this.list('pending_approval'); return r.pending||0; },
+    autonomyOf(id){ return st.autonomy[id]||'supervised'; },
+    async setAutonomy(id,level){ if(this.online()) await NEXA.setAutonomy(id,level); st.autonomy[id]=level; save(); aud('autonomy',id,'autonomy set to '+level); },
+    async roi(){ if(this.online()){ const r=await NEXA.roi(); if(r) return r; }
+      const wf=window.__wf||WF_FALLBACK; const hours=+wf.reduce((s,e)=>s+(e.timeSavedToday||0),0).toFixed(1); const seats=wf.length;
+      const daily=Math.round(hours*45), annual=daily*260, cost=seats*499, roi=cost?Math.round((annual/12-cost)/cost*100):0;
+      return {hoursSavedToday:hours,annualSavings:annual,monthlyCost:cost,roiPct:roi,seats,avgPerformance:98,tasksToday:wf.reduce((s,e)=>s+(e.tasksToday||0),0)}; },
+  };
+})();
+
+async function updateApBadge(){ try{ const n=await ENG.pending(); const b=$('#apBadge'); if(b){ b.textContent=n; b.style.display=n?'inline-block':'none'; } }catch(e){} }
+
+async function runCommand(text){
+  $('#cmd').value='';
+  const r=await ENG.submit(text); const task=(r&&r.task)||{}; const emp=task.empId||'OM';
+  const nm=(window.AINAMES&&AINAMES[emp])||task.empName||emp;
+  if(r&&r.executed){
+    if(ENG.online()){ toast(`<b>${nm}</b> — "${text}" ✓`); }
+    else if(currentView==='dashboard'){
+      addActivity(emp,'received command: "'+text+'"','command','just now');
+      (task.steps&&task.steps.length?task.steps:['executed: "'+text+'"']).forEach(s=>addActivity(emp,s,'exec','just now'));
+      const first=view.querySelector('.activity .act'); if(first) gsap.fromTo(first,{boxShadow:'0 0 0 2px rgba(37,99,235,0.6)'},{boxShadow:'0 0 0 0 transparent',duration:1.2});
+    } else { toast(`<b>${nm}</b> — "${text}" ✓`); }
+  } else {
+    toast(`<b>${nm}</b> ${t('ap.sent')}`);
+    updateApBadge();
+    if(currentView==='approvals') renderApprovals();
+  }
+}
+
+/* ---------- VIEW: APPROVALS ---------- */
+async function renderApprovals(){
+  view.innerHTML = `<div class="view-head"><div><h2 data-i18n="ap.title">Approvals</h2><p data-i18n="ap.sub">Supervised actions wait here for your approval.</p></div></div><div id="apList" style="display:grid;gap:12px"></div>`;
+  if(window.I18N) I18N.apply(view);
+  const wrap=view.querySelector('#apList');
+  const r=await ENG.list('pending_approval'); const items=r.tasks||[];
+  if(!items.length){ wrap.innerHTML=`<div class="glass" style="padding:24px;color:var(--text-3)" data-i18n="ap.none">Nothing waiting.</div>`; if(window.I18N)I18N.apply(wrap); updateApBadge(); return; }
+  wrap.innerHTML=items.map(tk=>`<div class="glass" style="padding:18px" data-id="${tk.id}">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:11px;overflow:hidden;flex:none">${window.aiAvatar?aiAvatar(tk.empId,40):''}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">${(window.AINAMES&&AINAMES[tk.empId])||tk.empName||tk.empId}</div><div style="font-size:13px;color:var(--text-2)">“${tk.text}”</div></div>
+        <span class="chip" style="font-size:11px">${tk.mode||'supervised'}</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn btn-primary ap-ok" style="padding:8px 16px;font-size:13px" data-i18n="ap.approve">Approve</button>
+        <button class="btn btn-ghost ap-no" style="padding:8px 16px;font-size:13px" data-i18n="ap.reject">Reject</button>
+      </div></div>`).join('');
+  if(window.I18N) I18N.apply(wrap);
+  wrap.querySelectorAll('[data-id]').forEach(card=>{
+    const id=card.dataset.id;
+    card.querySelector('.ap-ok').onclick=async()=>{ const rr=await ENG.approve(id); const e=(rr&&rr.task&&rr.task.empId)||''; const nm=(window.AINAMES&&AINAMES[e])||(rr&&rr.task&&rr.task.empName)||'Workforce'; toast(`<b>${nm}</b> ${t('ap.approved')}`); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
+    card.querySelector('.ap-no').onclick=async()=>{ await ENG.reject(id); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
+  });
+  updateApBadge();
+}
+
+/* ---------- VIEW: AUDIT ---------- */
+async function renderAudit(){
+  view.innerHTML=`<div class="view-head"><div><h2 data-i18n="au.title">Audit log</h2><p data-i18n="au.sub">Every command, execution, approval and change.</p></div></div><div class="rep-list" id="auList"></div>`;
+  if(window.I18N) I18N.apply(view);
+  const list=view.querySelector('#auList'); const items=await ENG.auditLog();
+  if(!items.length){ list.innerHTML=`<div class="glass" style="padding:24px;color:var(--text-3)" data-i18n="au.none">No activity logged yet.</div>`; if(window.I18N)I18N.apply(list); return; }
+  const ICON={command:'⌘',execute:'⚡',approve:'✔',reject:'✕',autonomy:'⚙',memory:'❒',schedule:'◷',connector:'⊞'};
+  list.innerHTML=items.map(a=>`<div class="rep"><div class="ric">${ICON[a.type]||'•'}</div><div style="min-width:0"><div class="nm" style="font-weight:500">${a.summary}</div><div class="meta">${a.empCode||'system'} · ${new Date(a.ts).toLocaleString(lang())}</div></div><span class="chip" style="margin-left:auto;font-size:11px">${a.type}</span></div>`).join('');
+}
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+let currentView = 'dashboard';
+const routes = { dashboard: renderDashboard, workforce: renderWorkforce, operations: renderOperations, integrations: renderIntegrations, reports: renderReports, documents: renderDocuments, approvals: renderApprovals, audit: renderAudit };
+function navigate(v){
+  if(!routes[v]) v = 'dashboard';
+  currentView = v;
+  clearTimers();
+  document.querySelectorAll('.side .nav-i[data-view]').forEach(n => n.classList.toggle('active', n.dataset.view === v));
+  view.scrollTop = 0; view.innerHTML = '';
+  routes[v]();
+  gsap.from(view.children, { opacity:0, y:16, duration:.4, stagger:.04, ease:'power2.out' });
+}
+document.querySelectorAll('.side .nav-i[data-view]').forEach(n => n.addEventListener('click', e => { e.preventDefault(); location.hash = n.dataset.view; }));
+window.addEventListener('hashchange', () => navigate(location.hash.replace('#','')));
+
+/* ============================================================
+   VIEW: DASHBOARD
+   ============================================================ */
+let dashLastTs = 0, dashUsingApi = false;
+function addActivity(emp, what, tag, age, prepend=true){
+  const actEl = view.querySelector('#activity'); if(!actEl) return;
+  const [i,name] = EMP[emp] || [emp,emp];
+  const exec = (tag==='exec'||tag==='executed');
+  const node = document.createElement('div'); node.className='act';
+  node.innerHTML = `<a class="av" href="employee.html?id=${emp}">${i}</a><div class="txt"><a class="who" style="color:inherit" href="employee.html?id=${emp}">${name}</a> <span class="what">${what}</span></div><span class="tag ${exec?'exec':''}">${exec?'Executed':'Command'}</span><span class="time">${age}</span>`;
+  if(prepend){ actEl.insertBefore(node, actEl.firstChild); gsap.from(node,{opacity:0,y:-12,duration:.4}); } else actEl.appendChild(node);
+  while(actEl.children.length>16) actEl.lastElementChild.remove();
+}
+function renderDashboard(){
+  view.innerHTML = `
+    <div class="dash">
+      <div>
+        <div class="metrics-row">
+          <div class="metric glass"><div class="v" id="mActions">0</div><div class="k">Actions executed today</div><div class="d up">↑ 24% vs yesterday</div></div>
+          <div class="metric glass"><div class="v" id="mTime">0h</div><div class="k">Time saved today</div><div class="d up">↑ across workforce</div></div>
+          <div class="metric glass"><div class="v" id="mPerf">0%</div><div class="k">Workforce performance</div><div class="d up">↑ 1.2 pts</div></div>
+          <div class="metric glass"><div class="v">€1.24M</div><div class="k">Revenue forecast</div><div class="d up">↑ 8.1% MoM</div></div>
+        </div>
+        <div class="feed-title"><h3>Live Activity</h3><span class="live-tag" id="liveTag"><span class="status-dot live"></span> Streaming · workforce online</span></div>
+        <div class="activity" id="activity"></div>
+      </div>
+      <div class="intel" id="intel">
+        <h4 data-i18n="roi.cardt">Live ROI</h4>
+        <div class="ibox" id="roiBox"><div class="top"><span class="lbl" data-i18n="roi.annual">Projected annual savings</span><span class="pill good" id="roiPct">—</span></div><div class="big" style="color:var(--success)" id="roiAnnual">€—</div></div>
+        <h4>Executive Intelligence</h4>
+        <div class="ibox"><div class="top"><span class="lbl">Revenue Forecast</span><span class="pill good">On track</span></div><div class="big" style="color:var(--success)">€1.24M</div></div>
+        <div class="ibox"><div class="top"><span class="lbl">Operational Bottleneck</span><span class="pill warn">Attention</span></div><div class="big" style="font-size:15px">Invoice approvals delayed 2.3 days avg</div></div>
+        <div class="ibox"><div class="top"><span class="lbl">Customer Risk Alerts</span><span class="pill bad">3 accounts</span></div><div class="big" style="font-size:15px">€84k ARR flagged at risk</div></div>
+        <h4>Workforce Performance</h4>
+        <div class="ibox" id="perfBox"></div>
+        <h4>AI Recommendations</h4>
+        <div id="recBox"></div>
+      </div>
+    </div>`;
+  // counters
+  countTo('#mActions', 318, ''); $('#mTime').textContent='27.6h'; countTo('#mPerf', 98, '%');
+  // perf + recs (API or fallback)
+  (async () => {
+    const intel = await NEXA.intelligence();
+    const perf = view.querySelector('#perfBox'), rec = view.querySelector('#recBox');
+    const wfData = (await NEXA.workforce());
+    const wf = (wfData && wfData.workforce) ? wfData.workforce : WF_FALLBACK;
+    perf.innerHTML = wf.slice(0,5).map(e => `<div class="top" style="margin-top:8px"><span class="lbl">${e.name.replace('AI ','')}</span><span style="font-weight:700">${e.performance}%</span></div><div class="perfbar"><i style="width:${e.performance}%"></i></div>`).join('');
+    const recs = (intel && intel.recommendations) || ['14 trial accounts show buying signals — deploy Sales Manager outreach.','Auto-send payment reminders for 6 overdue invoices (€31k).','Route tier-1 tickets fully to Support Agent — frees 9h/week.'];
+    rec.innerHTML = recs.map(r => `<div class="rec"><span class="ai">AI</span><div class="body">${r}</div></div>`).join('');
+    window.__wf = wf;
+    try { const roi = await ENG.roi(); const p=view.querySelector('#roiPct'), a=view.querySelector('#roiAnnual');
+      if(p) p.textContent = roi.roiPct + '% ROI'; if(a) a.textContent = '€' + (roi.annualSavings||0).toLocaleString('en-US'); } catch(e){}
+  })();
+  if(window.I18N) I18N.apply(view);
+  bootFeed();
+}
+function countTo(sel, val, suf){ const el=view.querySelector(sel); if(!el) return; gsap.to({v:0},{v:val,duration:1.3,ease:'power2.out',onUpdate(){el.textContent=Math.round(this.targets()[0].v)+suf;}}); }
+
+const FEED_LOCAL = [
+  ['OM','processed 17 emails and updated 9 CRM records'],['SM','followed up 24 leads · 6 replied'],['FM','reconciled 12 invoices · €48k cleared'],
+  ['SA','resolved 18 tickets · CSAT 4.8'],['RA','reviewed 42 applications · shortlisted 7'],['SM','generated and sent 3 proposals'],
+  ['OM','scheduled 5 meetings for next week'],['FM','sent payment reminders for 6 overdue invoices'],['SA','escalated 2 tickets to human review'],['RA','scheduled 4 interview slots'],
+];
+function timeAgo(ts){ const d=Math.round((Date.now()-ts)/60000); return d<=0?'just now':d+'m ago'; }
+async function bootFeed(){
+  const data = await NEXA.activity();
+  if(data && data.activity){
+    dashUsingApi = true;
+    data.activity.slice(0,9).reverse().forEach(a => addActivity(a.empCode, a.summary, a.tag, timeAgo(a.ts), true));
+    dashLastTs = data.activity.length ? data.activity[0].ts : Date.now();
+    const tag = view.querySelector('#liveTag'); if(tag) tag.innerHTML='<span class="status-dot live"></span> Live API · workforce executing';
+    every(async () => {
+      const d = await NEXA.activity(dashLastTs);
+      if(d && d.latest && d.latest.length){ d.latest.reverse().forEach(a => addActivity(a.empCode,a.summary,a.tag,'just now',true)); dashLastTs = d.latest[d.latest.length-1].ts; }
+    }, 4000);
+  } else {
+    FEED_LOCAL.slice(0,8).forEach((f,i)=>addActivity(f[0],f[1],'exec',(i*3+1)+'m ago',false));
+    let fi=8; every(()=>{ const f=FEED_LOCAL[fi%FEED_LOCAL.length]; fi++; addActivity(f[0],f[1],'exec','just now'); }, 4200);
+  }
+}
+
+/* ============================================================
+   VIEW: WORKFORCE
+   ============================================================ */
+async function renderWorkforce(){
+  const data = await NEXA.workforce();
+  const wf = (data && data.workforce) ? data.workforce : WF_FALLBACK;
+  window.__wf = wf;
+  view.innerHTML = `
+    <div class="view-head"><div><h2>Workforce</h2><p>${wf.length} AI employees deployed · operating 24/7</p></div>
+      <a href="marketplace.html" class="btn btn-warm">＋ Hire AI employee</a></div>
+    <div class="cards g3" id="wfCards"></div>`;
+  const grid = view.querySelector('#wfCards');
+  grid.innerHTML = wf.map(e => `
+    <div class="wf-card glass">
+      <div class="top"><div class="av" style="padding:0;overflow:hidden">${window.aiAvatar?aiAvatar(e.id,46):(window.aiInitial?aiInitial(e.id):e.code)}</div><div><div class="nm">${e.person||e.name}</div><div class="dp">${e.dept}</div></div>
+        <span style="margin-left:auto" class="status-dot ${e.status==='busy'?'busy':e.status==='idle'?'idle':'live'}"></span></div>
+      <div class="grid2">
+        <div class="m"><div class="v">${e.tasksToday}</div><div class="k">Tasks today</div></div>
+        <div class="m"><div class="v">${(e.timeSavedToday||0).toFixed(1)}h</div><div class="k">Time saved</div></div>
+      </div>
+      <div class="top" style="font-size:12px;color:var(--text-2)"><span>Performance</span><span style="margin-left:auto;font-weight:700;color:var(--text)">${e.performance}%</span></div>
+      <div class="perfbar"><i style="width:${e.performance}%"></i></div>
+      <div class="foot" style="margin-top:14px"><span class="chip" style="font-size:12px"><span class="status-dot ${e.status==='busy'?'busy':'live'}"></span> ${e.status}</span><a href="employee.html?id=${e.id}">Open profile →</a></div>
+    </div>`).join('');
+  $('#wfBadge').textContent = wf.length;
+}
+
+/* ============================================================
+   VIEW: OPERATIONS  (live board: Queued → Executing → Done)
+   ============================================================ */
+const OPS_SEED = [
+  ['OM','Compile Q2 operations summary'],['SM','Re-engage 38 inactive leads'],['FM','Reconcile June bank statement'],
+  ['SA','Resolve ticket queue (tier 1)'],['RA','Screen 14 new applications'],['SM','Prepare Northwind proposal'],
+  ['FM','Chase 6 overdue invoices'],['OM','Sync CRM with inbox threads'],['SA','Update KB: password reset'],['RA','Coordinate 3 interview panels'],
+];
+function renderOperations(){
+  view.innerHTML = `
+    <div class="view-head"><div><h2>Operations</h2><p>Live execution pipeline across the workforce</p></div></div>
+    <div class="ops-stats">
+      <div class="ops-stat glass"><div class="v" style="color:var(--sunset)" id="opThru">0</div><div class="k">Tasks / hour</div></div>
+      <div class="ops-stat glass"><div class="v">1.4m</div><div class="k">Avg handle time</div></div>
+      <div class="ops-stat glass"><div class="v" style="color:var(--success)">99.2%</div><div class="k">SLA met</div></div>
+      <div class="ops-stat glass"><div class="v" id="opDone">0</div><div class="k">Completed today</div></div>
+    </div>
+    <div class="board">
+      <div class="col glass"><h4>◷ Queued <span class="ct" id="cQ">0</span></h4><div id="colQ"></div></div>
+      <div class="col glass"><h4><span class="status-dot busy"></span> Executing <span class="ct" id="cE">0</span></h4><div id="colE"></div></div>
+      <div class="col glass"><h4><span class="status-dot live"></span> Completed <span class="ct" id="cD">0</span></h4><div id="colD"></div></div>
+    </div>`;
+  countTo('#opThru', 42, '');
+  let doneCount = 0; const elDone=view.querySelector('#opDone'); elDone.textContent='128';
+  const colQ=view.querySelector('#colQ'), colE=view.querySelector('#colE'), colD=view.querySelector('#colD');
+  const recount=()=>{ view.querySelector('#cQ').textContent=colQ.children.length; view.querySelector('#cE').textContent=colE.children.length; view.querySelector('#cD').textContent=colD.children.length; };
+  function card(emp, txt, cls){ const d=document.createElement('div'); d.className='task '+(cls||''); d.innerHTML=`<div class="who"><span class="status-dot ${cls==='done'?'live':cls==='exec'?'busy':'idle'}"></span>${(EMP[emp]||[emp,emp])[1]}</div>${txt}`; return d; }
+  // seed columns
+  OPS_SEED.slice(0,4).forEach(t => colQ.appendChild(card(t[0],t[1])));
+  OPS_SEED.slice(4,6).forEach(t => colE.appendChild(card(t[0],t[1],'exec')));
+  OPS_SEED.slice(6,9).forEach(t => colD.appendChild(card(t[0],t[1],'done')));
+  recount();
+  let idx = 0;
+  // flow: pull a queued task -> executing -> done
+  every(() => {
+    // move oldest executing to done
+    if(colE.firstChild){ const n=colE.firstChild; n.className='task done'; n.querySelector('.status-dot').className='status-dot live'; colD.insertBefore(n, colD.firstChild); doneCount++; elDone.textContent=128+doneCount; while(colD.children.length>5) colD.lastChild.remove(); }
+    // move a queued to executing
+    if(colQ.firstChild){ const n=colQ.firstChild; n.className='task exec'; n.querySelector('.status-dot').className='status-dot busy'; colE.appendChild(n); }
+    // add a fresh queued
+    const t = OPS_SEED[idx % OPS_SEED.length]; idx++; const fresh=card(t[0], t[1]); fresh.style.opacity=0; colQ.appendChild(fresh); gsap.to(fresh,{opacity:1,duration:.4});
+    recount();
+  }, 2600);
+}
+
+/* ============================================================
+   VIEW: INTEGRATIONS
+   ============================================================ */
+const INTEGRATIONS = [
+  ['Gmail','Email',true],['Outlook','Email',false],['Slack','Chat',true],['Microsoft Teams','Chat',false],
+  ['HubSpot','CRM',true],['Salesforce','CRM',false],['Notion','Docs',true],['Asana','Tasks',false],['Monday','Tasks',false],
+  ['Exact','Accounting',false],['AFAS','ERP',false],['SAP','ERP',false],['Dynamics','ERP',false],
+  ['Google Calendar','Calendar',true],['Microsoft 365','Suite',false],
+];
+function intState(){ try{ return JSON.parse(localStorage.getItem('nexa_int'))||{}; }catch(e){ return {}; } }
+function intSave(s){ try{ localStorage.setItem('nexa_int', JSON.stringify(s)); }catch(e){} }
+function renderIntegrations(){
+  const saved = intState();
+  INTEGRATIONS.forEach(i => { if(saved[i[0]]!==undefined) i[2]=saved[i[0]]; });
+  const byCat = {};
+  INTEGRATIONS.forEach(i => { (byCat[i[1]] = byCat[i[1]] || []).push(i); });
+  const connected = INTEGRATIONS.filter(i=>i[2]).length;
+  view.innerHTML = `
+    <div class="view-head"><div><h2>Integrations</h2><p>One workforce, every system · NEXA sits above your stack</p></div>
+      <span class="chip"><span class="status-dot live"></span> ${connected} connected</span></div>
+    <div id="intWrap"></div>`;
+  const wrap = view.querySelector('#intWrap');
+  Object.keys(byCat).forEach(cat => {
+    const row = document.createElement('div'); row.className='cat-row';
+    row.innerHTML = `<div class="cat-label">${cat}</div><div class="cards g3"></div>`;
+    const grid = row.querySelector('.cards');
+    byCat[cat].forEach(([name,,on]) => {
+      const c = document.createElement('div'); c.className='int-card glass';
+      c.innerHTML = `<div class="lg logo-tile">${window.brandLogo?brandLogo(name):name[0]}</div><div><div class="nm">${name}</div><div class="st ${on?'on':'off'}">${on?'● Connected':'Not connected'}</div></div>
+        <button class="int-toggle ${on?'on':''}">${on?'Connected':'Connect'}</button>`;
+      const btn = c.querySelector('.int-toggle'), st = c.querySelector('.st');
+      let state = on;
+      btn.onclick = () => {
+        state = !state;
+        btn.classList.toggle('on', state); btn.textContent = state?'Connected':'Connect';
+        st.className = 'st '+(state?'on':'off'); st.textContent = state?'● Connected':'Not connected';
+        const item = INTEGRATIONS.find(i=>i[0]===name); if(item) item[2]=state;
+        const s = intState(); s[name]=state; intSave(s);
+        toast(`<b>${name}</b> ${state?'connected to your workforce.':'disconnected.'}`);
+        const n = view.querySelectorAll('.int-toggle.on').length; const chip = view.querySelector('.chip'); if(chip) chip.innerHTML = `<span class="status-dot live"></span> ${n} connected`;
+      };
+      grid.appendChild(c);
+    });
+    wrap.appendChild(row);
+  });
+}
+
+/* ============================================================
+   VIEW: REPORTS  (SVG charts + generate)
+   ============================================================ */
+function barChart(data, color){
+  const w=300,h=120,max=Math.max(...data),bw=w/data.length;
+  const bars=data.map((v,i)=>{const bh=(v/max)*(h-20);return `<rect x="${i*bw+6}" y="${h-bh}" width="${bw-12}" height="${bh}" rx="4" fill="${color}" opacity="${0.5+0.5*v/max}"/>`;}).join('');
+  const labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].slice(0,data.length).map((l,i)=>`<text x="${i*bw+bw/2}" y="${h-2}" fill="#6B6B73" font-size="9" text-anchor="middle">${l}</text>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${bars}${labels}</svg>`;
+}
+function lineChart(data, color){
+  const w=300,h=120,max=Math.max(...data),min=Math.min(...data);
+  const pts=data.map((v,i)=>[i*(w/(data.length-1)),h-18-((v-min)/(max-min||1))*(h-30)]);
+  const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=path+` L ${w} ${h-18} L 0 ${h-18} Z`;
+  const dots=pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5" fill="${color}"/>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%"><defs><linearGradient id="lg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="0.35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#lg)"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2"/>${dots}</svg>`;
+}
+const REPORTS = [
+  ['◷','Weekly Operational Report','Operations · auto-generated Mondays'],
+  ['€','Finance & Cashflow Summary','Finance · invoices, reminders, forecast'],
+  ['⇄','Sales Pipeline Report','Sales · stages, conversion, forecast'],
+  ['☎','Support & CSAT Report','Support · volume, resolution, satisfaction'],
+  ['⚏','Recruiting Funnel Report','Recruiting · applicants, screening, interviews'],
+];
+function renderReports(){
+  view.innerHTML = `
+    <div class="view-head"><div><h2>Reports</h2><p>Workforce-generated intelligence, on demand</p></div></div>
+    <div class="rep-grid">
+      <div class="chart-card glass"><h4>Actions executed</h4><div class="sub">This week · ${[42,58,49,71,63,38,55].reduce((a,b)=>a+b)} total</div>${barChart([42,58,49,71,63,38,55],'#7C3AED')}</div>
+      <div class="chart-card glass"><h4>Hours saved</h4><div class="sub">Trending up · 7-day</div>${lineChart([18,22,20,27,25,29,31],'#FF7A50')}</div>
+    </div>
+    <div class="cards" style="grid-template-columns:1fr 320px;gap:16px;align-items:start">
+      <div class="rep-list" id="repList"></div>
+      <div class="glass" style="padding:18px"><h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px">Recently generated</h4><div class="recent-list" id="recent"><div class="r" style="color:var(--text-3)">No reports generated yet.</div></div></div>
+    </div>`;
+  const list = view.querySelector('#repList');
+  list.innerHTML = REPORTS.map((r,i)=>`<div class="rep"><div class="ric">${r[0]}</div><div><div class="nm">${r[1]}</div><div class="meta">${r[2]}</div></div><button class="gen" data-i="${i}">Generate</button></div>`).join('');
+  const recent = view.querySelector('#recent');
+  list.querySelectorAll('.gen').forEach(b => b.onclick = () => {
+    const r = REPORTS[b.dataset.i]; b.textContent='Generating…'; b.disabled=true;
+    later(() => {
+      b.textContent='Generate'; b.disabled=false;
+      if(recent.querySelector('.r')?.style.color) recent.innerHTML='';
+      const row=document.createElement('div'); row.className='r';
+      row.innerHTML=`<span class="status-dot live"></span> ${r[1]} · just now`; recent.insertBefore(row, recent.firstChild);
+      gsap.from(row,{opacity:0,x:12,duration:.4});
+      toast(`<b>${r[1]}</b> generated and shared.`);
+    }, 1100);
+  });
+}
+
+/* ============================================================
+   VIEW: DOCUMENTS  (Ava — generates real Excel / Word / PowerPoint)
+   ============================================================ */
+function downloadBlob(blob, filename){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function genDocument(type){
+  const date=new Date().toISOString().slice(0,10);
+  try {
+    if(type==='xlsx' && window.XLSX){
+      const wb=XLSX.utils.book_new();
+      const rows=[
+        ['NEXA — Financial Model','','',''],
+        ['Month','Revenue (€)','Costs (€)','Cashflow (€)'],
+        ['Jan',124000,68000,{t:'n',f:'B3-C3'}],
+        ['Feb',138000,71000,{t:'n',f:'B4-C4'}],
+        ['Mar',151000,74000,{t:'n',f:'B5-C5'}],
+        ['Q1 Total',{t:'n',f:'SUM(B3:B5)'},{t:'n',f:'SUM(C3:C5)'},{t:'n',f:'SUM(D3:D5)'}],
+      ];
+      const ws=XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols']=[{wch:14},{wch:14},{wch:14},{wch:14}];
+      XLSX.utils.book_append_sheet(wb,ws,'Financial Model');
+      const fname='NEXA-Financial-Model-'+date+'.xlsx';
+      XLSX.writeFile(wb,fname); return fname;
+    }
+    if(type==='docx'){
+      const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>NEXA Operations Report</title></head><body style="font-family:Calibri,Arial,sans-serif;color:#111">
+        <h1 style="color:#2563EB">NEXA — Operations Report</h1>
+        <p><b>Generated:</b> ${date} · by Ava, AI Document Specialist</p>
+        <h2>Executive summary</h2>
+        <p>The autonomous workforce executed <b>318 actions</b> today, saving an estimated <b>27.6 hours</b> of manual work at a workforce performance of <b>98%</b>.</p>
+        <h2>Highlights</h2>
+        <ul>
+          <li>Emma cleared the shared inbox and updated 9 CRM records.</li>
+          <li>Sophie reconciled 12 invoices — €48k cleared, 6 reminders sent.</li>
+          <li>Noah resolved 18 support tickets at a 4.8 CSAT.</li>
+          <li>Liam followed up 24 leads and sent 3 tailored proposals.</li>
+        </ul>
+        <h2>Revenue forecast</h2>
+        <p>Q2 revenue forecast remains on track at <b>€1.24M</b> (+8.1% MoM).</p>
+        <p style="color:#6B6B73;font-size:11px">© 2026 NEXA · Generated automatically</p>
+      </body></html>`;
+      const fname='NEXA-Business-Report-'+date+'.doc';
+      downloadBlob(new Blob(['﻿'+html],{type:'application/msword'}),fname); return fname;
+    }
+    if(type==='pptx' && window.PptxGenJS){
+      const p=new PptxGenJS(); p.layout='LAYOUT_WIDE';
+      const BLUE='2563EB', INK='0A0A0A';
+      let s=p.addSlide(); s.background={color:'F4F7FB'};
+      s.addText('NEXA',{x:0.6,y:2.2,fontSize:54,bold:true,color:BLUE});
+      s.addText('Your first digital workforce',{x:0.6,y:3.2,fontSize:22,color:INK});
+      s.addText('Generated automatically by Ava · '+date,{x:0.6,y:4.0,fontSize:12,color:'6B6B73'});
+      s=p.addSlide(); s.addText('The problem',{x:0.6,y:0.5,fontSize:30,bold:true,color:INK});
+      s.addText([{text:'Teams lose thousands of hours/year to repetitive work',options:{bullet:true}},{text:'Hiring does not scale with operational load',options:{bullet:true}},{text:'Manual processes break as companies grow',options:{bullet:true}}],{x:0.8,y:1.6,w:8,fontSize:18,color:INK,lineSpacingMultiple:1.4});
+      s=p.addSlide(); s.addText('The solution',{x:0.6,y:0.5,fontSize:30,bold:true,color:INK});
+      s.addText([{text:'Autonomous AI employees that execute real work',options:{bullet:true}},{text:'Operating 24/7 inside your existing tools',options:{bullet:true}},{text:'Supervised by you, run by them',options:{bullet:true}}],{x:0.8,y:1.6,w:8,fontSize:18,color:INK,lineSpacingMultiple:1.4});
+      s=p.addSlide(); s.addText('Traction',{x:0.6,y:0.5,fontSize:30,bold:true,color:INK});
+      s.addText('318 actions / day   ·   27.6h saved / day   ·   98% performance',{x:0.6,y:2.4,fontSize:20,bold:true,color:BLUE});
+      s=p.addSlide(); s.background={color:'0A0A0A'};
+      s.addText('Hire your first AI employee today.',{x:0.6,y:2.6,fontSize:30,bold:true,color:'FFFFFF'});
+      s.addText('From €499/month · nexa.ai',{x:0.6,y:3.6,fontSize:16,color:'B8C0CC'});
+      const fname='NEXA-Pitch-Deck-'+date+'.pptx';
+      p.writeFile({fileName:fname}); return fname;
+    }
+  } catch(e){ console.warn('doc gen failed, falling back to text', e); }
+  const fname='NEXA-'+type+'-'+date+'.txt';
+  downloadBlob(new Blob(['NEXA generated document ('+type+') — '+date],{type:'text/plain'}),fname); return fname;
+}
+function renderDocuments(){
+  view.innerHTML = `
+    <div class="view-head"><div><h2 data-i18n="doc.title">Documents</h2><p data-i18n="doc.sub">Ava generates Excel, Word and PowerPoint — fully automated.</p></div>
+      <span class="chip"><span class="status-dot live"></span> Ava</span></div>
+    <div class="cards" style="grid-template-columns:1fr 320px;gap:16px;align-items:start">
+      <div>
+        <div class="rep-list" id="docList"></div>
+        <div class="glass" style="padding:18px;margin-top:16px"><h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px" data-i18n="doc.schedules">Scheduled documents</h4><div id="schedList"></div></div>
+      </div>
+      <div class="glass" style="padding:18px"><h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px" data-i18n="doc.recent">Recently generated</h4><div class="recent-list" id="docRecent"><div class="r" style="color:var(--text-3)" data-i18n="doc.norecent">No documents generated yet.</div></div></div>
+    </div>`;
+  const DOCS=[
+    ['⊞','xlsx','doc.xlsx.t','doc.xlsx.s'],
+    ['¶','docx','doc.docx.t','doc.docx.s'],
+    ['▦','pptx','doc.pptx.t','doc.pptx.s'],
+  ];
+  const list=view.querySelector('#docList');
+  list.innerHTML=DOCS.map(d=>`<div class="rep"><div class="ric">${d[0]}</div><div><div class="nm" data-i18n="${d[2]}"></div><div class="meta" data-i18n="${d[3]}"></div></div><button class="gen" data-type="${d[1]}" data-i18n="doc.generate">Generate</button></div>`).join('');
+  if(window.I18N) I18N.apply(view);
+  const recent=view.querySelector('#docRecent');
+  function logRecent(fn){
+    const placeholder=recent.querySelector('.r[data-i18n]'); if(placeholder) recent.innerHTML='';
+    const row=document.createElement('div'); row.className='r';
+    row.innerHTML=`<span class="status-dot live"></span> ${fn}`; recent.insertBefore(row,recent.firstChild);
+    gsap.from(row,{opacity:0,x:12,duration:.4});
+    toast(`<b>${fn}</b> ${t('doc.ready')}`);
+  }
+  list.querySelectorAll('.gen').forEach(b=>b.onclick=()=>{
+    const ty=b.dataset.type; b.textContent=t('doc.generating'); b.disabled=true;
+    later(()=>{ const fn=genDocument(ty); b.textContent=t('doc.generate'); b.disabled=false; logRecent(fn); }, 900);
+  });
+  // schedules
+  (async ()=>{
+    const sl=view.querySelector('#schedList');
+    let schedules=[];
+    if(NEXA.online){ const r=await NEXA.schedules(); schedules=(r&&r.schedules)||[]; }
+    if(!schedules.length) schedules=[
+      {id:'sch_1',title:'Weekly operations report',docType:'docx',cadence:'Weekly · Mon 08:00',lastRun:null},
+      {id:'sch_2',title:'Monthly financial model',docType:'xlsx',cadence:'Monthly · 1st 07:00',lastRun:null},
+    ];
+    sl.innerHTML=schedules.map(s=>`<div class="rep" data-id="${s.id}" data-dt="${s.docType}" style="margin-bottom:10px"><div class="ric">◷</div><div style="min-width:0"><div class="nm">${s.title}</div><div class="meta">${s.cadence} · ${t('doc.lastrun')}: ${s.lastRun?new Date(s.lastRun).toLocaleDateString(lang()):t('doc.never')}</div></div><button class="gen sch-run" style="margin-left:auto" data-i18n="doc.run">Run now</button></div>`).join('');
+    if(window.I18N) I18N.apply(sl);
+    sl.querySelectorAll('.sch-run').forEach(b=>b.onclick=async()=>{
+      const card=b.closest('[data-id]'); const id=card.dataset.id, dt=card.dataset.dt;
+      b.textContent=t('doc.generating'); b.disabled=true;
+      if(NEXA.online){ try{ await NEXA.runSchedule(id); }catch(e){} }
+      later(()=>{ const fn=genDocument(dt); b.textContent=t('doc.run'); b.disabled=false; logRecent(fn);
+        const meta=card.querySelector('.meta'); if(meta) meta.textContent=meta.textContent.replace(/:.*$/, ': '+new Date().toLocaleDateString(lang())); }, 700);
+    });
+  })();
+}
+
+window.runCommand = runCommand;
+window.addEventListener('nexa:lang', () => navigate(currentView));
+/* ---------- boot ---------- */
+navigate(location.hash.replace('#','') || 'dashboard');
+updateApBadge();
+</script>
+<script src="assets/js/voice.js"></script>
+</body>
+</html>

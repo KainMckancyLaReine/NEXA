@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://nexa.ai/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nexa.ai/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://nexa.ai/?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://nexa.ai/?lang=nl"/>
+  </url>
+  <url><loc>https://nexa.ai/platform.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nexa.ai/workforce.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nexa.ai/integrations.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nexa.ai/pricing.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nexa.ai/marketplace.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nexa.ai/onboarding.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+</urlset>
