@@ -25,7 +25,10 @@ body { height: 100vh; overflow: hidden; }
 .nav-i { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 11px; color: var(--text-2); font-size: 14px; cursor: pointer; transition: .18s; font-weight: 500; text-decoration: none; }
 .nav-i:hover { background: rgba(15,23,42,0.04); color: var(--text); }
 .nav-i.active { background: linear-gradient(100deg, rgba(59,130,246,0.2), rgba(37,99,235,0.06)); color: var(--accent-2); box-shadow: inset 0 0 0 1px rgba(59,130,246,0.25); }
-.nav-i .ic { width: 18px; text-align: center; flex: none; font-size: 15px; }
+.nav-i .ic { width: 18px; height: 18px; flex: none; display: grid; place-items: center; color: var(--text-3); transition: color .18s; }
+.nav-i .ic svg { width: 18px; height: 18px; display: block; }
+.nav-i:hover .ic { color: var(--text); }
+.nav-i.active .ic { color: var(--accent-2); }
 .nav-i .badge { margin-left: auto; font-size: 11px; background: var(--accent); color:#fff; padding: 1px 7px; border-radius: 999px; }
 .side .user { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
 .side .user .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--sunset)); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
@@ -196,17 +199,17 @@ body { height: 100vh; overflow: hidden; }
   <!-- SIDEBAR -->
   <aside class="side">
     <a class="brand" href="index.html"><span class="logo"></span> <span>NEXA</span></a>
-    <a class="nav-i active" data-view="dashboard" href="#dashboard"><span class="ic">◎</span><span data-i18n="cc.dashboard">Command Center</span></a>
-    <a class="nav-i" data-view="workforce" href="#workforce"><span class="ic">⚏</span><span data-i18n="cc.workforce">Workforce</span><span class="badge" id="wfBadge">5</span></a>
-    <a class="nav-i" data-view="operations" href="#operations"><span class="ic">⇄</span><span data-i18n="cc.operations">Operations</span></a>
-    <a class="nav-i" data-view="approvals" href="#approvals"><span class="ic">✔</span><span data-i18n="cc.approvals">Approvals</span><span class="badge" id="apBadge" style="display:none">0</span></a>
-    <a class="nav-i" data-view="audit" href="#audit"><span class="ic">❑</span><span data-i18n="cc.audit">Audit log</span></a>
+    <a class="nav-i active" data-view="dashboard" href="#dashboard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="cc.dashboard">Command Center</span></a>
+    <a class="nav-i" data-view="workforce" href="#workforce"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span data-i18n="cc.workforce">Workforce</span><span class="badge" id="wfBadge">5</span></a>
+    <a class="nav-i" data-view="operations" href="#operations"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span data-i18n="cc.operations">Operations</span></a>
+    <a class="nav-i" data-view="approvals" href="#approvals"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><span data-i18n="cc.approvals">Approvals</span><span class="badge" id="apBadge" style="display:none">0</span></a>
+    <a class="nav-i" data-view="audit" href="#audit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span><span data-i18n="cc.audit">Audit log</span></a>
     <div class="grp-label">Configure</div>
-    <a class="nav-i" data-view="integrations" href="#integrations"><span class="ic">⊞</span><span data-i18n="cc.integrations">Integrations</span></a>
-    <a class="nav-i" data-view="reports" href="#reports"><span class="ic">◷</span><span data-i18n="cc.reports">Reports</span></a>
-    <a class="nav-i" data-view="documents" href="#documents"><span class="ic">▤</span><span data-i18n="cc.documents">Documents</span></a>
-    <a class="nav-i" href="marketplace.html"><span class="ic">⊕</span><span data-i18n="cc.marketplace">Marketplace</span></a>
-    <div class="user"><span class="av">K</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Kain</div><div style="font-size:11px;color:var(--text-3)">Admin · Acme Inc.</div></div><a class="logout" href="signin.html" title="Sign out" onclick="try{localStorage.removeItem('nexa_user');}catch(e){}">⏻</a></div>
+    <a class="nav-i" data-view="integrations" href="#integrations"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span data-i18n="cc.integrations">Integrations</span></a>
+    <a class="nav-i" data-view="reports" href="#reports"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="20" x2="21" y2="20"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="9"/><line x1="18" y1="20" x2="18" y2="5"/></svg></span><span data-i18n="cc.reports">Reports</span></a>
+    <a class="nav-i" data-view="documents" href="#documents"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></span><span data-i18n="cc.documents">Documents</span></a>
+    <a class="nav-i" href="marketplace.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span data-i18n="cc.marketplace">Marketplace</span></a>
+    <div class="user"><span class="av">K</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Kain</div><div style="font-size:11px;color:var(--text-3)">Admin · Acme Inc.</div></div><a class="logout" href="signin.html" title="Sign out" onclick="try{localStorage.removeItem('nexa_user');localStorage.removeItem('nexa_token');}catch(e){}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a></div>
   </aside>
 
   <!-- CENTER -->

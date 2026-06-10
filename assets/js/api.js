@@ -18,7 +18,7 @@ window.NEXA = (function () {
         headers: { 'Content-Type': 'application/json' },
         body: opts.body ? JSON.stringify(opts.body) : undefined,
       });
-      if (!res.ok) return null;
+      if (!res.ok) { online = false; return null; }
       online = true;
       return await res.json();
     } catch {
@@ -29,6 +29,7 @@ window.NEXA = (function () {
 
   return {
     get online() { return online; },
+    login: (user, pass) => call('/api/login', { method: 'POST', body: { user, pass } }),
     state: () => call('/api/state'),
     workforce: () => call('/api/workforce'),
     employee: (id) => call('/api/employee/' + id),

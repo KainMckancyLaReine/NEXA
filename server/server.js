@@ -50,6 +50,16 @@ const server = http.createServer(async (req, res) => {
   if (p.startsWith('/api/')) {
     const db = store.load();
 
+    /* ---------- auth ---------- */
+    if (p === '/api/login' && req.method === 'POST') {
+      const { user, pass } = await readBody(req);
+      const admin = (db.company && db.company.admin) || { user: 'kain', pass: 'Kain25', name: 'Kain' };
+      const ok = user && pass && String(user).trim().toLowerCase() === String(admin.user).toLowerCase() && pass === admin.pass;
+      if (!ok) return json(res, 401, { ok: false, error: 'invalid_credentials' });
+      const token = Buffer.from(`${admin.user}:${Date.now()}:${Math.random().toString(36).slice(2)}`).toString('base64');
+      return json(res, 200, { ok: true, user: admin.name || 'Kain', company: db.company.name, token });
+    }
+
     if (p === '/api/state' && req.method === 'GET')
       return json(res, 200, { company: db.company, connectors: db.connectors, workforce: db.workforce });
 

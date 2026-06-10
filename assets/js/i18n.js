@@ -1,4 +1,32 @@
 /* ============================================================
+   GSAP fallback shim — loaded on every page AFTER the GSAP CDN tag.
+   If GSAP is blocked/offline, pages that use it (dashboard, employee,
+   marketplace, onboarding) still render fully (values, cards and views
+   appear instantly, just without the animation) instead of crashing.
+   ============================================================ */
+if (!window.gsap) {
+  window.gsap = {
+    to: function (target, cfg) {
+      if (cfg) {
+        if (typeof cfg.v === 'number' && cfg.onUpdate) { target.v = cfg.v; try { cfg.onUpdate.call({ targets: function () { return [target]; } }); } catch (e) {} }
+        if (target && target.style) {
+          if (cfg.opacity !== undefined) target.style.opacity = cfg.opacity;
+          if (cfg.x !== undefined || cfg.y !== undefined) target.style.transform = '';
+          if (cfg.width !== undefined) target.style.width = cfg.width;
+        }
+        if (cfg.onComplete) { try { cfg.onComplete(); } catch (e) {} }
+      }
+      return {};
+    },
+    from: function () { return {}; },
+    fromTo: function () { return {}; },
+    set: function (t, c) { if (t && t.style && c) { if (c.opacity !== undefined) t.style.opacity = c.opacity; } return {}; },
+    timeline: function () { var o = { to: function () { return o; }, from: function () { return o; }, fromTo: function () { return o; }, set: function () { return o; }, add: function () { return o; } }; return o; },
+    registerPlugin: function () {}
+  };
+}
+
+/* ============================================================
    NEXA — i18n (English / Deutsch / Nederlands)
    Hand-written, grammatically correct copy for all three.
    Usage:
@@ -64,6 +92,41 @@
     'who.saas.d':  { en:'Support, onboarding, sales development and internal knowledge — scaled without hiring.', de:'Support, Onboarding, Sales Development und internes Wissen — skalieren ohne Einstellungen.', nl:'Support, onboarding, sales development en interne kennis — opschalen zonder aannemen.' },
     'who.more.t':  { en:'…and your team', de:'…und Ihr Team', nl:'…en jouw team' },
     'who.more.d':  { en:'Any team with repeatable work. Deploy your first AI employee today →', de:'Jedes Team mit wiederkehrender Arbeit. Setze heute deinen ersten KI-Mitarbeiter ein →', nl:'Elk team met herhaalbaar werk. Zet vandaag je eerste AI-medewerker in →' },
+    /* in-action band */
+    'band.title':  { en:'Scale output — not headcount.', de:'Skaliere Output — nicht die Belegschaft.', nl:'Schaal output op — niet je personeel.' },
+    'band.sub':    { en:'NEXA runs the operational engine room around the clock, so your people spend their hours on the work only humans can do.', de:'NEXA betreibt den operativen Maschinenraum rund um die Uhr, damit sich dein Team auf das konzentriert, was nur Menschen können.', nl:'NEXA draait 24/7 de operationele motorkamer, zodat jouw mensen hun uren besteden aan werk dat alleen mensen kunnen.' },
+    'band.s1':     { en:'always on', de:'immer aktiv', nl:'altijd actief' },
+    'band.s2':     { en:'output per head', de:'Output pro Kopf', nl:'output per persoon' },
+    'band.s3':     { en:'admin load', de:'Verwaltungslast', nl:'administratielast' },
+    /* human chips */
+    'human.c1':    { en:'Less busywork', de:'Weniger Kleinkram', nl:'Minder uitzoekwerk' },
+    'human.c2':    { en:'More deep work', de:'Mehr Tiefenarbeit', nl:'Meer focuswerk' },
+    'human.c3':    { en:'Happier teams', de:'Zufriedenere Teams', nl:'Blijere teams' },
+    /* long-term vision */
+    'vis.eyebrow': { en:'Long-term vision', de:'Langfristige Vision', nl:'Langetermijnvisie' },
+    'vis.title':   { en:'The road to the autonomous company.', de:'Der Weg zum autonomen Unternehmen.', nl:'De weg naar het autonome bedrijf.' },
+    'vis.p1e':     { en:'Phase 1', de:'Phase 1', nl:'Fase 1' },
+    'vis.p1t':     { en:'AI Operations Manager', de:'KI-Operations-Manager', nl:'AI Operations Manager' },
+    'vis.p1d':     { en:'The first autonomous employee runs your back office.', de:'Der erste autonome Mitarbeiter führt dein Back-Office.', nl:'De eerste autonome medewerker runt je backoffice.' },
+    'vis.p2e':     { en:'Phase 2', de:'Phase 2', nl:'Fase 2' },
+    'vis.p2t':     { en:'Multi-agent workforce', de:'Multi-Agenten-Belegschaft', nl:'Multi-agent personeel' },
+    'vis.p2d':     { en:'A coordinated team of AI specialists.', de:'Ein koordiniertes Team von KI-Spezialisten.', nl:'Een gecoördineerd team van AI-specialisten.' },
+    'vis.p3e':     { en:'Phase 3', de:'Phase 3', nl:'Fase 3' },
+    'vis.p3t':     { en:'Workforce marketplace', de:'Belegschafts-Marktplatz', nl:'Personeelsmarktplaats' },
+    'vis.p3d':     { en:'Install AI employees like apps.', de:'Installiere KI-Mitarbeiter wie Apps.', nl:'Installeer AI-medewerkers zoals apps.' },
+    'vis.p4e':     { en:'Phase 4', de:'Phase 4', nl:'Fase 4' },
+    'vis.p4t':     { en:'Autonomous company OS', de:'Autonomes Unternehmens-OS', nl:'Autonoom bedrijfs-OS' },
+    'vis.p4d':     { en:'The whole operation runs on NEXA.', de:'Der gesamte Betrieb läuft auf NEXA.', nl:'De hele organisatie draait op NEXA.' },
+    'vis.p5e':     { en:'Phase 5', de:'Phase 5', nl:'Fase 5' },
+    'vis.p5t':     { en:'Digital organizations', de:'Digitale Organisationen', nl:'Digitale organisaties' },
+    'vis.p5d':     { en:'AI handles execution; humans set strategy.', de:'KI übernimmt die Ausführung; Menschen setzen die Strategie.', nl:'AI voert uit; mensen bepalen de strategie.' },
+    /* footer */
+    'foot.tag':       { en:'The operating system for autonomous companies.', de:'Das Betriebssystem für autonome Unternehmen.', nl:'Het besturingssysteem voor autonome bedrijven.' },
+    'foot.company':   { en:'Company', de:'Unternehmen', nl:'Bedrijf' },
+    'foot.resources': { en:'Resources', de:'Ressourcen', nl:'Bronnen' },
+    'foot.docs':      { en:'Documentation', de:'Dokumentation', nl:'Documentatie' },
+    'foot.security':  { en:'Security', de:'Sicherheit', nl:'Beveiliging' },
+    'foot.status':    { en:'Status', de:'Status', nl:'Status' },
 
     // -------- human band --------
     'human.eyebrow':{ en:'Human + AI', de:'Mensch + KI', nl:'Mens + AI' },
@@ -262,9 +325,20 @@
     'si.pass':     { en:'Password', de:'Passwort', nl:'Wachtwoord' },
     'si.remember': { en:'Remember me', de:'Angemeldet bleiben', nl:'Onthoud mij' },
     'si.forgot':   { en:'Forgot password?', de:'Passwort vergessen?', nl:'Wachtwoord vergeten?' },
-    'si.go':       { en:'Sign in →', de:'Anmelden →', nl:'Inloggen →' },
+    'si.go':       { en:'Sign in', de:'Anmelden', nl:'Inloggen' },
     'si.nowork':   { en:'No workspace yet?', de:'Noch kein Workspace?', nl:'Nog geen workspace?' },
     'si.create':   { en:'Create one', de:'Erstelle einen', nl:'Maak er een aan' },
+    'si.back':     { en:'Back to site', de:'Zurück zur Seite', nl:'Terug naar site' },
+    'si.live':     { en:'Workforce online · executing now', de:'Belegschaft online · arbeitet jetzt', nl:'Personeel online · nu actief' },
+    'si.vtitle':   { en:'Welcome back to your digital workforce.', de:'Willkommen zurück bei deiner digitalen Belegschaft.', nl:'Welkom terug bij je digitale personeel.' },
+    'si.vsub':     { en:'Your AI employees kept working while you were away. Sign in to see everything they executed.', de:'Deine KI-Mitarbeiter haben weitergearbeitet, während du weg warst. Melde dich an, um alles zu sehen.', nl:'Je AI-medewerkers werkten door terwijl je weg was. Log in om te zien wat ze hebben gedaan.' },
+    'si.s1':       { en:'actions today', de:'Aktionen heute', nl:'acties vandaag' },
+    'si.s2':       { en:'time saved', de:'Zeit gespart', nl:'tijd bespaard' },
+    'si.s3':       { en:'performance', de:'Leistung', nl:'prestatie' },
+    'si.err':      { en:'Invalid credentials. Use your NEXA admin account.', de:'Ungültige Anmeldedaten. Nutze dein NEXA-Admin-Konto.', nl:'Ongeldige gegevens. Gebruik je NEXA-adminaccount.' },
+    'si.demo':     { en:'Admin demo', de:'Admin-Demo', nl:'Admin-demo' },
+    'si.demouser': { en:'username', de:'Benutzername', nl:'gebruikersnaam' },
+    'si.demopass': { en:'password', de:'Passwort', nl:'wachtwoord' },
 
     // -------- marketplace --------
     'mk.eyebrow':  { en:'Phase 3 · Workforce Marketplace', de:'Phase 3 · Belegschafts-Marktplatz', nl:'Fase 3 · Personeels-marktplaats' },

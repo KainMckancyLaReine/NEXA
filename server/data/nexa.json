@@ -55,10 +55,10 @@
         "Workflow execution"
       ],
       "status": "live",
-      "tasksToday": 119,
-      "timeSavedToday": 7.5,
-      "performance": 98,
-      "installedAt": 1780991832345
+      "tasksToday": 110,
+      "timeSavedToday": 8.1,
+      "performance": 97,
+      "installedAt": 1781049009340
     },
     {
       "id": "SM",
@@ -76,10 +76,10 @@
         "Meeting scheduling"
       ],
       "status": "live",
-      "tasksToday": 39,
-      "timeSavedToday": 6.2,
-      "performance": 97,
-      "installedAt": 1780905432345
+      "tasksToday": 90,
+      "timeSavedToday": 6.3,
+      "performance": 96,
+      "installedAt": 1780962609340
     },
     {
       "id": "FM",
@@ -96,10 +96,10 @@
         "Financial forecasting"
       ],
       "status": "busy",
-      "tasksToday": 66,
-      "timeSavedToday": 2.1,
+      "tasksToday": 44,
+      "timeSavedToday": 8.7,
       "performance": 96,
-      "installedAt": 1780819032345
+      "installedAt": 1780876209340
     },
     {
       "id": "SA",
@@ -116,10 +116,10 @@
         "24/7 support"
       ],
       "status": "live",
-      "tasksToday": 60,
-      "timeSavedToday": 3.7,
-      "performance": 99,
-      "installedAt": 1780732632345
+      "tasksToday": 104,
+      "timeSavedToday": 3,
+      "performance": 97,
+      "installedAt": 1780789809340
     },
     {
       "id": "RA",
@@ -136,431 +136,635 @@
         "Recruitment analytics"
       ],
       "status": "live",
-      "tasksToday": 58,
-      "timeSavedToday": 9,
-      "performance": 95,
-      "installedAt": 1780646232345
-    },
-    {
-      "id": "DOC",
-      "code": "DOC",
-      "person": "Ava",
-      "name": "AI Document Specialist",
-      "dept": "Documents",
-      "tagline": "Excel · Word · PowerPoint · fully automated",
-      "skills": [
-        "Excel spreadsheets",
-        "Word documents",
-        "PowerPoint decks",
-        "Report generation",
-        "Template automation"
-      ],
-      "status": "live",
-      "tasksToday": 12,
-      "timeSavedToday": 1.2,
-      "performance": 95,
-      "installedAt": 1781011784093
-    },
-    {
-      "id": "DA",
-      "code": "DA",
-      "person": "Lucas",
-      "name": "AI Data Analyst",
-      "dept": "Operations",
-      "tagline": "Dashboards · Insights · Anomaly detection",
-      "skills": [
-        "Reporting",
-        "Trend analysis",
-        "Anomaly detection",
-        "Forecasting",
-        "KPI tracking"
-      ],
-      "status": "live",
-      "tasksToday": 0,
-      "timeSavedToday": 0,
-      "performance": 95,
-      "installedAt": 1781047833212
+      "tasksToday": 52,
+      "timeSavedToday": 5.4,
+      "performance": 96,
+      "installedAt": 1780703409340
     }
   ],
   "activity": [
     {
-      "id": "act_17",
+      "id": "act_39",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 40 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 40
+      },
+      "ts": 1781050678475
+    },
+    {
+      "id": "act_38",
       "empId": "SM",
       "empCode": "SM",
       "empName": "AI Sales Manager",
-      "summary": "scheduled follow-up sequence",
+      "summary": "followed up 22 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 43
+      },
+      "ts": 1781050673438
+    },
+    {
+      "id": "act_37",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 18 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 35
+      },
+      "ts": 1781050668249
+    },
+    {
+      "id": "act_36",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 16 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 32
+      },
+      "ts": 1781050663436
+    },
+    {
+      "id": "act_35",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "summary": "reviewed 7 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 7,
+        "total": 38740
+      },
+      "ts": 1781050658433
+    },
+    {
+      "id": "act_34",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "summary": "reviewed 6 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 6,
+        "total": 29081
+      },
+      "ts": 1781050653288
+    },
+    {
+      "id": "act_33",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 12 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 12
+      },
+      "ts": 1781050648415
+    },
+    {
+      "id": "act_32",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 20 tickets · CSAT 4.6",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 20,
+        "csat": "4.6"
+      },
+      "ts": 1781050643218
+    },
+    {
+      "id": "act_31",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 14 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 28
+      },
+      "ts": 1781050638311
+    },
+    {
+      "id": "act_30",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 14 tickets · CSAT 4.8",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 14,
+        "csat": "4.8"
+      },
+      "ts": 1781050633110
+    },
+    {
+      "id": "act_29",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 18 tickets · CSAT 4.5",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 18,
+        "csat": "4.5"
+      },
+      "ts": 1781050628121
+    },
+    {
+      "id": "act_28",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "notified management with a summary",
       "tag": "executed",
       "detail": null,
-      "ts": 1781047833203
+      "ts": 1781050625180
+    },
+    {
+      "id": "act_27",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "updated CRM and internal docs",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781050625180
+    },
+    {
+      "id": "act_26",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "executed: \"Schedule onboarding meetings\"",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781050625180
+    },
+    {
+      "id": "act_25",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "parsed the request and gathered context",
+      "tag": "executed",
+      "detail": null,
+      "ts": 1781050625180
+    },
+    {
+      "id": "act_24",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 26 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 26
+      },
+      "ts": 1781050623162
+    },
+    {
+      "id": "act_23",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 18 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 35
+      },
+      "ts": 1781050618290
+    },
+    {
+      "id": "act_22",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 23 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 23
+      },
+      "ts": 1781050613232
+    },
+    {
+      "id": "act_21",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 40 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 40
+      },
+      "ts": 1781050608332
+    },
+    {
+      "id": "act_20",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 15 tickets · CSAT 4.9",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 15,
+        "csat": "4.9"
+      },
+      "ts": 1781050603155
+    },
+    {
+      "id": "act_19",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 46 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 46
+      },
+      "ts": 1781050598468
+    },
+    {
+      "id": "act_18",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "summary": "reviewed 6 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 6,
+        "total": 38167
+      },
+      "ts": 1781050593287
+    },
+    {
+      "id": "act_17",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 33 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 33
+      },
+      "ts": 1781050588099
     },
     {
       "id": "act_16",
-      "empId": "SM",
-      "empCode": "SM",
-      "empName": "AI Sales Manager",
-      "summary": "updated CRM · stage set to Re-engaged",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 13 tickets · CSAT 4.8",
       "tag": "executed",
-      "detail": null,
-      "ts": 1781047833203
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 13,
+        "csat": "4.8"
+      },
+      "ts": 1781050583264
     },
     {
       "id": "act_15",
-      "empId": "SM",
-      "empCode": "SM",
-      "empName": "AI Sales Manager",
-      "summary": "sent 44 personalized follow-ups",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 17 tickets · CSAT 4.8",
       "tag": "executed",
-      "detail": null,
-      "ts": 1781047833203
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 17,
+        "csat": "4.8"
+      },
+      "ts": 1781050578166
     },
     {
       "id": "act_14",
       "empId": "SM",
       "empCode": "SM",
       "empName": "AI Sales Manager",
-      "summary": "identified 44 matching leads",
+      "summary": "followed up 12 leads · logged outcomes",
       "tag": "executed",
-      "detail": null,
-      "ts": 1781047833203
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 23
+      },
+      "ts": 1781050573069
     },
     {
       "id": "act_13",
-      "empId": "SM",
-      "empCode": "SM",
-      "empName": "AI Sales Manager",
-      "summary": "received command: \"follow up all inactive leads\"",
-      "tag": "command",
-      "detail": null,
-      "ts": 1781047833203
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 17 tickets · CSAT 4.6",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 17,
+        "csat": "4.6"
+      },
+      "ts": 1781050568110
     },
     {
       "id": "act_12",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "shared it with the team",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 39 emails and updated CRM records",
       "tag": "executed",
-      "detail": null,
-      "ts": 1781011813550
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 39
+      },
+      "ts": 1781050563124
     },
     {
       "id": "act_11",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "saved NEXA-Business-Report-2026-06-09.docx",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813550
-    },
-    {
-      "id": "act_10",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "generated Weekly operations report",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813550
-    },
-    {
-      "id": "act_9",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "pulled the latest data from connected systems",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813550
-    },
-    {
-      "id": "act_8",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "shared it with the team",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813538
-    },
-    {
-      "id": "act_7",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "generated NEXA-Pitch-Deck-2026-06-09.pptx",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813538
-    },
-    {
-      "id": "act_6",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "drafted and formatted the PowerPoint deck",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813538
-    },
-    {
-      "id": "act_5",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "pulled the latest figures from connected systems",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011813538
-    },
-    {
-      "id": "act_4",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "shared it with the team",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011784136
-    },
-    {
-      "id": "act_3",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "generated NEXA-Financial-Model-2026-06-09.xlsx",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011784136
-    },
-    {
-      "id": "act_2",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "drafted and formatted the Excel workbook",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011784136
-    },
-    {
-      "id": "act_1",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "summary": "pulled the latest figures from connected systems",
-      "tag": "executed",
-      "detail": null,
-      "ts": 1781011784136
-    }
-  ],
-  "seq": 18,
-  "tasks": [
-    {
-      "id": "task_4",
       "empId": "FM",
       "empCode": "FM",
       "empName": "AI Finance Manager",
-      "text": "Chase overdue invoices",
-      "steps": [],
-      "status": "pending_approval",
-      "mode": "supervised",
-      "createdAt": 1781012542219,
-      "resolvedAt": null,
-      "document": null
+      "summary": "reviewed 8 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 8,
+        "total": 29728
+      },
+      "ts": 1781050558255
     },
     {
-      "id": "task_3",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "text": "Weekly operations report",
-      "steps": [
-        "pulled the latest data from connected systems",
-        "generated Weekly operations report",
-        "saved NEXA-Business-Report-2026-06-09.docx",
-        "shared it with the team"
-      ],
-      "status": "done",
-      "mode": "scheduled",
-      "createdAt": 1781011813550,
-      "resolvedAt": 1781011813550,
-      "document": {
-        "type": "docx",
-        "filename": "NEXA-Business-Report-2026-06-09.docx"
-      }
+      "id": "act_10",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 27 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 27
+      },
+      "ts": 1781050553160
     },
     {
-      "id": "task_2",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "text": "Generate the board pitch deck",
-      "steps": [
-        "pulled the latest figures from connected systems",
-        "drafted and formatted the PowerPoint deck",
-        "generated NEXA-Pitch-Deck-2026-06-09.pptx",
-        "shared it with the team"
-      ],
-      "status": "done",
-      "mode": "auto",
-      "createdAt": 1781011813537,
-      "resolvedAt": 1781011813538,
-      "document": {
-        "type": "pptx",
-        "filename": "NEXA-Pitch-Deck-2026-06-09.pptx"
-      }
+      "id": "act_9",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 19 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 37
+      },
+      "ts": 1781050548448
     },
+    {
+      "id": "act_8",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 29 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 29
+      },
+      "ts": 1781050543304
+    },
+    {
+      "id": "act_7",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 55 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 55
+      },
+      "ts": 1781050538075
+    },
+    {
+      "id": "act_6",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 25 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 49
+      },
+      "ts": 1781050533388
+    },
+    {
+      "id": "act_5",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 35 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 35
+      },
+      "ts": 1781050528200
+    },
+    {
+      "id": "act_4",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 25 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 25
+      },
+      "ts": 1781050523202
+    },
+    {
+      "id": "act_3",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 19 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 19
+      },
+      "ts": 1781050518092
+    },
+    {
+      "id": "act_2",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "summary": "reviewed 10 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 10,
+        "total": 22681
+      },
+      "ts": 1781050513409
+    },
+    {
+      "id": "act_1",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 21 tickets · CSAT 4.5",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 21,
+        "csat": "4.5"
+      },
+      "ts": 1781049281280
+    }
+  ],
+  "tasks": [
     {
       "id": "task_1",
-      "empId": "DOC",
-      "empCode": "DOC",
-      "empName": "AI Document Specialist",
-      "text": "Build the Q1 financial model in Excel",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "text": "Schedule onboarding meetings",
       "steps": [
-        "pulled the latest figures from connected systems",
-        "drafted and formatted the Excel workbook",
-        "generated NEXA-Financial-Model-2026-06-09.xlsx",
-        "shared it with the team"
+        "parsed the request and gathered context",
+        "executed: \"Schedule onboarding meetings\"",
+        "updated CRM and internal docs",
+        "notified management with a summary"
       ],
       "status": "done",
       "mode": "supervised",
-      "createdAt": 1781011784102,
-      "resolvedAt": 1781011784136,
-      "document": {
-        "type": "xlsx",
-        "filename": "NEXA-Financial-Model-2026-06-09.xlsx"
-      }
+      "createdAt": 1781050619267,
+      "resolvedAt": 1781050625180,
+      "document": null
     }
   ],
   "audit": [
     {
-      "id": "aud_9",
-      "ts": 1781012542219,
-      "empId": "FM",
-      "empCode": "FM",
-      "type": "command",
-      "summary": "received command: \"Chase overdue invoices\"",
-      "detail": {
-        "taskId": "task_4",
-        "mode": "supervised"
-      }
-    },
-    {
-      "id": "aud_8",
-      "ts": 1781011813562,
-      "empId": "FM",
-      "empCode": "FM",
-      "type": "memory",
-      "summary": "learned: \"Always CC finance@acme.com on reminders\"",
-      "detail": null
-    },
-    {
-      "id": "aud_7",
-      "ts": 1781011813550,
-      "empId": "DOC",
-      "empCode": "DOC",
-      "type": "schedule",
-      "summary": "ran schedule: Weekly operations report",
-      "detail": {
-        "scheduleId": "sch_1",
-        "file": "NEXA-Business-Report-2026-06-09.docx"
-      }
-    },
-    {
-      "id": "aud_6",
-      "ts": 1781011813538,
-      "empId": "DOC",
-      "empCode": "DOC",
-      "type": "execute",
-      "summary": "executed: \"Generate the board pitch deck\"",
-      "detail": {
-        "taskId": "task_2",
-        "steps": [
-          "pulled the latest figures from connected systems",
-          "drafted and formatted the PowerPoint deck",
-          "generated NEXA-Pitch-Deck-2026-06-09.pptx",
-          "shared it with the team"
-        ]
-      }
-    },
-    {
-      "id": "aud_5",
-      "ts": 1781011813537,
-      "empId": "DOC",
-      "empCode": "DOC",
-      "type": "command",
-      "summary": "received command: \"Generate the board pitch deck\"",
-      "detail": {
-        "taskId": "task_2",
-        "mode": "auto"
-      }
-    },
-    {
-      "id": "aud_4",
-      "ts": 1781011813532,
-      "empId": "DOC",
-      "empCode": "DOC",
-      "type": "autonomy",
-      "summary": "autonomy set to auto",
-      "detail": null
-    },
-    {
       "id": "aud_3",
-      "ts": 1781011784136,
-      "empId": "DOC",
-      "empCode": "DOC",
+      "ts": 1781050625180,
+      "empId": "OM",
+      "empCode": "OM",
       "type": "approve",
-      "summary": "approved & executed: \"Build the Q1 financial model in Excel\"",
+      "summary": "approved & executed: \"Schedule onboarding meetings\"",
       "detail": {
         "taskId": "task_1"
       }
     },
     {
       "id": "aud_2",
-      "ts": 1781011784136,
-      "empId": "DOC",
-      "empCode": "DOC",
+      "ts": 1781050625180,
+      "empId": "OM",
+      "empCode": "OM",
       "type": "execute",
-      "summary": "executed: \"Build the Q1 financial model in Excel\"",
+      "summary": "executed: \"Schedule onboarding meetings\"",
       "detail": {
         "taskId": "task_1",
         "steps": [
-          "pulled the latest figures from connected systems",
-          "drafted and formatted the Excel workbook",
-          "generated NEXA-Financial-Model-2026-06-09.xlsx",
-          "shared it with the team"
+          "parsed the request and gathered context",
+          "executed: \"Schedule onboarding meetings\"",
+          "updated CRM and internal docs",
+          "notified management with a summary"
         ]
       }
     },
     {
       "id": "aud_1",
-      "ts": 1781011784102,
-      "empId": "DOC",
-      "empCode": "DOC",
+      "ts": 1781050619267,
+      "empId": "OM",
+      "empCode": "OM",
       "type": "command",
-      "summary": "received command: \"Build the Q1 financial model in Excel\"",
+      "summary": "received command: \"Schedule onboarding meetings\"",
       "detail": {
         "taskId": "task_1",
         "mode": "supervised"
       }
     }
   ],
-  "memory": {
-    "FM": [
-      {
-        "ts": 1781011813562,
-        "note": "Always CC finance@acme.com on reminders"
-      }
-    ]
-  },
+  "memory": {},
   "autonomy": {
     "OM": "supervised",
     "SM": "supervised",
     "FM": "supervised",
     "SA": "auto",
     "RA": "supervised",
-    "DOC": "auto",
+    "DOC": "supervised",
     "DA": "auto",
     "MM": "supervised",
     "PM": "supervised"
@@ -573,7 +777,7 @@
       "docType": "docx",
       "cadence": "Weekly · Mon 08:00",
       "enabled": true,
-      "lastRun": 1781011813550
+      "lastRun": null
     },
     {
       "id": "sch_2",
@@ -585,6 +789,7 @@
       "lastRun": null
     }
   ],
-  "tseq": 5,
-  "aseq": 10
+  "seq": 40,
+  "tseq": 2,
+  "aseq": 4
 }

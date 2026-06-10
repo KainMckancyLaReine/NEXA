@@ -178,7 +178,7 @@ function paint(emp, history){
   $('#queue').innerHTML = q.map(x=>`<div class="q"><span class="sp"></span>${x}</div>`).join('');
   renderHist(history);
 }
-function animate(sel, val, suf){ const el=$(sel); gsap.to({v:0},{v:val,duration:1.2,ease:'power2.out',onUpdate(){el.textContent=Math.round(this.targets()[0].v)+suf;}}); }
+function animate(sel, val, suf){ const el=$(sel); if(!el) return; if(window.gsap){ gsap.to({v:0},{v:val,duration:1.2,ease:'power2.out',onUpdate(){el.textContent=Math.round(this.targets()[0].v)+suf;}}); } else { el.textContent=Math.round(val)+suf; } }
 function timeAgo(ts){ const d=Math.round((Date.now()-ts)/60000); return d<=0?'just now':d+'m ago'; }
 function hrow(what, tag, when){
   return `<div class="hrow"><span class="dotx"></span><span class="what">${what}</span><span class="tag ${tag==='command'?'command':''}">${tag==='command'?'Command':'Executed'}</span><span class="when">${when}</span></div>`;
@@ -192,7 +192,7 @@ function renderHist(history){
     const h = HIST_FALLBACK[id] || HIST_FALLBACK.OM;
     el.innerHTML = h.map((x,i)=>hrow(x,'executed',(i*4+2)+'m ago')).join('');
   }
-  gsap.from('#hist .hrow', { opacity:0, x:14, duration:.4, stagger:.05 });
+  if(window.gsap) gsap.from('#hist .hrow', { opacity:0, x:14, duration:.4, stagger:.05 });
 }
 
 // settings toggles
@@ -241,20 +241,25 @@ async function assign(text){
       const mine = res.actions.filter(a=>a.empId===id);
       const rows = (mine.length?mine:res.actions);
       $('#hist').insertAdjacentHTML('afterbegin', rows.map(a=>hrow(a.summary,a.tag,'just now')).join(''));
-      gsap.from('#hist .hrow:nth-child(-n+'+rows.length+')', {opacity:0,y:-10,duration:.4,stagger:.05});
+      if(window.gsap) gsap.from('#hist .hrow:nth-child(-n+'+rows.length+')', {opacity:0,y:-10,duration:.4,stagger:.05});
       return;
     }
   }
   $('#hist').insertAdjacentHTML('afterbegin', hrow('executed: "'+text+'"','executed','just now'));
-  gsap.from('#hist .hrow:first-child',{opacity:0,y:-10,duration:.4});
+  if(window.gsap) gsap.from('#hist .hrow:first-child',{opacity:0,y:-10,duration:.4});
 }
 $('#assignBtn').onclick = () => { const v=$('#assignInput').value.trim(); if(v) assign(v); };
 $('#assignInput').addEventListener('keydown', e => { if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) assign(v); } });
 
 async function boot(){
-  const data = await NEXA.employee(id);
-  if(data && data.employee){ paint(data.employee, data.history); pollLive(); }
-  else { paint(FALLBACK[id] || FALLBACK.OM, null); }
+  try {
+    const data = await NEXA.employee(id);
+    if(data && data.employee){ paint(data.employee, data.history); pollLive(); }
+    else { paint(FALLBACK[id] || FALLBACK.OM, null); }
+  } catch (e) {
+    // never leave the page blank — always render the fallback profile
+    try { paint(FALLBACK[id] || FALLBACK.OM, null); } catch (_) {}
+  }
 }
 async function pollLive(){
   setInterval(async () => {
