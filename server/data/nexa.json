@@ -76,8 +76,8 @@
         "Meeting scheduling"
       ],
       "status": "live",
-      "tasksToday": 90,
-      "timeSavedToday": 6.3,
+      "tasksToday": 91,
+      "timeSavedToday": 6.4,
       "performance": 96,
       "installedAt": 1780962609340
     },
@@ -96,8 +96,8 @@
         "Financial forecasting"
       ],
       "status": "busy",
-      "tasksToday": 44,
-      "timeSavedToday": 8.7,
+      "tasksToday": 45,
+      "timeSavedToday": 8.8,
       "performance": 96,
       "installedAt": 1780876209340
     },
@@ -143,6 +143,35 @@
     }
   ],
   "activity": [
+    {
+      "id": "act_41",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 21 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 42
+      },
+      "ts": 1781050688414
+    },
+    {
+      "id": "act_40",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "summary": "reviewed 4 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 4,
+        "total": 59167
+      },
+      "ts": 1781050683129
+    },
     {
       "id": "act_39",
       "empId": "OM",
@@ -789,7 +818,7 @@
       "lastRun": null
     }
   ],
-  "seq": 40,
+  "seq": 42,
   "tseq": 2,
   "aseq": 4
 }
