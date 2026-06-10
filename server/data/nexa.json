@@ -76,8 +76,8 @@
         "Meeting scheduling"
       ],
       "status": "live",
-      "tasksToday": 91,
-      "timeSavedToday": 6.4,
+      "tasksToday": 92,
+      "timeSavedToday": 6.5,
       "performance": 96,
       "installedAt": 1780962609340
     },
@@ -116,8 +116,8 @@
         "24/7 support"
       ],
       "status": "live",
-      "tasksToday": 104,
-      "timeSavedToday": 3,
+      "tasksToday": 105,
+      "timeSavedToday": 3.1,
       "performance": 97,
       "installedAt": 1780789809340
     },
@@ -143,6 +143,35 @@
     }
   ],
   "activity": [
+    {
+      "id": "act_46",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 11 tickets · CSAT 4.5",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 11,
+        "csat": "4.5"
+      },
+      "ts": 1781050713426
+    },
+    {
+      "id": "act_45",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 21 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 42
+      },
+      "ts": 1781050708341
+    },
     {
       "id": "act_44",
       "empId": "OM",
@@ -863,7 +892,7 @@
       "lastRun": null
     }
   ],
-  "seq": 45,
+  "seq": 47,
   "tseq": 2,
   "aseq": 4
 }
