@@ -55,8 +55,8 @@
         "Workflow execution"
       ],
       "status": "live",
-      "tasksToday": 112,
-      "timeSavedToday": 8.3,
+      "tasksToday": 113,
+      "timeSavedToday": 8.4,
       "performance": 97,
       "installedAt": 1781049009340
     },
@@ -143,6 +143,21 @@
     }
   ],
   "activity": [
+    {
+      "id": "act_44",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 22 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 22
+      },
+      "ts": 1781050703167
+    },
     {
       "id": "act_43",
       "empId": "OM",
@@ -848,7 +863,7 @@
       "lastRun": null
     }
   ],
-  "seq": 44,
+  "seq": 45,
   "tseq": 2,
   "aseq": 4
 }
