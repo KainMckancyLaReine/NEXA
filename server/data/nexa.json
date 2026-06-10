@@ -55,8 +55,8 @@
         "Workflow execution"
       ],
       "status": "live",
-      "tasksToday": 113,
-      "timeSavedToday": 8.4,
+      "tasksToday": 115,
+      "timeSavedToday": 8.6,
       "performance": 97,
       "installedAt": 1781049009340
     },
@@ -76,8 +76,8 @@
         "Meeting scheduling"
       ],
       "status": "live",
-      "tasksToday": 92,
-      "timeSavedToday": 6.5,
+      "tasksToday": 94,
+      "timeSavedToday": 6.7,
       "performance": 96,
       "installedAt": 1780962609340
     },
@@ -96,8 +96,8 @@
         "Financial forecasting"
       ],
       "status": "busy",
-      "tasksToday": 45,
-      "timeSavedToday": 8.8,
+      "tasksToday": 46,
+      "timeSavedToday": 8.9,
       "performance": 96,
       "installedAt": 1780876209340
     },
@@ -116,8 +116,8 @@
         "24/7 support"
       ],
       "status": "live",
-      "tasksToday": 105,
-      "timeSavedToday": 3.1,
+      "tasksToday": 107,
+      "timeSavedToday": 3.3,
       "performance": 97,
       "installedAt": 1780789809340
     },
@@ -136,13 +136,130 @@
         "Recruitment analytics"
       ],
       "status": "live",
-      "tasksToday": 52,
-      "timeSavedToday": 5.4,
+      "tasksToday": 53,
+      "timeSavedToday": 5.5,
       "performance": 96,
       "installedAt": 1780703409340
     }
   ],
   "activity": [
+    {
+      "id": "act_54",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 20 tickets · CSAT 4.7",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 20,
+        "csat": "4.7"
+      },
+      "ts": 1781050753154
+    },
+    {
+      "id": "act_53",
+      "empId": "RA",
+      "empCode": "RA",
+      "empName": "AI Recruiting Agent",
+      "summary": "screened 58 applications · shortlisted top candidates",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "screened": 58
+      },
+      "ts": 1781050748471
+    },
+    {
+      "id": "act_52",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 30 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 30
+      },
+      "ts": 1781050743470
+    },
+    {
+      "id": "act_51",
+      "empId": "FM",
+      "empCode": "FM",
+      "empName": "AI Finance Manager",
+      "summary": "reviewed 6 invoices · sent reminders",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "count": 6,
+        "total": 37786
+      },
+      "ts": 1781050738150
+    },
+    {
+      "id": "act_50",
+      "empId": "OM",
+      "empCode": "OM",
+      "empName": "AI Operations Manager",
+      "summary": "processed 33 emails and updated CRM records",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "action": "email.triage",
+        "processed": 33
+      },
+      "ts": 1781050733518
+    },
+    {
+      "id": "act_49",
+      "empId": "SA",
+      "empCode": "SA",
+      "empName": "AI Support Agent",
+      "summary": "resolved 14 tickets · CSAT 4.8",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "resolved": 14,
+        "csat": "4.8"
+      },
+      "ts": 1781050728499
+    },
+    {
+      "id": "act_48",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 11 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 21
+      },
+      "ts": 1781050723371
+    },
+    {
+      "id": "act_47",
+      "empId": "SM",
+      "empCode": "SM",
+      "empName": "AI Sales Manager",
+      "summary": "followed up 24 leads · logged outcomes",
+      "tag": "executed",
+      "detail": {
+        "ok": true,
+        "mode": "sandbox",
+        "leads": 48
+      },
+      "ts": 1781050718499
+    },
     {
       "id": "act_46",
       "empId": "SA",
@@ -892,7 +1009,7 @@
       "lastRun": null
     }
   ],
-  "seq": 47,
+  "seq": 55,
   "tseq": 2,
   "aseq": 4
 }
