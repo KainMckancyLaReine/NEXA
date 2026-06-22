@@ -490,14 +490,46 @@ window.addEventListener('hashchange', () => navigate(location.hash.replace('#','
    VIEW: DASHBOARD
    ============================================================ */
 let dashLastTs = 0, dashUsingApi = false;
-function addActivity(emp, what, tag, age, prepend=true){
+function addActivity(emp, what, tag, age, prepend=true, data=null){
   const actEl = view.querySelector('#activity'); if(!actEl) return;
   const [i,name] = EMP[emp] || [emp,emp];
   const exec = (tag==='exec'||tag==='executed');
-  const node = document.createElement('div'); node.className='act';
+  const node = document.createElement('div'); node.className='act'; node.style.cursor='pointer'; node.title='Click to see details';
   node.innerHTML = `<a class="av" href="employee.html?id=${emp}">${i}</a><div class="txt"><a class="who" style="color:inherit" href="employee.html?id=${emp}">${name}</a> <span class="what">${what}</span></div><span class="tag ${exec?'exec':''}">${exec?'Executed':'Command'}</span><span class="time">${age}</span>`;
+  node._act = data || { empCode:emp, summary:what, tag, ts:Date.now() };
+  node.addEventListener('click', e=>{ if(e.target.closest('a')) return; showActivityDetail(node._act); });
   if(prepend){ actEl.insertBefore(node, actEl.firstChild); gsap.from(node,{opacity:0,y:-12,duration:.4}); } else actEl.appendChild(node);
   while(actEl.children.length>16) actEl.lastElementChild.remove();
+}
+/* Detail of a single activity line — surfaces the concrete result + live/sandbox. */
+function showActivityDetail(act){
+  if(!act) return;
+  const emp=act.empCode||'OM';
+  const nm=(EMP[emp]&&EMP[emp][1])||(window.AINAMES&&AINAMES[emp])||emp;
+  const exec=(act.tag==='exec'||act.tag==='executed');
+  const when=act.ts?new Date(act.ts).toLocaleString():'just now';
+  const d=act.detail;
+  let detailHtml='';
+  if(d&&typeof d==='object'){
+    const mode=d.mode?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;${d.mode==='live'?'background:rgba(34,197,94,.15);color:#16a34a':'background:rgba(245,158,11,.15);color:#b45309'}">${rxEsc(d.mode)}</span>`:'';
+    const rows=Object.entries(d).filter(([k,v])=>k!=='action'&&k!=='mode'&&typeof v!=='object').map(([k,v])=>`<div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text-3)">${rxEsc(k)}</span><span style="font-weight:600">${rxEsc(String(v))}</span></div>`).join('');
+    detailHtml=`<div style="margin-bottom:14px">${mode?`<div style="margin-bottom:8px">${mode}${d.mode==='sandbox'?' <span style="font-size:11px;color:var(--text-3)">— simulated, no real system touched</span>':' <span style="font-size:11px;color:var(--text-3)">— real system</span>'}</div>`:''}${rows||'<div style="font-size:12px;color:var(--text-3)">No structured detail recorded.</div>'}</div>`;
+  } else {
+    detailHtml=`<div style="font-size:13px;color:var(--text-2);margin-bottom:14px">This is one executed step. Open the employee to see its full activity history.</div>`;
+  }
+  let h=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="width:42px;height:42px;border-radius:11px;overflow:hidden;flex:none">${window.aiAvatar?aiAvatar(emp,42):(EMP[emp]?EMP[emp][0]:'•')}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">${rxEsc(nm)}</div><div style="font-size:12px;color:var(--text-3)">${exec?'Executed action':'Command'} · ${rxEsc(when)}</div></div>
+      <button class="rx-close" aria-label="Close" style="background:none;border:none;color:var(--text-3);font-size:24px;line-height:1;cursor:pointer">×</button>
+    </div>
+    <div style="font-size:14px;margin:6px 0 14px">${rxEsc(act.summary||'')}</div>
+    ${detailHtml}
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <a class="btn btn-ghost" href="employee.html?id=${emp}" style="padding:8px 16px;font-size:13px;text-decoration:none">Open ${rxEsc(nm)}</a>
+      <button class="btn btn-primary rx-close" style="padding:8px 16px;font-size:13px">Done</button>
+    </div>`;
+  const {ov,close}=resultModal(h);
+  ov.querySelectorAll('.rx-close').forEach(b=>b.onclick=close);
 }
 function renderDashboard(){
   view.innerHTML = `
@@ -619,12 +651,12 @@ async function bootFeed(){
   const data = await NEXA.activity();
   if(data && data.activity){
     dashUsingApi = true;
-    data.activity.slice(0,9).reverse().forEach(a => addActivity(a.empCode, a.summary, a.tag, timeAgo(a.ts), true));
+    data.activity.slice(0,9).reverse().forEach(a => addActivity(a.empCode, a.summary, a.tag, timeAgo(a.ts), true, a));
     dashLastTs = data.activity.length ? data.activity[0].ts : Date.now();
     const tag = view.querySelector('#liveTag'); if(tag) tag.innerHTML='<span class="status-dot live"></span> Live API · workforce executing';
     every(async () => {
       const d = await NEXA.activity(dashLastTs);
-      if(d && d.latest && d.latest.length){ d.latest.reverse().forEach(a => addActivity(a.empCode,a.summary,a.tag,'just now',true)); dashLastTs = d.latest[d.latest.length-1].ts; }
+      if(d && d.latest && d.latest.length){ d.latest.reverse().forEach(a => addActivity(a.empCode,a.summary,a.tag,'just now',true,a)); dashLastTs = d.latest[d.latest.length-1].ts; }
     }, 4000);
   } else {
     FEED_LOCAL.slice(0,8).forEach((f,i)=>addActivity(f[0],f[1],'exec',(i*3+1)+'m ago',false));
