@@ -321,20 +321,75 @@ const ENG = (function(){
 
 async function updateApBadge(){ try{ const n=await ENG.pending(); const b=$('#apBadge'); if(b){ b.textContent=n; b.style.display=n?'inline-block':'none'; } }catch(e){} }
 
+/* ---- result / preview modal: shows exactly what a command produced ---- */
+function rxEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function rxDocType(s){ s=(s||'').toLowerCase(); if(/excel|spreadsheet|\.xlsx|workbook|model|cashflow|financial|budget/.test(s))return'xlsx'; if(/powerpoint|\bdeck\b|slides|presentation|\.pptx|pitch/.test(s))return'pptx'; return'docx'; }
+function resultModal(innerHtml){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(2,6,23,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px';
+  ov.innerHTML=`<div class="glass" style="width:min(560px,100%);max-height:86vh;overflow:auto;padding:22px">${innerHtml}</div>`;
+  const close=()=>{ if(window.gsap){ gsap.to(ov,{opacity:0,duration:.18,onComplete:()=>ov.remove()}); } else ov.remove(); };
+  ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
+  document.addEventListener('keydown',function esc(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',esc); } });
+  document.body.appendChild(ov);
+  if(window.gsap) gsap.from(ov.firstChild,{y:14,opacity:0,duration:.22});
+  return {ov,close};
+}
+function showResult(task){
+  if(!task||!task.empId&&!task.text) return;
+  const emp=task.empId||'OM';
+  const nm=(window.AINAMES&&AINAMES[emp])||task.empName||emp;
+  const pending=task.status==='pending_approval';
+  const stepsArr=(task.steps&&task.steps.length)?task.steps:[];
+  let h='';
+  h+=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+        <div style="width:42px;height:42px;border-radius:11px;overflow:hidden;flex:none">${window.aiAvatar?aiAvatar(emp,42):''}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">${rxEsc(nm)}</div>
+          <div style="font-size:12px;color:var(--text-3)">${pending?'Waiting for your approval':'Completed'}</div></div>
+        <button class="rx-close" aria-label="Close" style="background:none;border:none;color:var(--text-3);font-size:24px;line-height:1;cursor:pointer">×</button>
+      </div>`;
+  h+=`<div style="font-size:13px;color:var(--text-2);margin:6px 0 14px">“${rxEsc(task.text)}”</div>`;
+  if(task.kind==='email_send'&&task.email){
+    const sr=task.sendResult, sent=sr&&sr.ok;
+    h+=`<div style="padding:12px 14px;border-radius:10px;background:rgba(127,127,127,.08);border:1px solid var(--border);margin-bottom:14px">
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">✉︎ ${pending?'Draft email · review before sending':'Email '+(sent?'sent':'not sent')}</div>
+          <div style="font-size:13px"><b>To:</b> ${rxEsc(task.email.to)}</div>
+          <div style="font-size:13px"><b>Subject:</b> ${rxEsc(task.email.subject)}</div>
+          <div style="font-size:13px;white-space:pre-wrap;margin-top:6px;color:var(--text-2)">${rxEsc(task.email.text)}</div>
+          ${sr?`<div style="font-size:11px;color:var(--text-3);margin-top:8px">mode: ${rxEsc(sr.mode||'')}${sr.messageId?' · id '+rxEsc(sr.messageId):''}${sr.error?' · '+rxEsc(sr.error):''}</div>`:''}
+        </div>`;
+  }
+  if(stepsArr.length){
+    h+=`<div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">What was executed</div>
+        <div style="display:grid;gap:8px;margin-bottom:14px">${stepsArr.map(s=>`<div style="display:flex;gap:9px;align-items:flex-start;font-size:13px"><span style="color:var(--accent-2,#3b82f6);flex:none">✓</span><span>${rxEsc(s)}</span></div>`).join('')}</div>`;
+  } else if(pending){
+    h+=`<div style="font-size:13px;color:var(--text-2);margin-bottom:14px">This action is supervised. Approve it to run — then you'll see exactly what was executed.</div>`;
+  }
+  const isDoc=(emp==='DOC')||task.document;
+  const docTy=isDoc?((task.document&&task.document.type)||rxDocType(task.text)):null;
+  h+=`<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">`;
+  if(pending){
+    h+=`<button class="btn btn-ghost rx-close" style="padding:8px 16px;font-size:13px">Close</button>
+        <button class="btn btn-primary rx-go" style="padding:8px 16px;font-size:13px">Review in Approvals</button>`;
+  } else {
+    if(isDoc&&task.status==='done') h+=`<button class="btn btn-ghost rx-dl" style="padding:8px 16px;font-size:13px">⬇ Download ${docTy?docTy.toUpperCase():'file'}</button>`;
+    h+=`<button class="btn btn-primary rx-close" style="padding:8px 16px;font-size:13px">Done</button>`;
+  }
+  h+=`</div>`;
+  const {ov,close}=resultModal(h);
+  ov.querySelectorAll('.rx-close').forEach(b=>b.onclick=close);
+  const go=ov.querySelector('.rx-go'); if(go) go.onclick=()=>{ close(); navigate('approvals'); };
+  const dl=ov.querySelector('.rx-dl'); if(dl) dl.onclick=()=>{ try{ const fn=genDocument(docTy); toast(`<b>${fn}</b> ${t('doc.ready')}`); }catch(e){} };
+}
+
 async function runCommand(text){
   $('#cmd').value='';
-  const r=await ENG.submit(text); const task=(r&&r.task)||{}; const emp=task.empId||'OM';
-  const nm=(window.AINAMES&&AINAMES[emp])||task.empName||emp;
+  const r=await ENG.submit(text); const task=(r&&r.task)||{};
   if(r&&r.executed){
-    if(ENG.online()){ toast(`<b>${nm}</b> — "${text}" ✓`); }
-    else if(currentView==='dashboard'){
-      addActivity(emp,'received command: "'+text+'"','command','just now');
-      (task.steps&&task.steps.length?task.steps:['executed: "'+text+'"']).forEach(s=>addActivity(emp,s,'exec','just now'));
-      const first=view.querySelector('.activity .act'); if(first) gsap.fromTo(first,{boxShadow:'0 0 0 2px rgba(37,99,235,0.6)'},{boxShadow:'0 0 0 0 transparent',duration:1.2});
-    } else { toast(`<b>${nm}</b> — "${text}" ✓`); }
+    showResult(task);
   } else {
-    toast(`<b>${nm}</b> ${t('ap.sent')}`);
     updateApBadge();
+    showResult(task);
     if(currentView==='approvals') renderApprovals();
   }
 }
@@ -366,7 +421,7 @@ async function renderApprovals(){
   if(window.I18N) I18N.apply(wrap);
   wrap.querySelectorAll('[data-id]').forEach(card=>{
     const id=card.dataset.id;
-    card.querySelector('.ap-ok').onclick=async()=>{ const rr=await ENG.approve(id); const e=(rr&&rr.task&&rr.task.empId)||''; const nm=(window.AINAMES&&AINAMES[e])||(rr&&rr.task&&rr.task.empName)||'Workforce'; toast(`<b>${nm}</b> ${t('ap.approved')}`); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
+    card.querySelector('.ap-ok').onclick=async()=>{ const rr=await ENG.approve(id); const e=(rr&&rr.task&&rr.task.empId)||''; const nm=(window.AINAMES&&AINAMES[e])||(rr&&rr.task&&rr.task.empName)||'Workforce'; toast(`<b>${nm}</b> ${t('ap.approved')}`); if(rr&&rr.task) showResult(rr.task); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
     card.querySelector('.ap-no').onclick=async()=>{ await ENG.reject(id); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
   });
   updateApBadge();
