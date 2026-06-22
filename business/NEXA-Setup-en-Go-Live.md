@@ -58,6 +58,13 @@ GMAIL_REFRESH_TOKEN=...
 
 Bij herstart logt de server `Provider → gmail LIVE`.
 
+**Echt een mail versturen (veilig).** Geef een commando met een expliciet adres,
+bv. *"stuur mail naar jan@klant.nl over de openstaande factuur"*. NEXA stelt de
+mail op, zet 'm in de **approval-queue** en verstuurt pas ná jouw goedkeuring —
+dan echt via Gmail (live), of gesimuleerd (sandbox) als er nog geen credentials
+staan. Verzenden is altijd goedkeuring-gated, ook als autonomy op "auto" staat.
+Met een model-key actief wordt de tekst van de mail door het model opgesteld.
+
 ---
 
 ## 3. Connector: HubSpot live (CRM)

@@ -206,6 +206,42 @@ async function planChain(ws, empId, text) {
   return buildChain(empId, text);
 }
 
+/* ---- explicit, approval-gated email sending ----
+   A command like 'email jan@klant.nl about the reminder' becomes a task that
+   carries a real recipient + drafted subject/body. It NEVER auto-sends: it is
+   always queued for human approval, and only on approval does the Gmail
+   provider actually send (live) or simulate (sandbox). */
+const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
+const SEND_INTENT = /\b(e-?mail|mail|stuur|verstuur|send)\b/i;
+
+function isEmailSend(text) {
+  return SEND_INTENT.test(text) && EMAIL_RE.test(text);
+}
+
+async function draftEmail(ws, text, to) {
+  // Try to lift an explicit subject from the instruction.
+  const subjMatch = text.match(/\b(?:about|over|subject|onderwerp|regarding|inzake|re:)\s*[:\-]?\s*(.+)$/i);
+  let subject = subjMatch ? subjMatch[1].trim().replace(/["']/g, '').slice(0, 120) : null;
+  let body = null;
+
+  if (llm.isLive()) {
+    try {
+      const out = await llm.completeJSON(
+        'You are an assistant drafting a short, professional business email on behalf of the user. Keep it concise and polite.',
+        `Instruction: "${text}"\nRecipient: ${to}\nReturn JSON: {"subject": "...", "body": "..."} (body 2-5 sentences, no signature placeholder beyond "Kind regards").`,
+        { maxTokens: 400 }
+      );
+      if (out && out.body) { subject = out.subject || subject; body = out.body; }
+    } catch { /* fall back to template */ }
+  }
+
+  if (!subject) subject = 'Follow-up';
+  if (!body) {
+    body = `Hi,\n\nThis is a follow-up regarding ${subject.toLowerCase()}.\n\nKind regards`;
+  }
+  return { to, subject, text: body };
+}
+
 class NexaEngine {
   constructor() { this.listeners = new Set(); this.timer = null; }
 
@@ -258,6 +294,20 @@ class NexaEngine {
 
   /* ---------- tasks · human-in-the-loop ---------- */
   async _executeTask(ws, task) {
+    // Approval-gated real email send.
+    if (task.kind === 'email_send' && task.email) {
+      const r = await connectors.email.send(task.email);
+      task.sendResult = r;
+      const ok = r && r.ok;
+      const steps = ok
+        ? [`composed email to ${task.email.to}`, `subject: "${task.email.subject}"`, `sent via ${r.mode} (id ${r.messageId || 'n/a'})`]
+        : [`composed email to ${task.email.to}`, `send blocked: ${(r && r.error) || 'error'}`];
+      const actions = [];
+      for (const s of steps) actions.push(logAction(ws, { empId: task.empId, summary: s, tag: ok ? 'executed' : 'blocked' }));
+      task.steps = steps; task.status = ok ? 'done' : 'failed'; task.resolvedAt = Date.now();
+      this._audit(ws, { type: 'execute', empId: task.empId, summary: `${ok ? 'sent email' : 'email send failed'} → ${task.email.to}`, detail: { taskId: task.id, mode: r && r.mode, messageId: r && r.messageId } });
+      return actions;
+    }
     const steps = await planChain(ws, task.empId, task.text);
     const actions = [];
     for (const s of steps) actions.push(logAction(ws, { empId: task.empId, summary: s, tag: 'executed' }));
@@ -269,23 +319,31 @@ class NexaEngine {
 
   async submitCommand(tenantId, text) {
     const ws = store.tenant(tenantId);
-    const empId = routeCommand(text);
+    const sendIntent = isEmailSend(text);
+    const empId = sendIntent ? 'OM' : routeCommand(text);
     const emp = ws.workforce.find(e => e.id === empId) || { code: empId, name: empId };
-    const mode = (ws.autonomy && ws.autonomy[empId]) || 'supervised';
+    // Email sends are ALWAYS approval-gated, regardless of the autonomy dial.
+    const mode = sendIntent ? 'supervised' : ((ws.autonomy && ws.autonomy[empId]) || 'supervised');
     const task = {
       id: 'task_' + (ws.tseq++),
       empId, empCode: emp.code, empName: emp.name || empId,
-      text, steps: [], status: mode === 'auto' ? 'executing' : 'pending_approval',
-      mode, createdAt: Date.now(), resolvedAt: null, document: null,
+      text, steps: [], status: (mode === 'auto' && !sendIntent) ? 'executing' : 'pending_approval',
+      mode, kind: sendIntent ? 'email_send' : 'command',
+      email: null, sendResult: null,
+      createdAt: Date.now(), resolvedAt: null, document: null,
     };
+    if (sendIntent) {
+      const to = text.match(EMAIL_RE)[0];
+      task.email = await draftEmail(ws, text, to);   // drafted for human review before approval
+    }
     ws.tasks.unshift(task);
     if (ws.tasks.length > 200) ws.tasks.length = 200;
-    this._audit(ws, { type: 'command', empId, summary: `received command: "${text}"`, detail: { taskId: task.id, mode } });
+    this._audit(ws, { type: 'command', empId, summary: `received command: "${text}"`, detail: { taskId: task.id, mode, kind: task.kind } });
     let actions = [];
-    if (mode === 'auto') actions = await this._executeTask(ws, task);
+    if (mode === 'auto' && !sendIntent) actions = await this._executeTask(ws, task);
     store.save();
     actions.forEach(a => this._emit(a));
-    return { task, executed: mode === 'auto', actions };
+    return { task, executed: task.status === 'done', actions };
   }
 
   async approve(tenantId, id) {
