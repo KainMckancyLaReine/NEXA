@@ -177,10 +177,18 @@ function load() {
 
 function save() {
   ensureDir();
-  // Atomic write: temp file + rename so a crash mid-write cannot corrupt the DB.
+  const data = JSON.stringify(cache, null, 2);
+  // Prefer an atomic write (temp file + rename) so a crash mid-write cannot
+  // corrupt the DB. Some mounts disallow rename/unlink — fall back to an
+  // in-place write so persistence still works everywhere.
   const tmp = DB_PATH + '.' + process.pid + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(cache, null, 2));
-  fs.renameSync(tmp, DB_PATH);
+  try {
+    fs.writeFileSync(tmp, data);
+    fs.renameSync(tmp, DB_PATH);
+  } catch (e) {
+    try { fs.unlinkSync(tmp); } catch {}
+    fs.writeFileSync(DB_PATH, data);
+  }
 }
 
 /* The workspace for a tenant, seeded on first access. */
