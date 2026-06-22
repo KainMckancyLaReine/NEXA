@@ -344,6 +344,7 @@ async function renderApprovals(){
   view.innerHTML = `<div class="view-head"><div><h2 data-i18n="ap.title">Approvals</h2><p data-i18n="ap.sub">Supervised actions wait here for your approval.</p></div></div><div id="apList" style="display:grid;gap:12px"></div>`;
   if(window.I18N) I18N.apply(view);
   const wrap=view.querySelector('#apList');
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const r=await ENG.list('pending_approval'); const items=r.tasks||[];
   if(!items.length){ wrap.innerHTML=`<div class="glass" style="padding:24px;color:var(--text-3)" data-i18n="ap.none">Nothing waiting.</div>`; if(window.I18N)I18N.apply(wrap); updateApBadge(); return; }
   wrap.innerHTML=items.map(tk=>`<div class="glass" style="padding:18px" data-id="${tk.id}">
@@ -352,6 +353,12 @@ async function renderApprovals(){
         <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">${(window.AINAMES&&AINAMES[tk.empId])||tk.empName||tk.empId}</div><div style="font-size:13px;color:var(--text-2)">“${tk.text}”</div></div>
         <span class="chip" style="font-size:11px">${tk.mode||'supervised'}</span>
       </div>
+      ${tk.kind==='email_send'&&tk.email?`<div style="margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">✉︎ Draft email · review before sending</div>
+        <div style="font-size:13px"><b>To:</b> ${esc(tk.email.to)}</div>
+        <div style="font-size:13px"><b>Subject:</b> ${esc(tk.email.subject)}</div>
+        <div style="font-size:13px;white-space:pre-wrap;margin-top:6px;color:var(--text-2)">${esc(tk.email.text)}</div>
+      </div>`:''}
       <div style="display:flex;gap:10px;margin-top:14px">
         <button class="btn btn-primary ap-ok" style="padding:8px 16px;font-size:13px" data-i18n="ap.approve">Approve</button>
         <button class="btn btn-ghost ap-no" style="padding:8px 16px;font-size:13px" data-i18n="ap.reject">Reject</button>

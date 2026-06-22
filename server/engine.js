@@ -22,6 +22,17 @@ function nextId(ws) { return 'act_' + (ws.seq++); }
 const MINUTES_SAVED = { OM: 6, SM: 9, FM: 8, SA: 5, RA: 12, DA: 7, MM: 7, PM: 6, DOC: 25 };
 function minutesFor(empId) { return MINUTES_SAVED[empId] || 6; }
 
+function dayStamp(ts = Date.now()) { return new Date(ts).toISOString().slice(0, 10); }
+/* Reset the per-employee "today" counters when the calendar day rolls over,
+   so the live dashboard's today-metrics don't accumulate forever. The
+   cumulative pilot meter is separate and unaffected. */
+function resetDailyIfNeeded(ws) {
+  const today = dayStamp();
+  if (ws.metricsDay === today) return;
+  if (ws.metricsDay) { for (const e of ws.workforce) { e.tasksToday = 0; e.timeSavedToday = 0; } }
+  ws.metricsDay = today;
+}
+
 function logAction(ws, { empId, summary, tag = 'executed', detail = null }) {
   const emp = ws.workforce.find(e => e.id === empId);
   const action = {
@@ -254,6 +265,7 @@ class NexaEngine {
   async tick() {
     for (const tid of store.tenantIds()) {
       const ws = store.tenant(tid);
+      resetDailyIfNeeded(ws);
       const active = ws.workforce.filter(e => e.status !== 'idle');
       if (!active.length) continue;
       const emp = active[Math.floor(Math.random() * active.length)];
@@ -412,6 +424,7 @@ class NexaEngine {
   /* ---------- ROI (transparent estimate) ---------- */
   computeRoi(tenantId) {
     const ws = store.tenant(tenantId);
+    resetDailyIfNeeded(ws);
     const wf = ws.workforce;
     const hours = +(wf.reduce((s, e) => s + (e.timeSavedToday || 0), 0)).toFixed(1);
     const tasks = wf.reduce((s, e) => s + (e.tasksToday || 0), 0);
