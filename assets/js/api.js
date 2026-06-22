@@ -78,6 +78,10 @@ window.NEXA = (function () {
     // audit · autonomy · memory
     audit: () => call('/api/audit'),
     roi: () => call('/api/roi'),
+    // pilot mode
+    pilot: () => call('/api/pilot'),
+    startPilot: (cfg) => call('/api/pilot/start', { method: 'POST', body: cfg }),
+    stopPilot: () => call('/api/pilot/stop', { method: 'POST' }),
     setAutonomy: (id, level) => call('/api/employee/' + id + '/autonomy', { method: 'POST', body: { level } }),
     getMemory: (id) => call('/api/employee/' + id + '/memory'),
     addMemory: (id, note) => call('/api/employee/' + id + '/memory', { method: 'POST', body: { note } }),

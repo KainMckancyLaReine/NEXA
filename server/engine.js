@@ -34,6 +34,11 @@ function logAction(ws, { empId, summary, tag = 'executed', detail = null }) {
   if (emp && tag === 'executed') {
     emp.tasksToday += 1;
     emp.timeSavedToday = +(emp.timeSavedToday + minutesFor(empId) / 60).toFixed(2);
+    // Pilot evidence: count every action the workforce actually executes.
+    if (ws.pilot && ws.pilot.active) {
+      ws.pilot.actionsExecuted += 1;
+      ws.pilot.minutesTracked += minutesFor(empId);
+    }
   }
   return action;
 }
@@ -364,6 +369,63 @@ class NexaEngine {
       dailySavings, annualSavings, monthlyCost, roiPct, seats,
       estimated: true,
       basis: `Estimated from per-task time assumptions (${HOURLY} €/h blended). Replace with measured time per customer.`,
+    };
+  }
+
+  /* ---------- pilot mode ---------- */
+  startPilot(tenantId, { baselineHoursPerWeek = 0, hourlyRate = 45, seats = 1, label = null } = {}) {
+    const ws = store.tenant(tenantId);
+    ws.pilot = {
+      active: true, startedAt: Date.now(), endedAt: null, label,
+      baselineHoursPerWeek: Number(baselineHoursPerWeek) || 0,
+      hourlyRate: Number(hourlyRate) || 45,
+      seats: Number(seats) || 1,
+      actionsExecuted: 0, minutesTracked: 0,
+    };
+    this._audit(ws, { type: 'pilot', summary: `pilot started${label ? ' · ' + label : ''}`, detail: { baselineHoursPerWeek, hourlyRate, seats } });
+    store.save();
+    return this.computePilot(tenantId);
+  }
+
+  stopPilot(tenantId) {
+    const ws = store.tenant(tenantId);
+    if (!ws.pilot || !ws.pilot.active) return { active: false };
+    ws.pilot.active = false; ws.pilot.endedAt = Date.now();
+    this._audit(ws, { type: 'pilot', summary: 'pilot ended' });
+    store.save();
+    return this.computePilot(tenantId);
+  }
+
+  /* Pilot report: real executed-action evidence + savings derived from the
+     customer's own baseline (not a fabricated per-task figure). */
+  computePilot(tenantId) {
+    const ws = store.tenant(tenantId);
+    const pl = ws.pilot || {};
+    if (!pl.startedAt) return { active: false, configured: false };
+    const elapsedMs = (pl.endedAt || Date.now()) - pl.startedAt;
+    const weeks = Math.max(elapsedMs / (7 * 24 * 3600 * 1000), 0);
+    const days = Math.max(Math.floor(elapsedMs / (24 * 3600 * 1000)), 0);
+    // Savings the customer can defend: their stated baseline hours, prorated.
+    const baselineHoursSaved = +(pl.baselineHoursPerWeek * weeks).toFixed(1);
+    const baselineSavings = Math.round(baselineHoursSaved * pl.hourlyRate);
+    const monthsElapsed = Math.max(weeks / 4.345, 0);
+    const cost = Math.round((pl.seats * 499) * Math.max(monthsElapsed, 0));
+    const netSavings = baselineSavings - cost;
+    return {
+      active: !!pl.active, configured: true,
+      label: pl.label, startedAt: pl.startedAt, endedAt: pl.endedAt,
+      daysElapsed: days, weeksElapsed: +weeks.toFixed(2),
+      // Verifiable evidence — actions the workforce actually carried out:
+      actionsExecuted: pl.actionsExecuted,
+      // Customer-baseline savings (the defensible ROI number):
+      baselineHoursPerWeek: pl.baselineHoursPerWeek,
+      hourlyRate: pl.hourlyRate, seats: pl.seats,
+      baselineHoursSaved, baselineSavings, cost, netSavings,
+      // Steady-state projection (useful from day one, before time accrues):
+      projectedMonthlySavings: Math.round(pl.baselineHoursPerWeek * 4.345 * pl.hourlyRate),
+      projectedMonthlyCost: pl.seats * 499,
+      projectedMonthlyNet: Math.round(pl.baselineHoursPerWeek * 4.345 * pl.hourlyRate) - pl.seats * 499,
+      note: 'actionsExecuted is verified activity; savings are derived from the customer-stated baseline, not assumptions.',
     };
   }
 }

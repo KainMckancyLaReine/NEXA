@@ -60,6 +60,13 @@ const EMPLOYEE_LIBRARY = [
 ];
 
 const DEFAULT_AUTONOMY = { OM:'supervised', SM:'supervised', FM:'supervised', SA:'auto', RA:'supervised', DOC:'supervised', DA:'auto', MM:'supervised', PM:'supervised' };
+/* Pilot tracking: real, cumulative evidence + customer-provided baseline. */
+function newPilot() {
+  return { active: false, startedAt: null, endedAt: null, label: null,
+    baselineHoursPerWeek: 0, hourlyRate: 45, seats: 1,
+    actionsExecuted: 0, minutesTracked: 0 };
+}
+
 function defaultSchedules() {
   return [
     { id:'sch_1', empId:'DOC', title:'Weekly operations report', docType:'docx', cadence:'Weekly · Mon 08:00', enabled:true, lastRun:null },
@@ -93,6 +100,7 @@ function seedWorkspace(tenantId = 'default', companyName = 'Acme Inc.') {
     activity: [], tasks: [], audit: [],
     memory: {}, autonomy: { ...DEFAULT_AUTONOMY },
     schedules: defaultSchedules(),
+    pilot: newPilot(),
     seq: 1, tseq: 1, aseq: 1,
   };
 }
@@ -145,6 +153,7 @@ function migrate(root) {
     if (!ws.memory) ws.memory = {};
     if (!ws.autonomy) ws.autonomy = { ...DEFAULT_AUTONOMY };
     if (!ws.schedules) ws.schedules = defaultSchedules();
+    if (!ws.pilot) ws.pilot = newPilot();
     if (typeof ws.seq !== 'number') ws.seq = 1;
     if (typeof ws.tseq !== 'number') ws.tseq = 1;
     if (typeof ws.aseq !== 'number') ws.aseq = 1;

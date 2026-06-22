@@ -254,6 +254,18 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/roi' && req.method === 'GET')
       return json(res, 200, engine.computeRoi(tid));
 
+    /* ---------- pilot mode ---------- */
+    if (p === '/api/pilot' && req.method === 'GET')
+      return json(res, 200, engine.computePilot(tid));
+    if (p === '/api/pilot/start' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      return json(res, 200, engine.startPilot(tid, body));
+    }
+    if (p === '/api/pilot/stop' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      return json(res, 200, engine.stopPilot(tid));
+    }
+
     /* ---------- connectors ---------- */
     if (p === '/api/connectors' && req.method === 'GET') {
       const live = new Map(connectors.status().map(s => [s.id, s.mode]));
