@@ -28,7 +28,7 @@ const LIVE_ENV = {
   hubspot: ['HUBSPOT_TOKEN'],
   salesforce: ['SF_CLIENT_ID', 'SF_CLIENT_SECRET', 'SF_REFRESH_TOKEN'],
   gcal:    ['GCAL_CLIENT_ID', 'GCAL_CLIENT_SECRET', 'GCAL_REFRESH_TOKEN'],
-  exact:   ['EXACT_CLIENT_ID', 'EXACT_CLIENT_SECRET'],
+  exact:   ['EXACT_CLIENT_ID', 'EXACT_CLIENT_SECRET', 'EXACT_REFRESH_TOKEN', 'EXACT_DIVISION'],
 };
 
 function modeFor(connectorId) {

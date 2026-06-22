@@ -1,38 +1,39 @@
 /* ============================================================
-   NEXA — Agent Execution Engine
+   NEXA — Agent Execution Engine (multi-tenant)
    ------------------------------------------------------------
-   Drives autonomous behaviour:
-     • Background tick: each active employee periodically executes
-       a task via a sandbox connector and logs an executed action.
+   Drives autonomous behaviour, scoped per tenant:
+     • Background tick: for each tenant, an active employee
+       periodically executes a task via a sandbox/live connector.
      • Command dispatch: a natural-language command is routed to
        the right employee, which executes an action chain
        (Understand → Decide → Execute), each step logged.
-   This is an EXECUTION system: every command produces actions
-   that were carried out, not suggestions.
+   Every public method takes a tenantId and operates only on that
+   tenant's workspace, so data never crosses tenant boundaries.
    ============================================================ */
 
 const store = require('./store');
 const connectors = require('./connectors');
+const llm = require('./llm');
 
-function nextId(db) { return 'act_' + (db.seq++); }
+function nextId(ws) { return 'act_' + (ws.seq++); }
 
-function logAction(db, { empId, summary, tag = 'executed', detail = null }) {
-  const emp = db.workforce.find(e => e.id === empId);
+/* Transparent, assumption-based estimate of human minutes saved per
+   executed action — never presented as measured truth. */
+const MINUTES_SAVED = { OM: 6, SM: 9, FM: 8, SA: 5, RA: 12, DA: 7, MM: 7, PM: 6, DOC: 25 };
+function minutesFor(empId) { return MINUTES_SAVED[empId] || 6; }
+
+function logAction(ws, { empId, summary, tag = 'executed', detail = null }) {
+  const emp = ws.workforce.find(e => e.id === empId);
   const action = {
-    id: nextId(db),
-    empId,
-    empCode: emp ? emp.code : '??',
-    empName: emp ? emp.name : 'Workforce',
-    summary,
-    tag,
-    detail,
-    ts: Date.now(),
+    id: nextId(ws), empId,
+    empCode: emp ? emp.code : '??', empName: emp ? emp.name : 'Workforce',
+    summary, tag, detail, ts: Date.now(),
   };
-  db.activity.unshift(action);
-  if (db.activity.length > 200) db.activity.length = 200;
+  ws.activity.unshift(action);
+  if (ws.activity.length > 200) ws.activity.length = 200;
   if (emp && tag === 'executed') {
     emp.tasksToday += 1;
-    emp.timeSavedToday = +(emp.timeSavedToday + 0.1).toFixed(1);
+    emp.timeSavedToday = +(emp.timeSavedToday + minutesFor(empId) / 60).toFixed(2);
   }
   return action;
 }
@@ -40,9 +41,9 @@ function logAction(db, { empId, summary, tag = 'executed', detail = null }) {
 /* ---- autonomous background tasks per department ---- */
 const AUTONOMOUS = {
   OM: async () => { const r = await connectors.email.triage(); return { summary: `processed ${r.processed} emails and updated CRM records`, detail: r }; },
-  SM: async () => { const r = await connectors.crm.listInactiveLeads(); return { summary: `followed up ${Math.ceil(r.leads / 2)} leads · logged outcomes`, detail: r }; },
+  SM: async () => { const r = await connectors.crm.listInactiveLeads(); return { summary: `followed up ${Math.ceil((r.leads || 0) / 2)} leads · logged outcomes`, detail: r }; },
   FM: async () => { const r = await connectors.finance.listOverdue(); return { summary: `reviewed ${r.count} invoices · sent reminders`, detail: r }; },
-  SA: async () => { const r = await connectors.support.resolveTickets(); return { summary: `resolved ${r.resolved} tickets · CSAT ${r.csat}`, detail: r }; },
+  SA: async () => { const r = await connectors.support.resolveTickets(); return { summary: `resolved ${r.resolved || r.open || 0} tickets · CSAT ${r.csat || 'n/a'}`, detail: r }; },
   RA: async () => { const r = await connectors.recruiting.screen(); return { summary: `screened ${r.screened} applications · shortlisted top candidates`, detail: r }; },
   DA: async () => ({ summary: `refreshed dashboards · flagged 2 anomalies`, detail: { sandbox: true } }),
   MM: async () => ({ summary: `optimized 1 campaign · drafted 3 assets`, detail: { sandbox: true } }),
@@ -50,7 +51,7 @@ const AUTONOMOUS = {
   DOC: async () => ({ summary: `generated the weekly report · ready to download`, detail: { sandbox: true } }),
 };
 
-/* ---- command routing: pick employee + build executed chain ---- */
+/* ---- command routing ---- */
 function routeCommand(text) {
   const t = text.toLowerCase();
   if (/excel|spreadsheet|powerpoint|\bdeck\b|slides|presentation|word doc|\.xlsx|\.docx|\.pptx|generate (a |the )?(report|document|deck|model)|build (a |the )?(report|deck|model|workbook)/.test(t)) return 'DOC';
@@ -58,6 +59,9 @@ function routeCommand(text) {
   if (/ticket|support|customer|csat|escalat/.test(t)) return 'SA';
   if (/lead|follow.?up|prospect|outreach|deal|pipeline|proposal/.test(t)) return 'SM';
   if (/candidate|recruit|interview|applicant|hire|onboarding plan/.test(t)) return 'RA';
+  if (/campaign|marketing|content|copywrit|\bseo\b|social|newsletter|\bad(s)?\b|brand|audience/.test(t)) return 'MM';
+  if (/procure|vendor|supplier|purchase order|\bpo\b|purchasing|spend|sourcing/.test(t)) return 'PM';
+  if (/dashboard|analytics|anomal|\bkpi\b|metric|insight|trend|data analysis|forecast/.test(t)) return 'DA';
   if (/report|email|schedul|meeting|calendar|crm|document/.test(t)) return 'OM';
   return 'OM';
 }
@@ -75,8 +79,8 @@ function docDescriptor(type) {
   return { type: ext, filename: `NEXA-${DOC_META[ext] || 'Document'}-${date}.${ext}` };
 }
 
+/* ---- deterministic fallback chains (no LLM key) ---- */
 async function buildChain(empId, text) {
-  // returns ordered list of executed steps for the given command
   switch (empId) {
     case 'SM': {
       const leads = await connectors.crm.listInactiveLeads();
@@ -93,7 +97,7 @@ async function buildChain(empId, text) {
       const od = await connectors.finance.listOverdue();
       await connectors.finance.createInvoice({ amount: od.total });
       return [
-        `reviewed ${od.count} overdue invoices (€${od.total.toLocaleString('en-US')})`,
+        `reviewed ${od.count} overdue invoices (€${(od.total || 0).toLocaleString('en-US')})`,
         `sent payment reminders`,
         `flagged 1 account for escalation`,
         `updated cashflow forecast`,
@@ -103,7 +107,7 @@ async function buildChain(empId, text) {
       const r = await connectors.support.resolveTickets();
       return [
         `triaged the open ticket queue`,
-        `resolved ${r.resolved} tickets autonomously`,
+        `resolved ${r.resolved || r.open || 0} tickets autonomously`,
         `updated knowledge base with 2 articles`,
         `escalated 1 ticket to human review`,
       ];
@@ -118,6 +122,31 @@ async function buildChain(empId, text) {
         `sent follow-up emails to applicants`,
       ];
     }
+    case 'MM': {
+      await connectors.crm.listInactiveLeads();
+      return [
+        `analyzed recent campaign performance`,
+        `drafted 3 content assets for the campaign`,
+        `scheduled social posts and an email send`,
+        `updated the marketing dashboard`,
+      ];
+    }
+    case 'PM': {
+      return [
+        `reviewed open purchase requests`,
+        `routed 2 purchase orders for approval`,
+        `updated vendor and spend records`,
+        `flagged 1 contract for renewal`,
+      ];
+    }
+    case 'DA': {
+      return [
+        `pulled data from the connected systems`,
+        `refreshed the dashboards`,
+        `flagged 2 anomalies for review`,
+        `shared an insights summary with management`,
+      ];
+    }
     case 'DOC': {
       const dt = docTypeFromText(text);
       const kind = dt === 'xlsx' ? 'Excel workbook' : dt === 'pptx' ? 'PowerPoint deck' : 'Word document';
@@ -129,7 +158,7 @@ async function buildChain(empId, text) {
         `shared it with the team`,
       ];
     }
-    default: { // OM
+    default: {
       await connectors.email.triage();
       await connectors.calendar.schedule({ title: 'Sync' });
       return [
@@ -142,171 +171,200 @@ async function buildChain(empId, text) {
   }
 }
 
+/* ---- model-driven planning, grounded in the employee's role AND its
+   learned memory for this tenant. Falls back to buildChain. ---- */
+const EMP_CONTEXT = {
+  OM: 'Operations: triage email, schedule meetings, update CRM, prepare summaries.',
+  SM: 'Sales: qualify leads, send follow-ups, update deal stages, schedule meetings.',
+  FM: 'Finance: review overdue invoices, send payment reminders, update cashflow.',
+  SA: 'Support: triage tickets, resolve them, update the knowledge base, escalate.',
+  RA: 'Recruiting: screen applications, shortlist, schedule interviews, follow up.',
+  MM: 'Marketing: plan and run campaigns, draft content, schedule posts, report on performance.',
+  PM: 'Procurement: manage vendors, raise and route purchase orders, track spend, handle renewals.',
+  DA: 'Data analysis: refresh dashboards, track KPIs, detect anomalies, summarise insights.',
+  DOC: 'Documents: pull connected data and produce Excel / Word / PowerPoint files.',
+};
+async function planChain(ws, empId, text) {
+  if (!llm.isLive()) return buildChain(empId, text);
+  try {
+    const notes = (ws.memory[empId] || []).slice(0, 6).map(m => `- ${m.note}`).join('\n');
+    const system =
+      'You are the execution planner for a NEXA AI employee. ' +
+      'Given the employee role, its learned preferences, and a command, return the ' +
+      'concrete actions the employee will carry out via its connectors. Be specific. ' +
+      `Employee role — ${EMP_CONTEXT[empId] || EMP_CONTEXT.OM}` +
+      (notes ? `\nLearned preferences (must respect):\n${notes}` : '');
+    const user = `Command: "${text}"\nReturn JSON: {"steps": ["past-tense action", ...]} with 3-5 steps.`;
+    const out = await llm.completeJSON(system, user, { maxTokens: 400 });
+    if (out && Array.isArray(out.steps) && out.steps.length) return out.steps.slice(0, 6).map(s => String(s));
+  } catch { /* fall through */ }
+  return buildChain(empId, text);
+}
+
 class NexaEngine {
-  constructor() {
-    this.db = store.load();
-    this.listeners = new Set();
-    this.timer = null;
-  }
+  constructor() { this.listeners = new Set(); this.timer = null; }
 
   onAction(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
   _emit(action) { for (const fn of this.listeners) fn(action); }
 
-  start(intervalMs = 5000) {
-    if (this.timer) return;
-    this.timer = setInterval(() => this.tick(), intervalMs);
-  }
+  start(intervalMs = 5000) { if (!this.timer) this.timer = setInterval(() => this.tick(), intervalMs); }
   stop() { clearInterval(this.timer); this.timer = null; }
 
   async tick() {
-    const active = this.db.workforce.filter(e => e.status !== 'idle');
-    if (!active.length) return;
-    const emp = active[Math.floor(Math.random() * active.length)];
-    const fn = AUTONOMOUS[emp.id] || AUTONOMOUS.OM;
-    const { summary, detail } = await fn();
-    const action = logAction(this.db, { empId: emp.id, summary, detail });
+    for (const tid of store.tenantIds()) {
+      const ws = store.tenant(tid);
+      const active = ws.workforce.filter(e => e.status !== 'idle');
+      if (!active.length) continue;
+      const emp = active[Math.floor(Math.random() * active.length)];
+      const fn = AUTONOMOUS[emp.id] || AUTONOMOUS.OM;
+      try {
+        const { summary, detail } = await fn();
+        const action = logAction(ws, { empId: emp.id, summary, detail });
+        this._emit(action);
+      } catch { /* connector hiccup — skip this tick */ }
+    }
     store.save();
-    this._emit(action);
   }
 
-  // dispatch a natural-language command; returns the executed chain (legacy/auto path)
-  async dispatch(text) {
+  /* legacy auto path */
+  async dispatch(tenantId, text) {
+    const ws = store.tenant(tenantId);
     const empId = routeCommand(text);
-    const steps = await buildChain(empId, text);
-    const actions = [];
-    // first the command acknowledgement, then executed steps
-    actions.push(logAction(this.db, { empId, summary: `received command: "${text}"`, tag: 'command' }));
-    for (const step of steps) {
-      actions.push(logAction(this.db, { empId, summary: step, tag: 'executed' }));
-    }
+    const steps = await planChain(ws, empId, text);
+    const actions = [logAction(ws, { empId, summary: `received command: "${text}"`, tag: 'command' })];
+    for (const step of steps) actions.push(logAction(ws, { empId, summary: step, tag: 'executed' }));
     store.save();
     actions.forEach(a => this._emit(a));
     return { empId, actions };
   }
 
-  /* ---------- audit log ---------- */
-  _audit(entry) {
-    const emp = this.db.workforce.find(w => w.id === entry.empId);
+  /* ---------- audit ---------- */
+  _audit(ws, entry) {
+    const emp = ws.workforce.find(w => w.id === entry.empId);
     const e = {
-      id: 'aud_' + (this.db.aseq++),
-      ts: Date.now(),
-      empId: entry.empId || null,
-      empCode: emp ? emp.code : (entry.empId || null),
-      type: entry.type,
-      summary: entry.summary,
-      detail: entry.detail || null,
+      id: 'aud_' + (ws.aseq++), ts: Date.now(),
+      empId: entry.empId || null, empCode: emp ? emp.code : (entry.empId || null),
+      type: entry.type, summary: entry.summary, detail: entry.detail || null,
     };
-    this.db.audit.unshift(e);
-    if (this.db.audit.length > 500) this.db.audit.length = 500;
+    ws.audit.unshift(e);
+    if (ws.audit.length > 500) ws.audit.length = 500;
     return e;
   }
 
-  /* ---------- tasks · human-in-the-loop approval ---------- */
-  async _executeTask(task) {
-    const steps = await buildChain(task.empId, task.text);
+  /* ---------- tasks · human-in-the-loop ---------- */
+  async _executeTask(ws, task) {
+    const steps = await planChain(ws, task.empId, task.text);
     const actions = [];
-    for (const s of steps) actions.push(logAction(this.db, { empId: task.empId, summary: s, tag: 'executed' }));
-    task.steps = steps;
-    task.status = 'done';
-    task.resolvedAt = Date.now();
+    for (const s of steps) actions.push(logAction(ws, { empId: task.empId, summary: s, tag: 'executed' }));
+    task.steps = steps; task.status = 'done'; task.resolvedAt = Date.now();
     if (task.empId === 'DOC') task.document = docDescriptor(docTypeFromText(task.text));
-    this._audit({ type: 'execute', empId: task.empId, summary: `executed: "${task.text}"`, detail: { taskId: task.id, steps } });
+    this._audit(ws, { type: 'execute', empId: task.empId, summary: `executed: "${task.text}"`, detail: { taskId: task.id, steps } });
     return actions;
   }
 
-  // submit a command; routes to an employee and either auto-executes or queues for approval
-  async submitCommand(text) {
+  async submitCommand(tenantId, text) {
+    const ws = store.tenant(tenantId);
     const empId = routeCommand(text);
-    const emp = this.db.workforce.find(e => e.id === empId) || { code: empId, name: empId };
-    const mode = (this.db.autonomy && this.db.autonomy[empId]) || 'supervised';
+    const emp = ws.workforce.find(e => e.id === empId) || { code: empId, name: empId };
+    const mode = (ws.autonomy && ws.autonomy[empId]) || 'supervised';
     const task = {
-      id: 'task_' + (this.db.tseq++),
+      id: 'task_' + (ws.tseq++),
       empId, empCode: emp.code, empName: emp.name || empId,
       text, steps: [], status: mode === 'auto' ? 'executing' : 'pending_approval',
       mode, createdAt: Date.now(), resolvedAt: null, document: null,
     };
-    this.db.tasks.unshift(task);
-    if (this.db.tasks.length > 200) this.db.tasks.length = 200;
-    this._audit({ type: 'command', empId, summary: `received command: "${text}"`, detail: { taskId: task.id, mode } });
+    ws.tasks.unshift(task);
+    if (ws.tasks.length > 200) ws.tasks.length = 200;
+    this._audit(ws, { type: 'command', empId, summary: `received command: "${text}"`, detail: { taskId: task.id, mode } });
     let actions = [];
-    if (mode === 'auto') { actions = await this._executeTask(task); }
+    if (mode === 'auto') actions = await this._executeTask(ws, task);
     store.save();
     actions.forEach(a => this._emit(a));
     return { task, executed: mode === 'auto', actions };
   }
 
-  async approve(id) {
-    const t = this.db.tasks.find(x => x.id === id);
+  async approve(tenantId, id) {
+    const ws = store.tenant(tenantId);
+    const t = ws.tasks.find(x => x.id === id);
     if (!t) return { error: 'not found' };
     if (t.status !== 'pending_approval') return { error: 'not pending', task: t };
     t.status = 'executing';
-    const actions = await this._executeTask(t);
-    this._audit({ type: 'approve', empId: t.empId, summary: `approved & executed: "${t.text}"`, detail: { taskId: id } });
+    const actions = await this._executeTask(ws, t);
+    this._audit(ws, { type: 'approve', empId: t.empId, summary: `approved & executed: "${t.text}"`, detail: { taskId: id } });
     store.save();
     actions.forEach(a => this._emit(a));
     return { task: t, actions };
   }
 
-  reject(id) {
-    const t = this.db.tasks.find(x => x.id === id);
+  reject(tenantId, id) {
+    const ws = store.tenant(tenantId);
+    const t = ws.tasks.find(x => x.id === id);
     if (!t) return { error: 'not found' };
-    t.status = 'rejected';
-    t.resolvedAt = Date.now();
-    this._audit({ type: 'reject', empId: t.empId, summary: `rejected: "${t.text}"`, detail: { taskId: id } });
+    t.status = 'rejected'; t.resolvedAt = Date.now();
+    this._audit(ws, { type: 'reject', empId: t.empId, summary: `rejected: "${t.text}"`, detail: { taskId: id } });
     store.save();
     return { task: t };
   }
 
   /* ---------- autonomy + memory ---------- */
-  setAutonomy(empId, level) {
+  setAutonomy(tenantId, empId, level) {
     if (!['supervised', 'auto'].includes(level)) return { error: 'bad level' };
-    this.db.autonomy[empId] = level;
-    this._audit({ type: 'autonomy', empId, summary: `autonomy set to ${level}` });
+    const ws = store.tenant(tenantId);
+    ws.autonomy[empId] = level;
+    this._audit(ws, { type: 'autonomy', empId, summary: `autonomy set to ${level}` });
     store.save();
     return { empId, level };
   }
-  addMemory(empId, note) {
+  addMemory(tenantId, empId, note) {
     if (!note || !note.trim()) return { error: 'empty' };
-    (this.db.memory[empId] = this.db.memory[empId] || []).unshift({ ts: Date.now(), note: note.trim() });
-    this._audit({ type: 'memory', empId, summary: `learned: "${note.trim()}"` });
+    const ws = store.tenant(tenantId);
+    (ws.memory[empId] = ws.memory[empId] || []).unshift({ ts: Date.now(), note: note.trim() });
+    this._audit(ws, { type: 'memory', empId, summary: `learned: "${note.trim()}"` });
     store.save();
-    return { empId, memory: this.db.memory[empId] };
+    return { empId, memory: ws.memory[empId] };
   }
 
   /* ---------- scheduled documents ---------- */
-  async runSchedule(id) {
-    const s = this.db.schedules.find(x => x.id === id);
+  async runSchedule(tenantId, id) {
+    const ws = store.tenant(tenantId);
+    const s = ws.schedules.find(x => x.id === id);
     if (!s) return { error: 'not found' };
     const d = docDescriptor(s.docType);
     const task = {
-      id: 'task_' + (this.db.tseq++),
+      id: 'task_' + (ws.tseq++),
       empId: s.empId, empCode: 'DOC', empName: 'AI Document Specialist',
       text: s.title, steps: [], status: 'executing', mode: 'scheduled',
       createdAt: Date.now(), resolvedAt: null, document: null,
     };
-    this.db.tasks.unshift(task);
+    ws.tasks.unshift(task);
     const steps = [`pulled the latest data from connected systems`, `generated ${s.title}`, `saved ${d.filename}`, `shared it with the team`];
-    for (const st of steps) logAction(this.db, { empId: s.empId, summary: st, tag: 'executed' });
+    for (const st of steps) logAction(ws, { empId: s.empId, summary: st, tag: 'executed' });
     task.steps = steps; task.status = 'done'; task.resolvedAt = Date.now(); task.document = d;
     s.lastRun = Date.now();
-    this._audit({ type: 'schedule', empId: s.empId, summary: `ran schedule: ${s.title}`, detail: { scheduleId: id, file: d.filename } });
+    this._audit(ws, { type: 'schedule', empId: s.empId, summary: `ran schedule: ${s.title}`, detail: { scheduleId: id, file: d.filename } });
     store.save();
     return { task, schedule: s };
   }
 
-  /* ---------- ROI ---------- */
-  computeRoi() {
-    const wf = this.db.workforce;
+  /* ---------- ROI (transparent estimate) ---------- */
+  computeRoi(tenantId) {
+    const ws = store.tenant(tenantId);
+    const wf = ws.workforce;
     const hours = +(wf.reduce((s, e) => s + (e.timeSavedToday || 0), 0)).toFixed(1);
     const tasks = wf.reduce((s, e) => s + (e.tasksToday || 0), 0);
     const avgPerf = wf.length ? Math.round(wf.reduce((s, e) => s + e.performance, 0) / wf.length) : 0;
-    const HOURLY = 45;                       // blended loaded cost of manual work
+    const HOURLY = 45;
     const dailySavings = Math.round(hours * HOURLY);
-    const annualSavings = dailySavings * 260; // working days
+    const annualSavings = dailySavings * 260;
     const seats = wf.length;
     const monthlyCost = seats * 499;
     const roiPct = monthlyCost ? Math.round(((annualSavings / 12) - monthlyCost) / monthlyCost * 100) : 0;
-    return { hoursSavedToday: hours, tasksToday: tasks, avgPerformance: avgPerf, dailySavings, annualSavings, monthlyCost, roiPct, seats };
+    return {
+      hoursSavedToday: hours, tasksToday: tasks, avgPerformance: avgPerf,
+      dailySavings, annualSavings, monthlyCost, roiPct, seats,
+      estimated: true,
+      basis: `Estimated from per-task time assumptions (${HOURLY} €/h blended). Replace with measured time per customer.`,
+    };
   }
 }
 

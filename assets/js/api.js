@@ -10,14 +10,28 @@ window.NEXA = (function () {
   const BASE = sameOrigin ? '' : 'http://localhost:4000';
   let online = sameOrigin; // assume online only when served over http
 
+  // Bearer token from login. Kept in memory and mirrored to localStorage
+  // (when available) so navigation within the dashboard stays signed in.
+  let token = null;
+  try { token = localStorage.getItem('nexa_token') || null; } catch {}
+  function setToken(t) {
+    token = t || null;
+    try { t ? localStorage.setItem('nexa_token', t) : localStorage.removeItem('nexa_token'); } catch {}
+  }
+
   async function call(pathname, opts = {}) {
     if (!online && !sameOrigin) return null;
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
       const res = await fetch(BASE + pathname, {
         method: opts.method || 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: opts.body ? JSON.stringify(opts.body) : undefined,
       });
+      // On an expired/missing token, clear it and behave like "offline" so
+      // callers fall back to local demo data instead of rendering errors.
+      if (res.status === 401 && pathname !== '/api/login' && pathname !== '/api/signup') { setToken(null); return null; }
       if (!res.ok) { online = false; return null; }
       online = true;
       return await res.json();
@@ -27,9 +41,26 @@ window.NEXA = (function () {
     }
   }
 
+  async function login(user, pass, tenant = 'default') {
+    const r = await call('/api/login', { method: 'POST', body: { user, pass, tenant } });
+    if (r && r.ok && r.token) setToken(r.token);
+    return r;
+  }
+
+  async function signup(opts) {
+    const r = await call('/api/signup', { method: 'POST', body: opts });
+    if (r && r.ok && r.token) setToken(r.token);
+    return r;
+  }
+
   return {
     get online() { return online; },
-    login: (user, pass) => call('/api/login', { method: 'POST', body: { user, pass } }),
+    get authed() { return !!token; },
+    logout: () => setToken(null),
+    login,
+    signup,
+    me: () => call('/api/me'),
+    createUser: (u) => call('/api/users', { method: 'POST', body: u }),
     state: () => call('/api/state'),
     workforce: () => call('/api/workforce'),
     employee: (id) => call('/api/employee/' + id),

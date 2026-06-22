@@ -1,41 +1,83 @@
 /* ============================================================
-   NEXA — API + static server (zero-dependency)
+   NEXA — API + static server (zero-dependency, multi-tenant)
    Run:  node server/server.js   →  http://localhost:4000
    ============================================================ */
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const store = require('./store');
+const auth = require('./auth');
+const connectors = require('./connectors');
 const { NexaEngine } = require('./engine');
 
 const PORT = process.env.PORT || 4000;
-const ROOT = path.join(__dirname, '..'); // serve the site too
+const ROOT = path.join(__dirname, '..');
+const CORS_ORIGIN = process.env.NEXA_CORS_ORIGIN || '*';
+const MAX_BODY = 1_000_000; // 1 MB request cap
 const engine = new NexaEngine();
 engine.start(5000);
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+/* ---- register live connector providers (activate when env vars present) ---- */
+function registerProviders() {
+  const registry = [
+    ['gmail', () => require('./providers/gmail')],
+    ['hubspot', () => require('./providers/hubspot')],
+    ['exact', () => require('./providers/exact')],
+  ];
+  const live = new Set(connectors.status().filter(s => s.mode === 'live').map(s => s.id));
+  for (const [id, load] of registry) {
+    if (live.has(id)) {
+      try { connectors.registerProvider(id, load()); console.log(`     Provider      → ${id} LIVE`); }
+      catch (e) { console.warn(`     Provider ${id} failed to load:`, e.message); }
+    }
+  }
+}
+registerProviders();
+
+const PUBLIC_API = new Set(['/api/login', '/api/signup']);
+
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'no-referrer',
+  'X-XSS-Protection': '0',
+};
+
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.mp4': 'video/mp4', '.png': 'image/png', '.jpg': 'image/jpeg' };
 
 function json(res, code, data) {
-  const body = JSON.stringify(data);
-  res.writeHead(code, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS' });
-  res.end(body);
+  res.writeHead(code, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': CORS_ORIGIN,
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    ...SECURITY_HEADERS,
+  });
+  res.end(JSON.stringify(data));
 }
 
+/* Read a JSON body with a hard size cap to prevent memory-exhaustion. */
 function readBody(req) {
-  return new Promise(resolve => {
-    let b = '';
-    req.on('data', c => (b += c));
-    req.on('end', () => { try { resolve(b ? JSON.parse(b) : {}); } catch { resolve({}); } });
+  return new Promise((resolve, reject) => {
+    let b = '', size = 0, over = false;
+    req.on('data', c => {
+      if (over) return;
+      size += c.length;
+      if (size > MAX_BODY) { over = true; reject(new Error('payload_too_large')); return; }
+      b += c;
+    });
+    req.on('end', () => { if (over) return; try { resolve(b ? JSON.parse(b) : {}); } catch { resolve({}); } });
+    req.on('error', reject);
   });
 }
 
 function serveStatic(req, res, urlPath) {
-  let rel = urlPath === '/' ? '/index.html' : decodeURIComponent(urlPath);
-  const filePath = path.join(ROOT, rel);
+  const rel = urlPath === '/' ? '/index.html' : decodeURIComponent(urlPath);
+  const filePath = path.normalize(path.join(ROOT, rel));
   if (!filePath.startsWith(ROOT)) return json(res, 403, { error: 'forbidden' });
   fs.readFile(filePath, (err, data) => {
-    if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream' });
+    if (err) { res.writeHead(404, { 'Content-Type': 'text/plain', ...SECURITY_HEADERS }); return res.end('Not found'); }
+    res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream', ...SECURITY_HEADERS });
     res.end(data);
   });
 }
@@ -48,40 +90,82 @@ const server = http.createServer(async (req, res) => {
 
   // ---------- API ----------
   if (p.startsWith('/api/')) {
-    const db = store.load();
-
-    /* ---------- auth ---------- */
-    if (p === '/api/login' && req.method === 'POST') {
-      const { user, pass } = await readBody(req);
-      const admin = (db.company && db.company.admin) || { user: 'kain', pass: 'Kain25', name: 'Kain' };
-      const ok = user && pass && String(user).trim().toLowerCase() === String(admin.user).toLowerCase() && pass === admin.pass;
-      if (!ok) return json(res, 401, { ok: false, error: 'invalid_credentials' });
-      const token = Buffer.from(`${admin.user}:${Date.now()}:${Math.random().toString(36).slice(2)}`).toString('base64');
-      return json(res, 200, { ok: true, user: admin.name || 'Kain', company: db.company.name, token });
+    const root = store.load();
+    const secret = root.authSecret;
+    let body;
+    if (req.method === 'POST') {
+      try { body = await readBody(req); }
+      catch { return json(res, 413, { error: 'payload_too_large' }); }
     }
 
+    /* ---------- public: login ---------- */
+    if (p === '/api/login' && req.method === 'POST') {
+      const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'local').toString();
+      if (auth.rateLimited(ip)) return json(res, 429, { ok: false, error: 'too_many_attempts' });
+      const { user, pass, tenant = 'default' } = body;
+      const account = store.findUser(user, tenant);
+      const ok = account && auth.verifyPassword(pass, account.passwordHash);
+      if (!ok) return json(res, 401, { ok: false, error: 'invalid_credentials' });
+      auth.resetRateLimit(ip);
+      const token = auth.issueToken({ userId: account.id, tenantId: account.tenantId, role: account.role }, secret);
+      const ws = store.tenant(account.tenantId);
+      return json(res, 200, { ok: true, user: account.name, role: account.role, tenant: account.tenantId, company: ws.company.name, token });
+    }
+
+    /* ---------- public: self-serve signup (new tenant + admin) ---------- */
+    if (p === '/api/signup' && req.method === 'POST') {
+      if (process.env.NEXA_ALLOW_SIGNUP === 'false') return json(res, 403, { error: 'signup_disabled' });
+      const { tenantId, companyName, user, pass, name } = body;
+      if (!tenantId || !user || !pass) return json(res, 400, { error: 'missing_fields' });
+      const r = store.createTenant({ tenantId: String(tenantId).trim().toLowerCase(), companyName, adminUser: user, adminPass: pass, adminName: name });
+      if (r.error) return json(res, 409, r);
+      const token = auth.issueToken({ userId: r.user.id, tenantId: r.tenantId, role: 'admin' }, secret);
+      return json(res, 200, { ok: true, tenant: r.tenantId, token });
+    }
+
+    /* ---------- auth gate ---------- */
+    if (!PUBLIC_API.has(p)) {
+      const ctx = auth.authContext(req, secret);
+      if (!ctx) return json(res, 401, { error: 'unauthorized' });
+      req.auth = ctx;
+    }
+
+    const tid = req.auth.tenantId;
+    const ws = store.tenant(tid);
+    const isAdmin = req.auth.role === 'admin';
+
+    /* ---------- admin: user management ---------- */
+    if (p === '/api/users' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      const { user, pass, name, role } = body;
+      const r = store.createUser({ tenantId: tid, user, pass, name, role: role === 'admin' ? 'admin' : 'member' });
+      return json(res, r.error ? 409 : 200, r);
+    }
+    if (p === '/api/me' && req.method === 'GET')
+      return json(res, 200, { userId: req.auth.userId, role: req.auth.role, tenant: tid, company: ws.company.name });
+
     if (p === '/api/state' && req.method === 'GET')
-      return json(res, 200, { company: db.company, connectors: db.connectors, workforce: db.workforce });
+      return json(res, 200, { company: ws.company, connectors: ws.connectors, workforce: ws.workforce });
 
     if (p === '/api/workforce' && req.method === 'GET')
-      return json(res, 200, { workforce: db.workforce });
+      return json(res, 200, { workforce: ws.workforce });
 
     if (p.match(/^\/api\/employee\/[A-Z]+$/) && req.method === 'GET') {
       const id = p.split('/').pop();
-      const emp = db.workforce.find(e => e.id === id);
+      const emp = ws.workforce.find(e => e.id === id);
       if (!emp) return json(res, 404, { error: 'not found' });
-      const history = db.activity.filter(a => a.empId === id).slice(0, 40);
+      const history = ws.activity.filter(a => a.empId === id).slice(0, 40);
       return json(res, 200, { employee: emp, history });
     }
 
     if (p === '/api/activity' && req.method === 'GET') {
       const since = +u.searchParams.get('since') || 0;
-      const items = db.activity.filter(a => a.ts > since).slice(0, 50);
-      return json(res, 200, { activity: db.activity.slice(0, 30), latest: items });
+      const items = ws.activity.filter(a => a.ts > since).slice(0, 50);
+      return json(res, 200, { activity: ws.activity.slice(0, 30), latest: items });
     }
 
     if (p === '/api/intelligence' && req.method === 'GET') {
-      const wf = db.workforce;
+      const wf = ws.workforce;
       const avgPerf = wf.length ? Math.round(wf.reduce((s, e) => s + e.performance, 0) / wf.length) : 0;
       const timeSaved = wf.reduce((s, e) => s + e.timeSavedToday, 0).toFixed(1);
       const tasks = wf.reduce((s, e) => s + e.tasksToday, 0);
@@ -99,117 +183,105 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === '/api/marketplace' && req.method === 'GET') {
-      const installed = new Set(db.workforce.map(e => e.id));
+      const installed = new Set(ws.workforce.map(e => e.id));
       const items = store.EMPLOYEE_LIBRARY.map(e => ({ ...e, installed: installed.has(e.id) }));
       return json(res, 200, { marketplace: items });
     }
 
     if (p === '/api/workforce/install' && req.method === 'POST') {
-      const { id } = await readBody(req);
+      const { id } = body;
       const lib = store.EMPLOYEE_LIBRARY.find(e => e.id === id);
       if (!lib) return json(res, 400, { error: 'unknown employee' });
-      if (db.workforce.find(e => e.id === id)) return json(res, 200, { ok: true, already: true });
-      db.workforce.push({
+      if (ws.workforce.find(e => e.id === id)) return json(res, 200, { ok: true, already: true });
+      ws.workforce.push({
         id: lib.id, code: lib.code, person: lib.person, name: lib.name, dept: lib.dept, tagline: lib.tagline, skills: lib.skills,
         status: 'live', tasksToday: 0, timeSavedToday: 0, performance: 95, installedAt: Date.now(),
       });
       store.save();
-      return json(res, 200, { ok: true, workforce: db.workforce });
+      return json(res, 200, { ok: true, workforce: ws.workforce });
     }
 
     if (p === '/api/commands' && req.method === 'POST') {
-      const { text } = await readBody(req);
+      const { text } = body;
       if (!text || !text.trim()) return json(res, 400, { error: 'empty command' });
-      const result = await engine.dispatch(text.trim());
-      return json(res, 200, result);
+      return json(res, 200, await engine.dispatch(tid, text.trim()));
     }
 
     /* ---------- tasks · human-in-the-loop ---------- */
     if (p === '/api/tasks' && req.method === 'GET') {
       const status = u.searchParams.get('status');
-      let items = db.tasks;
+      let items = ws.tasks;
       if (status) items = items.filter(t => t.status === status);
-      const pending = db.tasks.filter(t => t.status === 'pending_approval').length;
+      const pending = ws.tasks.filter(t => t.status === 'pending_approval').length;
       return json(res, 200, { tasks: items.slice(0, 60), pending });
     }
     if (p === '/api/tasks' && req.method === 'POST') {
-      const { text } = await readBody(req);
+      const { text } = body;
       if (!text || !text.trim()) return json(res, 400, { error: 'empty command' });
-      const result = await engine.submitCommand(text.trim());
-      return json(res, 200, result);
+      return json(res, 200, await engine.submitCommand(tid, text.trim()));
     }
-    if (p === '/api/tasks/approve' && req.method === 'POST') {
-      const { id } = await readBody(req);
-      return json(res, 200, await engine.approve(id));
-    }
-    if (p === '/api/tasks/reject' && req.method === 'POST') {
-      const { id } = await readBody(req);
-      return json(res, 200, engine.reject(id));
-    }
+    if (p === '/api/tasks/approve' && req.method === 'POST')
+      return json(res, 200, await engine.approve(tid, body.id));
+    if (p === '/api/tasks/reject' && req.method === 'POST')
+      return json(res, 200, engine.reject(tid, body.id));
 
     /* ---------- audit ---------- */
     if (p === '/api/audit' && req.method === 'GET')
-      return json(res, 200, { audit: db.audit.slice(0, 100) });
+      return json(res, 200, { audit: ws.audit.slice(0, 100) });
 
     /* ---------- autonomy + memory ---------- */
-    if (p.match(/^\/api\/employee\/[A-Z]+\/autonomy$/) && req.method === 'POST') {
-      const id = p.split('/')[3];
-      const { level } = await readBody(req);
-      return json(res, 200, engine.setAutonomy(id, level));
-    }
+    if (p.match(/^\/api\/employee\/[A-Z]+\/autonomy$/) && req.method === 'POST')
+      return json(res, 200, engine.setAutonomy(tid, p.split('/')[3], body.level));
     if (p.match(/^\/api\/employee\/[A-Z]+\/memory$/) && req.method === 'GET') {
       const id = p.split('/')[3];
-      return json(res, 200, { memory: db.memory[id] || [], autonomy: db.autonomy[id] || 'supervised' });
+      return json(res, 200, { memory: ws.memory[id] || [], autonomy: ws.autonomy[id] || 'supervised' });
     }
-    if (p.match(/^\/api\/employee\/[A-Z]+\/memory$/) && req.method === 'POST') {
-      const id = p.split('/')[3];
-      const { note } = await readBody(req);
-      return json(res, 200, engine.addMemory(id, note));
-    }
+    if (p.match(/^\/api\/employee\/[A-Z]+\/memory$/) && req.method === 'POST')
+      return json(res, 200, engine.addMemory(tid, p.split('/')[3], body.note));
 
     /* ---------- schedules ---------- */
     if (p === '/api/schedules' && req.method === 'GET')
-      return json(res, 200, { schedules: db.schedules });
-    if (p === '/api/schedules/run' && req.method === 'POST') {
-      const { id } = await readBody(req);
-      return json(res, 200, await engine.runSchedule(id));
-    }
+      return json(res, 200, { schedules: ws.schedules });
+    if (p === '/api/schedules/run' && req.method === 'POST')
+      return json(res, 200, await engine.runSchedule(tid, body.id));
     if (p === '/api/schedules/toggle' && req.method === 'POST') {
-      const { id } = await readBody(req);
-      const s = db.schedules.find(x => x.id === id);
+      const s = ws.schedules.find(x => x.id === body.id);
       if (s) { s.enabled = !s.enabled; store.save(); }
       return json(res, 200, { schedule: s });
     }
 
     /* ---------- ROI ---------- */
     if (p === '/api/roi' && req.method === 'GET')
-      return json(res, 200, engine.computeRoi());
+      return json(res, 200, engine.computeRoi(tid));
 
     /* ---------- connectors ---------- */
     if (p === '/api/connectors' && req.method === 'GET') {
-      const connectors = require('./connectors');
       const live = new Map(connectors.status().map(s => [s.id, s.mode]));
-      const items = db.connectors.map(c => ({ ...c, mode: live.get(c.id) || 'sandbox' }));
+      const items = ws.connectors.map(c => ({ ...c, mode: live.get(c.id) || 'sandbox' }));
       return json(res, 200, { connectors: items });
     }
     if (p === '/api/connectors/toggle' && req.method === 'POST') {
-      const { id } = await readBody(req);
-      const c = db.connectors.find(x => x.id === id);
+      const c = ws.connectors.find(x => x.id === body.id);
       if (c) { c.connected = !c.connected; store.save(); }
       return json(res, 200, { connector: c });
     }
 
-    if (p === '/api/reset' && req.method === 'POST') { store.reset(); return json(res, 200, { ok: true }); }
+    /* ---------- reset (admin only) ---------- */
+    if (p === '/api/reset' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      store.reset();
+      return json(res, 200, { ok: true });
+    }
 
     return json(res, 404, { error: 'unknown endpoint' });
   }
 
-  // ---------- static site ----------
   serveStatic(req, res, p);
 });
 
 server.listen(PORT, () => {
   console.log(`\n  ◎  NEXA running → http://localhost:${PORT}`);
   console.log(`     API base      → http://localhost:${PORT}/api`);
-  console.log(`     Connectors    → SANDBOX (no real accounts touched)\n`);
+  const liveCount = connectors.status().filter(s => s.mode === 'live').length;
+  console.log(`     Connectors    → ${liveCount ? liveCount + ' LIVE' : 'SANDBOX (no real accounts touched)'}\n`);
 });

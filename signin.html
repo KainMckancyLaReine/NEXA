@@ -195,8 +195,16 @@ body { min-height:100vh; background:var(--bg); }
     $('#err').style.display = 'none';
     signIn($('#user').value, $('#password').value);
   });
-  $('#ssoGoogle').onclick = () => go(FALLBACK.name);
-  $('#ssoMs').onclick = () => go(FALLBACK.name);
+  /* Demo SSO: when the backend is up, sign in with the demo account to get a
+     real token (live dashboard); otherwise fall back to the local demo view. */
+  async function ssoDemo() {
+    let result = null;
+    try { result = window.NEXA ? await NEXA.login(FALLBACK.user, FALLBACK.pass) : null; } catch (e) { result = null; }
+    if (result && result.ok) return go(result.user, result.token);
+    return go(FALLBACK.name);
+  }
+  $('#ssoGoogle').onclick = ssoDemo;
+  $('#ssoMs').onclick = ssoDemo;
 
   /* live numbers from backend when available */
   (async () => {
