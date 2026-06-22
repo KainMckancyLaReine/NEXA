@@ -324,6 +324,34 @@ async function updateApBadge(){ try{ const n=await ENG.pending(); const b=$('#ap
 /* ---- result / preview modal: shows exactly what a command produced ---- */
 function rxEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function rxDocType(s){ s=(s||'').toLowerCase(); if(/excel|spreadsheet|\.xlsx|workbook|model|cashflow|financial|budget/.test(s))return'xlsx'; if(/powerpoint|\bdeck\b|slides|presentation|\.pptx|pitch/.test(s))return'pptx'; return'docx'; }
+/* Visible, on-screen preview of what the Documents bot produced — same
+   content that the Download button writes to a real file. */
+function docPreviewHtml(type){
+  const date=new Date().toISOString().slice(0,10);
+  if(type==='xlsx'){
+    const rows=[['Jan','124,000','68,000','56,000'],['Feb','138,000','71,000','67,000'],['Mar','151,000','74,000','77,000'],['Q1 Total','413,000','213,000','200,000']];
+    return `<div style="background:#fff;color:#111;padding:14px;font:13px/1.5 Calibri,Arial,sans-serif">
+      <div style="font-weight:700;color:#2563EB;margin-bottom:8px">NEXA — Financial Model · ${date}</div>
+      <table style="border-collapse:collapse;width:100%;font-size:12.5px">
+        <thead><tr>${['Month','Revenue (€)','Costs (€)','Cashflow (€)'].map(h=>`<th style="text-align:left;border:1px solid #e2e8f0;padding:6px 9px;background:#f1f5f9">${h}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map((r,i)=>`<tr style="${i===rows.length-1?'font-weight:700;background:#f8fafc':''}">${r.map((c,j)=>`<td style="border:1px solid #e2e8f0;padding:6px 9px;${j>0?'text-align:right':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table></div>`;
+  }
+  if(type==='pptx'){
+    const slides=[['NEXA','Your first digital workforce'],['The problem','Teams lose thousands of hours/year · Hiring doesn\'t scale · Manual processes break'],['The solution','Autonomous AI employees · 24/7 inside your tools · Supervised by you'],['Traction','318 actions/day · 27.6h saved/day · 98% performance'],['Call to action','Hire your first AI employee today · from €499/mo']];
+    return `<div style="background:#fff;color:#111;padding:14px;display:grid;gap:8px;font:13px/1.4 Arial,sans-serif">
+      ${slides.map((s,i)=>`<div style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:#94a3b8">Slide ${i+1}</div><div style="font-weight:700;color:#2563EB">${rxEsc(s[0])}</div><div style="color:#334155;font-size:12.5px">${rxEsc(s[1])}</div></div>`).join('')}</div>`;
+  }
+  return `<div style="background:#fff;color:#111;padding:16px;font:13px/1.6 Calibri,Arial,sans-serif">
+    <div style="font-size:18px;font-weight:700;color:#2563EB">NEXA — Operations Report</div>
+    <div style="color:#6B6B73;font-size:11px;margin:2px 0 10px">Generated ${date} · by Ava, AI Document Specialist</div>
+    <div style="font-weight:700;margin-top:6px">Executive summary</div>
+    <p style="margin:4px 0">The autonomous workforce executed <b>318 actions</b> today, saving an estimated <b>27.6 hours</b> of manual work at <b>98%</b> performance.</p>
+    <div style="font-weight:700;margin-top:6px">Highlights</div>
+    <ul style="margin:4px 0;padding-left:18px"><li>Emma cleared the shared inbox and updated 9 CRM records.</li><li>Sophie reconciled 12 invoices — €48k cleared, 6 reminders sent.</li><li>Noah resolved 18 support tickets at a 4.8 CSAT.</li><li>Liam followed up 24 leads and sent 3 proposals.</li></ul>
+    <div style="font-weight:700;margin-top:6px">Revenue forecast</div>
+    <p style="margin:4px 0">Q2 forecast on track at <b>€1.24M</b> (+8.1% MoM).</p></div>`;
+}
 function resultModal(innerHtml){
   const ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(2,6,23,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px';
@@ -367,6 +395,10 @@ function showResult(task){
   }
   const isDoc=(emp==='DOC')||task.document;
   const docTy=isDoc?((task.document&&task.document.type)||rxDocType(task.text)):null;
+  if(isDoc&&task.status==='done'){
+    h+=`<div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Preview · ${docTy.toUpperCase()}${task.document&&task.document.filename?' · '+rxEsc(task.document.filename):''}</div>
+        <div style="border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:300px;margin-bottom:14px">${docPreviewHtml(docTy)}</div>`;
+  }
   h+=`<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">`;
   if(pending){
     h+=`<button class="btn btn-ghost rx-close" style="padding:8px 16px;font-size:13px">Close</button>
@@ -477,6 +509,8 @@ function renderDashboard(){
           <div class="metric glass"><div class="v" id="mPerf">0%</div><div class="k">Workforce performance</div><div class="d up">↑ 1.2 pts</div></div>
           <div class="metric glass"><div class="v">€1.24M</div><div class="k">Revenue forecast</div><div class="d up">↑ 8.1% MoM</div></div>
         </div>
+        <div class="feed-title"><h3>Workforce · what each is doing</h3></div>
+        <div id="liveWork" class="glass" style="padding:4px 8px;margin-bottom:18px"></div>
         <div class="feed-title"><h3>Live Activity</h3><span class="live-tag" id="liveTag"><span class="status-dot live"></span> Streaming · workforce online</span></div>
         <div class="activity" id="activity"></div>
       </div>
@@ -510,8 +544,33 @@ function renderDashboard(){
   })();
   if(window.I18N) I18N.apply(view);
   bootFeed();
+  renderLiveWorkforce();
+  every(renderLiveWorkforce, 4000);
 }
 function countTo(sel, val, suf){ const el=view.querySelector(sel); if(!el) return; gsap.to({v:0},{v:val,duration:1.3,ease:'power2.out',onUpdate(){el.textContent=Math.round(this.targets()[0].v)+suf;}}); }
+
+/* Live "what each bot does + what it's doing now" panel. */
+const ROLE={OM:'Operations · inbox, scheduling, CRM',SM:'Sales · leads & follow-ups',FM:'Finance · invoices & reminders',SA:'Support · tickets & CSAT',RA:'Recruiting · screening & interviews',DA:'Data · dashboards & anomalies',MM:'Marketing · campaigns & content',PM:'Procurement · POs & vendors',DOC:'Documents · Excel / Word / PPT'};
+async function renderLiveWorkforce(){
+  const box=view.querySelector('#liveWork'); if(!box) return;
+  const wfData=await NEXA.workforce(); const wf=(wfData&&wfData.workforce)?wfData.workforce:(window.__wf||WF_FALLBACK);
+  const actData=await NEXA.activity(); const acts=(actData&&actData.activity)||[];
+  const latest={}; for(const a of acts){ if(!latest[a.empCode]) latest[a.empCode]={summary:a.summary,ts:a.ts}; }
+  box.innerHTML=wf.map(e=>{
+    const code=e.code||e.id; const l=latest[code]; const working=l&&(Date.now()-l.ts<12000);
+    const nm=(EMP[code]&&EMP[code][1])||e.name;
+    const doing=l?rxEsc(l.summary):'ready for your command';
+    return `<a href="employee.html?id=${code}" style="display:flex;align-items:center;gap:11px;padding:9px 8px;border-bottom:1px solid var(--border);text-decoration:none;color:inherit">
+      <div style="width:34px;height:34px;border-radius:9px;overflow:hidden;flex:none">${window.aiAvatar?aiAvatar(code,34):(EMP[code]?EMP[code][0]:'•')}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600">${rxEsc(nm)} <span style="font-weight:400;color:var(--text-3)">· ${ROLE[code]||e.dept||''}</span></div>
+        <div style="font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${working?'➤ ':''}${doing}</div>
+      </div>
+      <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;flex:none;${working?'background:rgba(34,197,94,.15);color:#16a34a':'color:var(--text-3);background:rgba(127,127,127,.1)'}">${working?'● working':'idle'}</span>
+    </a>`;
+  }).join('');
+  const last=box.lastElementChild; if(last) last.style.borderBottom='none';
+}
 
 const FEED_LOCAL = [
   ['OM','processed 17 emails and updated 9 CRM records'],['SM','followed up 24 leads · 6 replied'],['FM','reconciled 12 invoices · €48k cleared'],
