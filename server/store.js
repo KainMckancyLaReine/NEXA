@@ -248,6 +248,17 @@ function setPassword(userId, newPass) {
   return { ok: true };
 }
 
+/* Update a user's profile fields (avatar data-URL, display name). */
+function updateUserProfile(userId, patch) {
+  const root = load();
+  const u = (root.users || []).find(x => x.id === userId);
+  if (!u) return { error: 'not_found' };
+  if (typeof patch.avatar === 'string') u.avatar = patch.avatar;
+  if (typeof patch.name === 'string' && patch.name.trim()) u.name = patch.name.trim();
+  save();
+  return { ok: true };
+}
+
 function reset() {
   cache = seedRoot();
   save();
@@ -256,6 +267,6 @@ function reset() {
 
 module.exports = {
   load, save, reset,
-  tenant, tenantIds, createTenant, createUser, findUser, findUserById, setPassword,
+  tenant, tenantIds, createTenant, createUser, findUser, findUserById, setPassword, updateUserProfile,
   EMPLOYEE_LIBRARY,
 };

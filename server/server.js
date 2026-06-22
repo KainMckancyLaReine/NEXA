@@ -174,8 +174,28 @@ const server = http.createServer(async (req, res) => {
       const r = store.createUser({ tenantId: tid, user, pass, name, role: role === 'admin' ? 'admin' : 'member' });
       return json(res, r.error ? 409 : 200, r);
     }
-    if (p === '/api/me' && req.method === 'GET')
-      return json(res, 200, { userId: req.auth.userId, role: req.auth.role, tenant: tid, company: ws.company.name });
+    if (p === '/api/me' && req.method === 'GET') {
+      const u = store.findUserById(req.auth.userId);
+      return json(res, 200, { userId: req.auth.userId, role: req.auth.role, tenant: tid, company: ws.company.name,
+        name: u ? u.name : null, email: u ? (u.email || null) : null, avatar: u ? (u.avatar || null) : null });
+    }
+    if (p === '/api/me/password' && req.method === 'POST') {
+      const { currentPassword, newPassword } = body;
+      if (!newPassword || String(newPassword).length < 8) return json(res, 400, { ok: false, error: 'weak_password', message: 'Password must be at least 8 characters.' });
+      const u = store.findUserById(req.auth.userId);
+      if (!u || !auth.verifyPassword(currentPassword, u.passwordHash)) return json(res, 401, { ok: false, error: 'wrong_current', message: 'Current password is incorrect.' });
+      store.setPassword(u.id, newPassword);
+      return json(res, 200, { ok: true });
+    }
+    if (p === '/api/me/profile' && req.method === 'POST') {
+      const { avatar, name } = body;
+      if (avatar != null) {
+        if (typeof avatar !== 'string' || !/^data:image\/(png|jpe?g|webp);base64,/.test(avatar)) return json(res, 400, { ok: false, error: 'bad_image' });
+        if (avatar.length > 700000) return json(res, 413, { ok: false, error: 'too_large', message: 'Image too large — use a smaller photo.' });
+      }
+      const r = store.updateUserProfile(req.auth.userId, { avatar, name });
+      return json(res, r.error ? 400 : 200, r.error ? { ok: false, error: r.error } : { ok: true });
+    }
 
     if (p === '/api/state' && req.method === 'GET')
       return json(res, 200, { company: ws.company, connectors: ws.connectors, workforce: ws.workforce });
