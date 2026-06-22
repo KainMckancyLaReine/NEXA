@@ -503,11 +503,12 @@ function renderDashboard(){
   view.innerHTML = `
     <div class="dash">
       <div>
+        <div id="statusStrip" class="glass" style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 14px;margin-bottom:14px;font-size:12.5px"></div>
         <div class="metrics-row">
-          <div class="metric glass"><div class="v" id="mActions">0</div><div class="k">Actions executed today</div><div class="d up">↑ 24% vs yesterday</div></div>
-          <div class="metric glass"><div class="v" id="mTime">0h</div><div class="k">Time saved today</div><div class="d up">↑ across workforce</div></div>
-          <div class="metric glass"><div class="v" id="mPerf">0%</div><div class="k">Workforce performance</div><div class="d up">↑ 1.2 pts</div></div>
-          <div class="metric glass"><div class="v">€1.24M</div><div class="k">Revenue forecast</div><div class="d up">↑ 8.1% MoM</div></div>
+          <div class="metric glass"><div class="v" id="mActions">0</div><div class="k">Actions executed today</div><div class="d up" id="mActionsD">live count</div></div>
+          <div class="metric glass"><div class="v" id="mTime">0h</div><div class="k">Time saved today</div><div class="d" id="mTimeD" style="color:var(--text-3)">estimated</div></div>
+          <div class="metric glass"><div class="v" id="mPerf">0%</div><div class="k">Workforce performance</div><div class="d up">avg across bots</div></div>
+          <a class="metric glass" id="mApprovTile" href="#approvals" style="text-decoration:none;color:inherit"><div class="v" id="mApprov">0</div><div class="k">Awaiting your approval</div><div class="d" id="mApprovD" style="color:var(--accent-2)">tap to review →</div></a>
         </div>
         <div class="feed-title"><h3>Workforce · what each is doing</h3></div>
         <div id="liveWork" class="glass" style="padding:4px 8px;margin-bottom:18px"></div>
@@ -518,34 +519,70 @@ function renderDashboard(){
         <h4 data-i18n="roi.cardt">Live ROI</h4>
         <div class="ibox" id="roiBox"><div class="top"><span class="lbl" data-i18n="roi.annual">Projected annual savings</span><span class="pill good" id="roiPct">—</span></div><div class="big" style="color:var(--success)" id="roiAnnual">€—</div></div>
         <h4>Executive Intelligence</h4>
-        <div class="ibox"><div class="top"><span class="lbl">Revenue Forecast</span><span class="pill good">On track</span></div><div class="big" style="color:var(--success)">€1.24M</div></div>
-        <div class="ibox"><div class="top"><span class="lbl">Operational Bottleneck</span><span class="pill warn">Attention</span></div><div class="big" style="font-size:15px">Invoice approvals delayed 2.3 days avg</div></div>
-        <div class="ibox"><div class="top"><span class="lbl">Customer Risk Alerts</span><span class="pill bad">3 accounts</span></div><div class="big" style="font-size:15px">€84k ARR flagged at risk</div></div>
+        <div class="ibox"><div class="top"><span class="lbl">Revenue Forecast</span><span class="pill good">On track</span></div><div class="big" style="color:var(--success)" id="intRev">€1.24M</div></div>
+        <div class="ibox"><div class="top"><span class="lbl">Operational Bottleneck</span><span class="pill warn">Attention</span></div><div class="big" style="font-size:15px" id="intBott">Invoice approvals delayed 2.3 days avg</div></div>
+        <div class="ibox"><div class="top"><span class="lbl">Customer Risk Alerts</span><span class="pill bad" id="intRiskPill">3 accounts</span></div><div class="big" style="font-size:15px" id="intRiskBig">€84k ARR flagged at risk</div></div>
         <h4>Workforce Performance</h4>
         <div class="ibox" id="perfBox"></div>
         <h4>AI Recommendations</h4>
         <div id="recBox"></div>
       </div>
     </div>`;
-  // counters
-  countTo('#mActions', 318, ''); $('#mTime').textContent='27.6h'; countTo('#mPerf', 98, '%');
-  // perf + recs (API or fallback)
   (async () => {
+    // ---- real numbers from the API (fall back to demo values) ----
+    let roi=null; try { roi = await ENG.roi(); } catch(e){}
+    if(roi){
+      countTo('#mActions', roi.tasksToday||0, '');
+      const mt=view.querySelector('#mTime'); if(mt) mt.textContent=(roi.hoursSavedToday||0)+'h';
+      countTo('#mPerf', roi.avgPerformance||0, '%');
+      const p=view.querySelector('#roiPct'), a=view.querySelector('#roiAnnual');
+      if(p) p.textContent=(roi.roiPct||0)+'% ROI'; if(a) a.textContent='€'+(roi.annualSavings||0).toLocaleString('en-US');
+    } else { countTo('#mActions',318,''); const mt=view.querySelector('#mTime'); if(mt) mt.textContent='27.6h'; countTo('#mPerf',98,'%'); }
+    // ---- approvals tile ----
+    try { const n=await ENG.pending(); const m=view.querySelector('#mApprov'); if(m) m.textContent=n;
+      const d=view.querySelector('#mApprovD'); if(d) d.textContent = n? 'tap to review →' : 'all clear ✓'; } catch(e){}
+    // ---- intelligence rail (real bottleneck / risk / revenue) ----
     const intel = await NEXA.intelligence();
+    if(intel){
+      const rev=view.querySelector('#intRev'); if(rev&&intel.revenueForecast) rev.textContent=intel.revenueForecast;
+      const bott=view.querySelector('#intBott'); if(bott&&intel.bottleneck) bott.textContent=intel.bottleneck;
+      if(intel.risk){ const rp=view.querySelector('#intRiskPill'), rb=view.querySelector('#intRiskBig');
+        if(rp) rp.textContent=(intel.risk.accounts||0)+' accounts'; if(rb&&intel.risk.arr) rb.textContent=intel.risk.arr+' ARR flagged at risk'; }
+    }
+    // ---- performance + recommendations ----
     const perf = view.querySelector('#perfBox'), rec = view.querySelector('#recBox');
     const wfData = (await NEXA.workforce());
     const wf = (wfData && wfData.workforce) ? wfData.workforce : WF_FALLBACK;
-    perf.innerHTML = wf.slice(0,5).map(e => `<div class="top" style="margin-top:8px"><span class="lbl">${e.name.replace('AI ','')}</span><span style="font-weight:700">${e.performance}%</span></div><div class="perfbar"><i style="width:${e.performance}%"></i></div>`).join('');
+    if(perf) perf.innerHTML = wf.slice(0,5).map(e => `<div class="top" style="margin-top:8px"><span class="lbl">${e.name.replace('AI ','')}</span><span style="font-weight:700">${e.performance}%</span></div><div class="perfbar"><i style="width:${e.performance}%"></i></div>`).join('');
     const recs = (intel && intel.recommendations) || ['14 trial accounts show buying signals — deploy Sales Manager outreach.','Auto-send payment reminders for 6 overdue invoices (€31k).','Route tier-1 tickets fully to Support Agent — frees 9h/week.'];
-    rec.innerHTML = recs.map(r => `<div class="rec"><span class="ai">AI</span><div class="body">${r}</div></div>`).join('');
+    if(rec) rec.innerHTML = recs.map(r => `<div class="rec"><span class="ai">AI</span><div class="body">${r}</div></div>`).join('');
     window.__wf = wf;
-    try { const roi = await ENG.roi(); const p=view.querySelector('#roiPct'), a=view.querySelector('#roiAnnual');
-      if(p) p.textContent = roi.roiPct + '% ROI'; if(a) a.textContent = '€' + (roi.annualSavings||0).toLocaleString('en-US'); } catch(e){}
   })();
   if(window.I18N) I18N.apply(view);
   bootFeed();
-  renderLiveWorkforce();
-  every(renderLiveWorkforce, 4000);
+  renderLiveWorkforce(); every(renderLiveWorkforce, 4000);
+  renderStatusStrip(); every(renderStatusStrip, 6000);
+}
+
+/* Status strip: data-source, connector mode (live/sandbox), pilot, headcount. */
+async function renderStatusStrip(){
+  const box=view.querySelector('#statusStrip'); if(!box) return;
+  const online = !!(window.NEXA && NEXA.online);
+  let conn=[]; try { const c=await NEXA.connectorList(); conn=(c&&c.connectors)||[]; } catch(e){}
+  const live=conn.filter(c=>c.mode==='live').length, sand=conn.length-live;
+  let pilot=null; try { pilot=await NEXA.pilot(); } catch(e){}
+  const wfData=await NEXA.workforce(); const wf=(wfData&&wfData.workforce)?wfData.workforce:WF_FALLBACK;
+  const dot=(c)=>`<span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block;flex:none"></span>`;
+  const item=(c,txt)=>`<span style="display:inline-flex;align-items:center;gap:7px">${dot(c)}${txt}</span>`;
+  const sep=`<span style="color:var(--border)">|</span>`;
+  const parts=[];
+  parts.push(item('#16a34a', `<b>${wf.length}</b>&nbsp;AI employees active`));
+  parts.push(online? item('#16a34a','Live API') : item('#9ca3af','Demo mode'));
+  parts.push(live? item('#16a34a', `<b>${live}</b>&nbsp;connector${live>1?'s':''} live${sand?` <span style="color:var(--text-3)">· ${sand} sandbox</span>`:''}`)
+                 : item('#f59e0b', `Sandbox · ${sand||5} connectors simulated`));
+  parts.push((pilot&&pilot.active)? item('#2563EB', `Pilot active${pilot.label?' · '+rxEsc(pilot.label):''}`)
+                                  : `<span style="color:var(--text-3)">No pilot running</span>`);
+  box.innerHTML=parts.join(sep);
 }
 function countTo(sel, val, suf){ const el=view.querySelector(sel); if(!el) return; gsap.to({v:0},{v:val,duration:1.3,ease:'power2.out',onUpdate(){el.textContent=Math.round(this.targets()[0].v)+suf;}}); }
 
