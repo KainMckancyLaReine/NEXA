@@ -474,7 +474,88 @@ async function renderAudit(){
    ROUTER
    ============================================================ */
 let currentView = 'dashboard';
-const routes = { dashboard: renderDashboard, workforce: renderWorkforce, operations: renderOperations, integrations: renderIntegrations, reports: renderReports, documents: renderDocuments, approvals: renderApprovals, audit: renderAudit };
+const routes = { dashboard: renderDashboard, workforce: renderWorkforce, operations: renderOperations, integrations: renderIntegrations, reports: renderReports, documents: renderDocuments, approvals: renderApprovals, audit: renderAudit, settings: renderSettings };
+
+/* Load the signed-in user's name + avatar into the sidebar chip. */
+async function initMe(){
+  let me=null; try{ me = await NEXA.me(); }catch(e){}
+  if(!me) return;
+  const av=document.getElementById('meAvatar'), nm=document.getElementById('meName'), sub=document.getElementById('meSub');
+  if(nm && me.name) nm.textContent=me.name;
+  if(sub) sub.textContent=`${me.role==='admin'?'Admin':'Member'} · ${me.company||''}`;
+  if(av){ av.innerHTML = me.avatar ? `<img src="${me.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">` : ((me.name||'U').trim().charAt(0).toUpperCase()); }
+  try{ if(me.name) localStorage.setItem('nexa_user', me.name); }catch(e){}
+}
+
+/* ============================================================
+   VIEW: SETTINGS — profile photo, display name, password
+   ============================================================ */
+async function renderSettings(){
+  let me=null; try{ me = await NEXA.me(); }catch(e){}
+  me = me || {};
+  const initial=(me.name||'U').trim().charAt(0).toUpperCase();
+  const IN='width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg-1,transparent);color:var(--text);font-family:inherit;font-size:14px;margin-top:6px';
+  view.innerHTML=`
+    <div class="view-head"><div><h2>Settings</h2><p>Manage your profile photo, name and password.</p></div></div>
+    <div style="display:grid;gap:16px;max-width:560px">
+      <div class="glass" style="padding:20px">
+        <h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">Profile</h4>
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
+          <div id="stAvatar" style="width:74px;height:74px;border-radius:16px;overflow:hidden;background:#2563eb;color:#fff;display:grid;place-items:center;font-size:30px;font-weight:700;flex:none">${me.avatar?`<img src="${me.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`:initial}</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label class="btn btn-ghost" style="padding:8px 14px;font-size:13px;cursor:pointer;margin:0">Upload photo<input id="stPhoto" type="file" accept="image/png,image/jpeg,image/webp" style="display:none"></label>
+            <button class="btn btn-ghost" id="stRemove" style="padding:8px 14px;font-size:13px">Remove photo</button>
+          </div>
+        </div>
+        <label style="font-size:12px;color:var(--text-3)">Display name</label>
+        <input id="stName" value="${rxEsc(me.name||'')}" style="${IN}">
+        <div id="stProfileMsg" style="font-size:12.5px;margin-top:10px;min-height:16px"></div>
+        <button class="btn btn-primary" id="stSaveProfile" style="margin-top:8px;padding:9px 18px;font-size:13px">Save profile</button>
+      </div>
+      <div class="glass" style="padding:20px">
+        <h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">Password</h4>
+        <input id="stCur" type="password" placeholder="Current password" autocomplete="current-password" style="${IN};margin-top:0">
+        <input id="stNew" type="password" placeholder="New password (min 8 characters)" autocomplete="new-password" style="${IN}">
+        <input id="stConf" type="password" placeholder="Confirm new password" autocomplete="new-password" style="${IN}">
+        <div id="stPassMsg" style="font-size:12.5px;margin-top:10px;min-height:16px"></div>
+        <button class="btn btn-primary" id="stSavePass" style="margin-top:8px;padding:9px 18px;font-size:13px">Update password</button>
+      </div>
+      <div class="glass" style="padding:14px 20px;font-size:13px;color:var(--text-3)">Signed in as <b style="color:var(--text)">${rxEsc(me.user||'')}</b> · ${rxEsc(me.role||'')} · ${rxEsc(me.company||'')}</div>
+    </div>`;
+  if(window.I18N) I18N.apply(view);
+
+  let pendingAvatar; // undefined = unchanged, null = remove, string = new data URL
+  view.querySelector('#stPhoto').addEventListener('change', e=>{
+    const f=e.target.files && e.target.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{ const img=new Image(); img.onload=()=>{
+      const S=256, c=document.createElement('canvas'); c.width=S; c.height=S;
+      const ctx=c.getContext('2d'); const scale=Math.max(S/img.width,S/img.height);
+      const w=img.width*scale, h=img.height*scale; ctx.drawImage(img,(S-w)/2,(S-h)/2,w,h);
+      const data=c.toDataURL('image/jpeg',0.85); pendingAvatar=data;
+      view.querySelector('#stAvatar').innerHTML=`<img src="${data}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+    }; img.src=rd.result; };
+    rd.readAsDataURL(f);
+  });
+  view.querySelector('#stRemove').onclick=()=>{ pendingAvatar=null; view.querySelector('#stAvatar').textContent=initial; };
+  view.querySelector('#stSaveProfile').onclick=async()=>{
+    const msg=view.querySelector('#stProfileMsg'); msg.textContent='';
+    const patch={ name: view.querySelector('#stName').value.trim() };
+    if(pendingAvatar!==undefined) patch.avatar = (pendingAvatar===null ? '' : pendingAvatar);
+    let r=null; try{ r=await NEXA.updateProfile(patch); }catch(e){}
+    if(r&&r.ok){ msg.style.color='var(--success)'; msg.textContent='Profile saved.'; initMe(); }
+    else { msg.style.color='var(--error)'; msg.textContent=(r&&r.message)||'Could not save — try a smaller photo.'; }
+  };
+  view.querySelector('#stSavePass').onclick=async()=>{
+    const msg=view.querySelector('#stPassMsg'); msg.textContent='';
+    const cur=view.querySelector('#stCur').value, nw=view.querySelector('#stNew').value, cf=view.querySelector('#stConf').value;
+    if(nw.length<8){ msg.style.color='var(--error)'; msg.textContent='New password must be at least 8 characters.'; return; }
+    if(nw!==cf){ msg.style.color='var(--error)'; msg.textContent='New passwords do not match.'; return; }
+    let r=null; try{ r=await NEXA.changePassword(cur,nw); }catch(e){}
+    if(r&&r.ok){ msg.style.color='var(--success)'; msg.textContent='Password updated.'; view.querySelector('#stCur').value=''; view.querySelector('#stNew').value=''; view.querySelector('#stConf').value=''; }
+    else { msg.style.color='var(--error)'; msg.textContent=(r&&r.message)||'Current password is incorrect.'; }
+  };
+}
 function navigate(v){
   if(!routes[v]) v = 'dashboard';
   currentView = v;
@@ -959,6 +1040,7 @@ function renderDocuments(){
 window.runCommand = runCommand;
 window.addEventListener('nexa:lang', () => navigate(currentView));
 /* ---------- boot ---------- */
+initMe();
 navigate(location.hash.replace('#','') || 'dashboard');
 updateApBadge();
 </script>

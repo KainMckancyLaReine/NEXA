@@ -248,15 +248,16 @@ function setPassword(userId, newPass) {
   return { ok: true };
 }
 
+/* Update display name and/or profile photo (data URL). */
 /* Update a user's profile fields (avatar data-URL, display name). */
 function updateUserProfile(userId, patch) {
   const root = load();
   const u = (root.users || []).find(x => x.id === userId);
   if (!u) return { error: 'not_found' };
-  if (typeof patch.avatar === 'string') u.avatar = patch.avatar;
-  if (typeof patch.name === 'string' && patch.name.trim()) u.name = patch.name.trim();
+  if (typeof patch.avatar === 'string') u.avatar = patch.avatar || null; // '' clears it
+  if (typeof patch.name === 'string' && patch.name.trim()) u.name = patch.name.trim().slice(0, 80);
   save();
-  return { ok: true };
+  return { ok: true, name: u.name, avatar: u.avatar || null };
 }
 
 function reset() {
