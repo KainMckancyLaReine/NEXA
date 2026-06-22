@@ -59,6 +59,8 @@ window.NEXA = (function () {
     logout: () => setToken(null),
     login,
     signup,
+    forgotPassword: (user, tenant='default') => call('/api/forgot', { method: 'POST', body: { user, tenant } }),
+    resetPassword: (token, password) => call('/api/reset-password', { method: 'POST', body: { token, password } }),
     me: () => call('/api/me'),
     createUser: (u) => call('/api/users', { method: 'POST', body: u }),
     state: () => call('/api/state'),

@@ -34,7 +34,7 @@ function registerProviders() {
 }
 registerProviders();
 
-const PUBLIC_API = new Set(['/api/login', '/api/signup']);
+const PUBLIC_API = new Set(['/api/login', '/api/signup', '/api/forgot', '/api/reset-password']);
 
 const SECURITY_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
@@ -121,6 +121,39 @@ const server = http.createServer(async (req, res) => {
       if (r.error) return json(res, 409, r);
       const token = auth.issueToken({ userId: r.user.id, tenantId: r.tenantId, role: 'admin' }, secret);
       return json(res, 200, { ok: true, tenant: r.tenantId, token });
+    }
+
+    /* ---------- public: request a password reset ---------- */
+    if (p === '/api/forgot' && req.method === 'POST') {
+      const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'local').toString();
+      if (auth.rateLimited('forgot:' + ip)) return json(res, 429, { ok: false, error: 'too_many_attempts' });
+      const { user, tenant = 'default' } = body;
+      const account = store.findUser(user, tenant);
+      if (account) {
+        const rtoken = auth.issueResetToken({ userId: account.id, tenantId: account.tenantId }, secret);
+        // Always make the code available to the operator via the server console.
+        console.log(`\n  🔑  Password reset code for "${account.user}" (valid 30 min):\n      ${rtoken}\n`);
+        // If Gmail is live and the account has an email, deliver it there too.
+        if (account.email) {
+          try {
+            await connectors.email.send({ to: account.email, subject: 'Your NEXA password reset code',
+              text: `Use this code to reset your password (valid 30 minutes):\n\n${rtoken}\n\nIf you did not request this, ignore this email.` });
+          } catch (e) { /* console fallback already done */ }
+        }
+      }
+      // Never reveal whether the account exists.
+      return json(res, 200, { ok: true, message: 'If that account exists, a reset code was issued. Check your email, or the server console in local mode.' });
+    }
+
+    /* ---------- public: complete a password reset ---------- */
+    if (p === '/api/reset-password' && req.method === 'POST') {
+      const { token, password } = body;
+      if (!password || String(password).length < 8) return json(res, 400, { ok: false, error: 'weak_password', message: 'Password must be at least 8 characters.' });
+      const v = auth.verifyResetToken(token, secret);
+      if (!v) return json(res, 400, { ok: false, error: 'invalid_or_expired' });
+      const r = store.setPassword(v.userId, password);
+      if (r.error) return json(res, 400, { ok: false, error: r.error });
+      return json(res, 200, { ok: true });
     }
 
     /* ---------- auth gate ---------- */

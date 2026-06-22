@@ -58,7 +58,26 @@ function verifyToken(token, secret) {
   let payload;
   try { payload = JSON.parse(unb64url(body)); } catch { return null; }
   if (!payload.exp || Date.now() > payload.exp) return null;
+  // Purpose-tagged tokens (e.g. password reset) are NOT valid session tokens.
+  if (payload.p) return null;
   return { userId: payload.u, tenantId: payload.t, role: payload.r, exp: payload.exp };
+}
+
+/* ---------- single-purpose password-reset tokens (30 min) ---------- */
+function issueResetToken({ userId, tenantId }, secret, ttl = 30 * 60 * 1000) {
+  const body = b64url(JSON.stringify({ u: userId, t: tenantId, p: 'reset', exp: Date.now() + ttl }));
+  return `${body}.${sign(body, secret)}`;
+}
+function verifyResetToken(token, secret) {
+  if (!token || typeof token !== 'string' || !token.includes('.')) return null;
+  const [body, mac] = token.split('.');
+  if (!body || !mac) return null;
+  const expected = sign(body, secret);
+  const a = Buffer.from(mac), b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  let p; try { p = JSON.parse(unb64url(body)); } catch { return null; }
+  if (p.p !== 'reset' || !p.exp || Date.now() > p.exp) return null;
+  return { userId: p.u, tenantId: p.t };
 }
 
 /* ---------- request helper ---------- */
@@ -89,6 +108,7 @@ function resetRateLimit(key) { attempts.delete(key); }
 module.exports = {
   hashPassword, verifyPassword,
   issueToken, verifyToken, authContext, bearerFrom,
+  issueResetToken, verifyResetToken,
   rateLimited, resetRateLimit,
   TOKEN_TTL_MS,
 };

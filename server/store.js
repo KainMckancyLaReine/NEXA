@@ -35,7 +35,8 @@ function seedAdmin() {
   const user = process.env.NEXA_ADMIN_USER || 'kain';
   const pass = process.env.NEXA_ADMIN_PASS || 'Kain25';
   const name = process.env.NEXA_ADMIN_NAME || 'Kain';
-  return { id: 'usr_admin', user: user.toLowerCase(), name, role: 'admin', tenantId: 'default', passwordHash: auth.hashPassword(pass) };
+  const email = process.env.NEXA_ADMIN_EMAIL || null;
+  return { id: 'usr_admin', user: user.toLowerCase(), name, email, role: 'admin', tenantId: 'default', passwordHash: auth.hashPassword(pass) };
 }
 
 const EMPLOYEE_LIBRARY = [
@@ -232,6 +233,21 @@ function findUser(userLogin, tenantId = 'default') {
   return (root.users || []).find(x => x.user === u && (x.tenantId || 'default') === tenantId) || null;
 }
 
+function findUserById(id) {
+  const root = load();
+  return (root.users || []).find(x => x.id === id) || null;
+}
+
+/* Set a new password for a user (used by the reset flow). */
+function setPassword(userId, newPass) {
+  const root = load();
+  const u = (root.users || []).find(x => x.id === userId);
+  if (!u) return { error: 'not_found' };
+  u.passwordHash = auth.hashPassword(newPass);
+  save();
+  return { ok: true };
+}
+
 function reset() {
   cache = seedRoot();
   save();
@@ -240,6 +256,6 @@ function reset() {
 
 module.exports = {
   load, save, reset,
-  tenant, tenantIds, createTenant, createUser, findUser,
+  tenant, tenantIds, createTenant, createUser, findUser, findUserById, setPassword,
   EMPLOYEE_LIBRARY,
 };
