@@ -125,7 +125,7 @@ body { min-height:100vh; background:var(--bg); }
           <label data-i18n="si.user">Username or email</label>
           <div class="inp">
             <span class="lead-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <input id="user" type="text" placeholder="Kain" autocomplete="username" required>
+            <input id="user" type="text" placeholder="you@company.com" autocomplete="username" required>
           </div>
         </div>
         <div class="fld">
@@ -138,13 +138,29 @@ body { min-height:100vh; background:var(--bg); }
         </div>
         <div class="row">
           <label><input type="checkbox" id="remember" checked style="accent-color:#0A0A0A"> <span data-i18n="si.remember">Remember me</span></label>
-          <a href="#" data-i18n="si.forgot">Forgot password?</a>
+          <a href="#" id="forgotLink" data-i18n="si.forgot">Forgot password?</a>
         </div>
         <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn"><span data-i18n="si.go">Sign in</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
       </form>
 
-      <div class="foot-note"><span data-i18n="si.nowork">No workspace yet?</span> <a href="onboarding.html" data-i18n="si.create">Create one</a></div>
-      <div class="hint"><span data-i18n="si.demo">Admin demo</span> · <span data-i18n="si.demouser">username</span> <b>Kain</b> · <span data-i18n="si.demopass">password</span> <b>Kain25</b></div>
+      <div class="foot-note" id="signinFoot"><span data-i18n="si.nowork">No workspace yet?</span> <a href="onboarding.html" data-i18n="si.create">Create one</a></div>
+
+      <!-- forgot-password flow -->
+      <div id="forgotPanel" style="display:none">
+        <div class="head" style="margin:2px 0 16px"><h1 style="font-size:21px">Reset password</h1><div class="sub">We'll issue a one-time code valid for 30 minutes.</div></div>
+        <div class="err" id="fpErr" style="display:none"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> <span>Invalid or expired code.</span></div>
+        <div id="fpMsg" style="display:none;font-size:13px;color:var(--text-2);background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:14px"></div>
+        <div id="fpStep1">
+          <div class="fld"><label>Username or email</label><div class="inp"><span class="lead-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><input id="fpUser" type="text" placeholder="you@company.com" autocomplete="username"></div></div>
+          <button type="button" class="btn btn-primary btn-block btn-lg" id="fpSend"><span>Send reset code</span></button>
+        </div>
+        <div id="fpStep2" style="display:none">
+          <div class="fld"><label>Reset code</label><div class="inp"><input id="fpToken" type="text" placeholder="Paste the code"></div></div>
+          <div class="fld"><label>New password</label><div class="inp"><span class="lead-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input id="fpPass" type="password" placeholder="At least 8 characters" autocomplete="new-password"></div></div>
+          <button type="button" class="btn btn-primary btn-block btn-lg" id="fpReset"><span>Update password</span></button>
+        </div>
+        <div class="foot-note"><a href="#" id="fpBack">← Back to sign in</a></div>
+      </div>
     </div>
   </div>
 </div>
@@ -152,7 +168,6 @@ body { min-height:100vh; background:var(--bg); }
 <script src="assets/js/api.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script>
-  const FALLBACK = { user: 'kain', pass: 'Kain25', name: 'Kain' };
   const $ = s => document.querySelector(s);
 
   /* password show/hide */
@@ -164,15 +179,16 @@ body { min-height:100vh; background:var(--bg); }
   /* persist session + go to dashboard */
   function go(name, token) {
     try {
-      localStorage.setItem('nexa_user', name || 'Kain');
+      localStorage.setItem('nexa_user', name || 'User');
       if (token) localStorage.setItem('nexa_token', token);
     } catch (e) {}
     window.location.href = 'command-center.html';
   }
 
-  function fail(btn, orig) {
+  function fail(btn, orig, msg) {
     if (btn) { btn.disabled = false; btn.innerHTML = orig; }
-    $('#err').style.display = 'flex';
+    const e = $('#err'); if (msg) e.querySelector('span').textContent = msg;
+    e.style.display = 'flex';
     $('#password').value = '';
     $('#password').focus();
   }
@@ -180,14 +196,11 @@ body { min-height:100vh; background:var(--bg); }
   async function signIn(user, pass) {
     const btn = $('#submitBtn'); const orig = btn.innerHTML;
     btn.disabled = true; btn.innerHTML = '<span>Signing in…</span>';
-    // Try the real backend first; fall back to local check if offline (static hosting).
     let result = null;
     try { result = window.NEXA ? await NEXA.login(user, pass) : null; } catch (e) { result = null; }
     if (result && result.ok) return go(result.user, result.token);
-    if (result && result.ok === false) return fail(btn, orig);
-    // offline fallback (no server running)
-    if (user.trim().toLowerCase() === FALLBACK.user && pass === FALLBACK.pass) return go(FALLBACK.name);
-    fail(btn, orig);
+    if (result && result.ok === false) return fail(btn, orig, 'Invalid username or password.');
+    return fail(btn, orig, 'Can’t reach the server. Make sure NEXA is running.');
   }
 
   $('#signinForm').addEventListener('submit', e => {
@@ -195,16 +208,55 @@ body { min-height:100vh; background:var(--bg); }
     $('#err').style.display = 'none';
     signIn($('#user').value, $('#password').value);
   });
-  /* Demo SSO: when the backend is up, sign in with the demo account to get a
-     real token (live dashboard); otherwise fall back to the local demo view. */
-  async function ssoDemo() {
-    let result = null;
-    try { result = window.NEXA ? await NEXA.login(FALLBACK.user, FALLBACK.pass) : null; } catch (e) { result = null; }
-    if (result && result.ok) return go(result.user, result.token);
-    return go(FALLBACK.name);
+
+  /* SSO is not configured in this build — guide the user to their account. */
+  function ssoUnavailable() {
+    const e = $('#err'); e.querySelector('span').textContent = 'Single sign-on isn’t enabled yet — sign in with your account.';
+    e.style.display = 'flex';
   }
-  $('#ssoGoogle').onclick = ssoDemo;
-  $('#ssoMs').onclick = ssoDemo;
+  $('#ssoGoogle').onclick = ssoUnavailable;
+  $('#ssoMs').onclick = ssoUnavailable;
+
+  /* ---------- forgot / reset password ---------- */
+  function showForgot(show) {
+    document.querySelector('.social').style.display = show ? 'none' : '';
+    document.querySelector('.divider').style.display = show ? 'none' : '';
+    $('#signinForm').style.display = show ? 'none' : '';
+    $('#signinFoot').style.display = show ? 'none' : '';
+    $('#err').style.display = 'none';
+    $('#forgotPanel').style.display = show ? 'block' : 'none';
+  }
+  $('#forgotLink').addEventListener('click', e => { e.preventDefault(); showForgot(true); });
+  $('#fpBack').addEventListener('click', e => { e.preventDefault(); showForgot(false); });
+
+  $('#fpSend').addEventListener('click', async () => {
+    const u = $('#fpUser').value.trim(); if (!u) return;
+    const b = $('#fpSend'); b.disabled = true;
+    try { if (window.NEXA) await NEXA.forgotPassword(u); } catch (e) {}
+    b.disabled = false;
+    const m = $('#fpMsg'); m.style.display = 'block';
+    m.textContent = 'If that account exists, a reset code was issued. Check your email — or, in local mode, the server console (Terminal).';
+    $('#fpStep2').style.display = 'block';
+    $('#fpErr').style.display = 'none';
+  });
+
+  $('#fpReset').addEventListener('click', async () => {
+    const tk = $('#fpToken').value.trim(), pw = $('#fpPass').value;
+    const err = $('#fpErr');
+    err.style.display = 'none';
+    if (pw.length < 8) { err.querySelector('span').textContent = 'Password must be at least 8 characters.'; err.style.display = 'flex'; return; }
+    const b = $('#fpReset'); b.disabled = true;
+    let r = null; try { r = window.NEXA ? await NEXA.resetPassword(tk, pw) : null; } catch (e) {}
+    b.disabled = false;
+    if (r && r.ok) {
+      $('#fpStep1').style.display = 'none'; $('#fpStep2').style.display = 'none';
+      const m = $('#fpMsg'); m.style.display = 'block'; m.textContent = 'Password updated. Returning to sign in…';
+      setTimeout(() => showForgot(false), 1600);
+    } else {
+      err.querySelector('span').textContent = (r && r.message) || 'Invalid or expired code.';
+      err.style.display = 'flex';
+    }
+  });
 
   /* live numbers from backend when available */
   (async () => {
