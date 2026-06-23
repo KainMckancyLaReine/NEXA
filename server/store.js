@@ -36,7 +36,8 @@ function seedAdmin() {
   const pass = process.env.NEXA_ADMIN_PASS || 'Kain25';
   const name = process.env.NEXA_ADMIN_NAME || 'Kain';
   const email = process.env.NEXA_ADMIN_EMAIL || null;
-  return { id: 'usr_admin', user: user.toLowerCase(), name, email, role: 'admin', tenantId: 'default', passwordHash: auth.hashPassword(pass) };
+  // The seeded admin is the founder account — protected from removal/edits by others.
+  return { id: 'usr_admin', user: user.toLowerCase(), name, email, role: 'admin', founder: true, tenantId: 'default', passwordHash: auth.hashPassword(pass) };
 }
 
 const EMPLOYEE_LIBRARY = [
@@ -140,6 +141,9 @@ function migrate(root) {
 
   if (!root.authSecret) root.authSecret = process.env.NEXA_AUTH_SECRET || crypto.randomBytes(32).toString('hex');
   if (!Array.isArray(root.users) || !root.users.length) root.users = [seedAdmin()];
+  // Ensure the original seed admin is always flagged as the protected founder.
+  const founder = root.users.find(u => u.id === 'usr_admin');
+  if (founder && !founder.founder) founder.founder = true;
   if (!root.tenants || typeof root.tenants !== 'object') root.tenants = { default: seedWorkspace('default') };
 
   // Per-workspace backfill of any missing collection.
@@ -243,7 +247,7 @@ function listUsers(tenantId = 'default') {
   const root = load();
   return (root.users || [])
     .filter(u => (u.tenantId || 'default') === tenantId)
-    .map(u => ({ id: u.id, user: u.user, name: u.name, email: u.email || null, role: u.role, avatar: u.avatar || null }));
+    .map(u => ({ id: u.id, user: u.user, name: u.name, email: u.email || null, role: u.role, avatar: u.avatar || null, founder: !!u.founder }));
 }
 
 function removeUser(userId) {

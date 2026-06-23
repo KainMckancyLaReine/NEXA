@@ -209,7 +209,7 @@ body { height: 100vh; overflow: hidden; }
     <a class="nav-i" data-view="reports" href="#reports"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="20" x2="21" y2="20"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="9"/><line x1="18" y1="20" x2="18" y2="5"/></svg></span><span data-i18n="cc.reports">Reports</span></a>
     <a class="nav-i" data-view="documents" href="#documents"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></span><span data-i18n="cc.documents">Documents</span></a>
     <a class="nav-i" data-view="settings" href="#settings"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></span><span data-i18n="cc.settings">Settings</span></a>
-    <a class="nav-i" href="marketplace.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span data-i18n="cc.marketplace">Marketplace</span></a>
+    <a class="nav-i" href="#" id="navShop" onclick="openShop();return false;"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span data-i18n="cc.marketplace">Marketplace</span></a>
     <div class="user"><span class="av" id="meAvatar" style="overflow:hidden">K</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600" id="meName">Kain</div><div style="font-size:11px;color:var(--text-3)" id="meSub">Admin · Acme Inc.</div></div><a class="logout" href="signin.html" title="Sign out" onclick="try{localStorage.removeItem('nexa_user');localStorage.removeItem('nexa_token');}catch(e){}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a></div>
   </aside>
 
@@ -415,6 +415,58 @@ function showResult(task){
   const dl=ov.querySelector('.rx-dl'); if(dl) dl.onclick=()=>{ try{ const fn=genDocument(docTy); toast(`<b>${fn}</b> ${t('doc.ready')}`); }catch(e){} };
 }
 
+/* ---- in-app Marketplace pop-up shop (distinct from the public page) ---- */
+async function openShop(){
+  let data=null; try{ data=await NEXA.marketplace(); }catch(e){}
+  const items=(data&&data.marketplace)||[];
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(2,6,23,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px';
+  const card=document.createElement('div'); card.className='glass';
+  card.style.cssText='width:min(900px,100%);max-height:88vh;overflow:auto;padding:0';
+  card.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--border)">
+      <div style="font-size:22px">🛍️</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:16px">Hire AI employees</div><div style="font-size:12px;color:var(--text-3)">Add a specialist to your workforce — installs instantly into your Command Center.</div></div>
+      <button class="shopClose" aria-label="Close" style="background:none;border:none;color:var(--text-3);font-size:26px;line-height:1;cursor:pointer">×</button>
+    </div>
+    <div id="shopGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:14px;padding:20px"></div>`;
+  ov.appendChild(card); document.body.appendChild(ov);
+  if(window.gsap) gsap.from(card,{y:16,opacity:0,duration:.25});
+  const close=()=>{ if(window.gsap){ gsap.to(ov,{opacity:0,duration:.18,onComplete:()=>ov.remove()}); } else ov.remove(); };
+  ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
+  card.querySelector('.shopClose').onclick=close;
+  const grid=card.querySelector('#shopGrid');
+  function draw(){
+    grid.innerHTML = items.map(e=>{
+      const skills=(e.skills||[]).slice(0,3).map(s=>`<span style="font-size:10px;color:var(--text-3);border:1px solid var(--border);border-radius:6px;padding:2px 6px">${rxEsc(s)}</span>`).join(' ');
+      const av = window.aiAvatar ? aiAvatar(e.code,42) : `<span style="display:grid;place-items:center;width:100%;height:100%;background:#2563eb;color:#fff;font-weight:700">${rxEsc((e.person||e.code||'A').charAt(0))}</span>`;
+      return `<div style="border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:11px">
+          <div style="width:42px;height:42px;border-radius:11px;overflow:hidden;flex:none">${av}</div>
+          <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px">${rxEsc(e.person||e.name)}</div><div style="font-size:11.5px;color:var(--text-3)">${rxEsc((e.name||'').replace('AI ',''))}</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--text-2);min-height:32px">${rxEsc(e.tagline||'')}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${skills}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+          <div style="font-size:14px;font-weight:800">€${e.price}<span style="font-size:10px;color:var(--text-3);font-weight:500">/mo</span></div>
+          ${e.installed?`<span style="font-size:12px;font-weight:600;color:var(--success,#16a34a)">✓ Hired</span>`:`<button class="btn btn-primary shopInstall" data-id="${e.id}" style="padding:7px 15px;font-size:12.5px">Hire</button>`}
+        </div>
+      </div>`;
+    }).join('') || '<div style="color:var(--text-3);padding:20px">No employees available.</div>';
+    grid.querySelectorAll('.shopInstall').forEach(b=>b.onclick=async()=>{
+      const id=b.dataset.id; b.disabled=true; b.textContent='Hiring…';
+      let r=null; try{ r=await NEXA.install(id); }catch(e){}
+      if(r && (r.ok || r.already)){
+        const it=items.find(x=>x.id===id); if(it) it.installed=true; draw();
+        toast(`<b>${rxEsc((items.find(x=>x.id===id)||{}).person||'Employee')}</b> hired ✓`);
+        if(typeof renderLiveWorkforce==='function') renderLiveWorkforce();
+      } else { b.disabled=false; b.textContent='Hire'; }
+    });
+  }
+  draw();
+}
+window.openShop = openShop;
+
 async function runCommand(text){
   $('#cmd').value='';
   const r=await ENG.submit(text); const task=(r&&r.task)||{};
@@ -523,8 +575,8 @@ async function renderSettings(){
         <button class="btn btn-primary" id="acCreate" style="margin-top:8px;padding:9px 18px;font-size:13px">Create company account</button>
       </div>`;
   view.innerHTML=`
-    <div class="view-head"><div><h2>Settings</h2><p>Manage your profile photo, name and password.</p></div></div>
-    <div style="display:grid;gap:16px;max-width:560px">
+    <div class="view-head"><div><h2>Settings</h2><p>Manage your profile, security${isAdminUser?', team and company accounts':''}.</p></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;align-items:start;max-width:920px">
       <div class="glass" style="padding:20px">
         <h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">Profile</h4>
         <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
@@ -548,8 +600,8 @@ async function renderSettings(){
         <button class="btn btn-primary" id="stSavePass" style="margin-top:8px;padding:9px 18px;font-size:13px">Update password</button>
       </div>
       ${adminHtml}
-      <div class="glass" style="padding:14px 20px;font-size:13px;color:var(--text-3)">Signed in as <b style="color:var(--text)">${rxEsc(me.user||'')}</b> · ${rxEsc(me.role||'')} · ${rxEsc(me.company||'')}</div>
-    </div>`;
+    </div>
+    <div class="glass" style="padding:14px 20px;font-size:13px;color:var(--text-3);max-width:920px;margin-top:16px">Signed in as <b style="color:var(--text)">${rxEsc(me.user||'')}</b> · ${rxEsc(me.role||'')}${me.role==='admin'?' (admin)':''} · ${rxEsc(me.company||'')}</div>`;
   if(window.I18N) I18N.apply(view);
 
   let pendingAvatar; // undefined = unchanged, null = remove, string = new data URL
@@ -592,8 +644,8 @@ async function renderSettings(){
       const users=(r&&r.users)||[];
       box.innerHTML = users.map(u=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:9px">
           <div style="width:30px;height:30px;border-radius:8px;overflow:hidden;background:#2563eb;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none">${u.avatar?`<img src="${u.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`:rxEsc((u.name||u.user||'U').charAt(0).toUpperCase())}</div>
-          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${rxEsc(u.name||u.user)}</div><div style="font-size:11px;color:var(--text-3)">${rxEsc(u.user)} · ${rxEsc(u.role)}</div></div>
-          ${u.id===me.userId?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">you</span>`:`<button class="btn btn-ghost rmU" data-id="${u.id}" style="padding:5px 11px;font-size:12px">Remove</button>`}
+          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${rxEsc(u.name||u.user)} ${u.founder?`<span style="font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:1px 6px;border-radius:999px;background:rgba(245,158,11,.15);color:#b45309;vertical-align:middle">FOUNDER</span>`:''}</div><div style="font-size:11px;color:var(--text-3)">${rxEsc(u.user)} · ${rxEsc(u.role)}</div></div>
+          ${u.founder?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">protected</span>`:(u.id===me.userId?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">you</span>`:`<button class="btn btn-ghost rmU" data-id="${u.id}" style="padding:5px 11px;font-size:12px">Remove</button>`)}
         </div>`).join('') || '<div style="font-size:12px;color:var(--text-3)">No users yet.</div>';
       box.querySelectorAll('.rmU').forEach(b=>b.onclick=async()=>{
         if(!confirm('Remove this user? They will lose access immediately.')) return;
@@ -819,7 +871,7 @@ async function renderWorkforce(){
   window.__wf = wf;
   view.innerHTML = `
     <div class="view-head"><div><h2>Workforce</h2><p>${wf.length} AI employees deployed · operating 24/7</p></div>
-      <a href="marketplace.html" class="btn btn-warm">＋ Hire AI employee</a></div>
+      <a href="#" class="btn btn-warm" onclick="openShop();return false;">＋ Hire AI employee</a></div>
     <div class="cards g3" id="wfCards"></div>`;
   const grid = view.querySelector('#wfCards');
   grid.innerHTML = wf.map(e => `

@@ -185,6 +185,7 @@ const server = http.createServer(async (req, res) => {
       if (userId === req.auth.userId) return json(res, 400, { error: 'cannot_remove_self', message: "You can't remove your own account." });
       const target = store.findUserById(userId);
       if (!target || (target.tenantId || 'default') !== tid) return json(res, 404, { error: 'not_found' });
+      if (target.founder) return json(res, 403, { error: 'founder_protected', message: 'The founder account cannot be removed.' });
       const admins = store.listUsers(tid).filter(u => u.role === 'admin');
       if (target.role === 'admin' && admins.length <= 1) return json(res, 400, { error: 'last_admin', message: 'Cannot remove the last admin.' });
       return json(res, 200, store.removeUser(userId));
