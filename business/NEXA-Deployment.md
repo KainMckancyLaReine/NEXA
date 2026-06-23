@@ -61,6 +61,32 @@ Klaar. De hele app (site, dashboard, accounts, shop, settings) draait nu live.
 
 ---
 
+## GitHub Pages (frontend) gekoppeld aan een gehoste backend (split)
+
+Wil je de site tóch op GitHub Pages houden en alleen de API elders draaien? Dat kan
+nu — de client weet hoe hij een externe backend bereikt.
+
+1. **Deploy de backend** (Render/Railway/Fly, zie boven). Je krijgt een URL, bv.
+   `https://nexa-xxxx.onrender.com`.
+2. **Wijs de Pages-site naar die backend.** Open `assets/js/api.js` en zet bovenin:
+
+   ```js
+   const API_BASE_OVERRIDE = 'https://nexa-xxxx.onrender.com';
+   ```
+
+   (Alternatief zonder api.js te wijzigen: zet ergens vóór het laden van api.js
+   `window.NEXA_API_BASE = 'https://nexa-xxxx.onrender.com';`.)
+3. **Push naar GitHub Pages.** De statische site laadt nu data en login van je
+   backend. Bearer-tokens werken cross-origin (geen cookies), dus CORS met `*` is
+   voldoende.
+4. **Optioneel veiliger:** zet op de backend `NEXA_CORS_ORIGIN` op exact je
+   Pages-origin, bijv. `https://kainmckancylareine.github.io`.
+
+> Let op: de backend moet bereikbaar zijn (op gratis Render "slaapt" de service na
+> inactiviteit en heeft de eerste request ~30s nodig om wakker te worden).
+> Laat `API_BASE_OVERRIDE` leeg als dezelfde Node-server de site óók serveert —
+> dan loopt alles same-origin en heb je dit niet nodig.
+
 ## Je eigen domein koppelen
 
 Op elke host kun je onder "Custom domain" je domein (bijv. `app.nexa.nl`)

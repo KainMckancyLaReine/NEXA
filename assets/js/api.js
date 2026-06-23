@@ -6,9 +6,19 @@
    so the UI always works.
    ============================================================ */
 window.NEXA = (function () {
+  // ===========================================================================
+  // STATIC HOSTING (e.g. GitHub Pages): point this at your deployed NEXA backend
+  // so the static site can log in and load real data from the server.
+  //   e.g. const API_BASE_OVERRIDE = 'https://nexa-xxxx.onrender.com';
+  // Leave '' when the Node server serves this site itself (same origin / local).
+  // You can also set window.NEXA_API_BASE = '...' before this script loads.
+  // ===========================================================================
+  const API_BASE_OVERRIDE = '';
+  const configured = ((window.NEXA_API_BASE || API_BASE_OVERRIDE) || '').replace(/\/+$/, '');
+
   const sameOrigin = location.protocol.startsWith('http');
-  const BASE = sameOrigin ? '' : 'http://localhost:4000';
-  let online = sameOrigin; // assume online only when served over http
+  const BASE = configured || (sameOrigin ? '' : 'http://localhost:4000');
+  let online = !!configured || sameOrigin; // online when a backend URL is known
 
   // Bearer token from login. Kept in memory and mirrored to localStorage
   // (when available) so navigation within the dashboard stays signed in.
