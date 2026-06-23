@@ -260,6 +260,16 @@ function removeUser(userId) {
   return { ok: true, removed: { id: u.id, tenantId: u.tenantId } };
 }
 
+function setUserRole(userId, role) {
+  if (!['admin', 'member'].includes(role)) return { error: 'bad_role' };
+  const root = load();
+  const u = (root.users || []).find(x => x.id === userId);
+  if (!u) return { error: 'not_found' };
+  u.role = role;
+  save();
+  return { ok: true, role };
+}
+
 /* Set a new password for a user (used by the reset flow). */
 function setPassword(userId, newPass) {
   const root = load();
@@ -291,6 +301,6 @@ function reset() {
 module.exports = {
   load, save, reset,
   tenant, tenantIds, createTenant, createUser, findUser, findUserById, setPassword, updateUserProfile,
-  listUsers, removeUser,
+  listUsers, removeUser, setUserRole,
   EMPLOYEE_LIBRARY,
 };

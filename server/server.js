@@ -190,6 +190,30 @@ const server = http.createServer(async (req, res) => {
       if (target.role === 'admin' && admins.length <= 1) return json(res, 400, { error: 'last_admin', message: 'Cannot remove the last admin.' });
       return json(res, 200, store.removeUser(userId));
     }
+    if (p === '/api/users/role' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      const { userId, role } = body;
+      if (userId === req.auth.userId) return json(res, 400, { error: 'cannot_change_self', message: "You can't change your own role." });
+      const target = store.findUserById(userId);
+      if (!target || (target.tenantId || 'default') !== tid) return json(res, 404, { error: 'not_found' });
+      if (target.founder) return json(res, 403, { error: 'founder_protected', message: "The founder's role cannot be changed." });
+      if (target.role === 'admin' && role !== 'admin') {
+        const admins = store.listUsers(tid).filter(u => u.role === 'admin');
+        if (admins.length <= 1) return json(res, 400, { error: 'last_admin', message: 'Cannot demote the last admin.' });
+      }
+      const r = store.setUserRole(userId, role === 'admin' ? 'admin' : 'member');
+      return json(res, r.error ? 400 : 200, r);
+    }
+    if (p === '/api/users/password' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      const { userId, newPassword } = body;
+      if (!newPassword || String(newPassword).length < 8) return json(res, 400, { error: 'weak_password', message: 'Password must be at least 8 characters.' });
+      const target = store.findUserById(userId);
+      if (!target || (target.tenantId || 'default') !== tid) return json(res, 404, { error: 'not_found' });
+      if (target.founder && target.id !== req.auth.userId) return json(res, 403, { error: 'founder_protected', message: "The founder's password can only be changed by the founder." });
+      store.setPassword(userId, newPassword);
+      return json(res, 200, { ok: true });
+    }
 
     /* ---------- admin: create a new company account (tenant) ---------- */
     if (p === '/api/tenants' && req.method === 'POST') {

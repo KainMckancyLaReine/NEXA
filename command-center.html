@@ -429,6 +429,10 @@ async function openShop(){
       <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:16px">Hire AI employees</div><div style="font-size:12px;color:var(--text-3)">Add a specialist to your workforce — installs instantly into your Command Center.</div></div>
       <button class="shopClose" aria-label="Close" style="background:none;border:none;color:var(--text-3);font-size:26px;line-height:1;cursor:pointer">×</button>
     </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:13px 22px;border-bottom:1px solid var(--border)">
+      <div id="shopChips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      <input id="shopSearch" placeholder="Search role or skill…" style="margin-left:auto;padding:7px 12px;border:1px solid var(--border);border-radius:9px;background:var(--bg-1,transparent);color:var(--text);font-size:12.5px;min-width:150px;font-family:inherit">
+    </div>
     <div id="shopGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:14px;padding:20px"></div>`;
   ov.appendChild(card); document.body.appendChild(ov);
   if(window.gsap) gsap.from(card,{y:16,opacity:0,duration:.25});
@@ -436,8 +440,17 @@ async function openShop(){
   ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
   card.querySelector('.shopClose').onclick=close;
   const grid=card.querySelector('#shopGrid');
+  let activeDept='all', q='';
+  const depts=['all', ...Array.from(new Set(items.map(e=>e.dept).filter(Boolean))).sort()];
+  const chipsEl=card.querySelector('#shopChips');
+  function renderChips(){
+    chipsEl.innerHTML=depts.map(d=>`<button class="shopChip" data-d="${rxEsc(d)}" style="padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:${d===activeDept?'#2563eb':'transparent'};color:${d===activeDept?'#fff':'var(--text-2)'};font-size:12px;cursor:pointer;font-family:inherit">${d==='all'?'All':rxEsc(d)}</button>`).join('');
+    chipsEl.querySelectorAll('.shopChip').forEach(b=>b.onclick=()=>{ activeDept=b.dataset.d; renderChips(); draw(); });
+  }
+  card.querySelector('#shopSearch').addEventListener('input', e=>{ q=e.target.value.trim().toLowerCase(); draw(); });
   function draw(){
-    grid.innerHTML = items.map(e=>{
+    const filtered=items.filter(e => (activeDept==='all'||e.dept===activeDept) && (!q || `${e.person} ${e.name} ${e.tagline} ${(e.skills||[]).join(' ')}`.toLowerCase().includes(q)));
+    grid.innerHTML = filtered.map(e=>{
       const skills=(e.skills||[]).slice(0,3).map(s=>`<span style="font-size:10px;color:var(--text-3);border:1px solid var(--border);border-radius:6px;padding:2px 6px">${rxEsc(s)}</span>`).join(' ');
       const av = window.aiAvatar ? aiAvatar(e.code,42) : `<span style="display:grid;place-items:center;width:100%;height:100%;background:#2563eb;color:#fff;font-weight:700">${rxEsc((e.person||e.code||'A').charAt(0))}</span>`;
       return `<div style="border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
@@ -452,7 +465,7 @@ async function openShop(){
           ${e.installed?`<span style="font-size:12px;font-weight:600;color:var(--success,#16a34a)">✓ Hired</span>`:`<button class="btn btn-primary shopInstall" data-id="${e.id}" style="padding:7px 15px;font-size:12.5px">Hire</button>`}
         </div>
       </div>`;
-    }).join('') || '<div style="color:var(--text-3);padding:20px">No employees available.</div>';
+    }).join('') || '<div style="color:var(--text-3);padding:20px">No matching employees.</div>';
     grid.querySelectorAll('.shopInstall').forEach(b=>b.onclick=async()=>{
       const id=b.dataset.id; b.disabled=true; b.textContent='Hiring…';
       let r=null; try{ r=await NEXA.install(id); }catch(e){}
@@ -463,7 +476,7 @@ async function openShop(){
       } else { b.disabled=false; b.textContent='Hire'; }
     });
   }
-  draw();
+  renderChips(); draw();
 }
 window.openShop = openShop;
 
@@ -645,12 +658,28 @@ async function renderSettings(){
       box.innerHTML = users.map(u=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:9px">
           <div style="width:30px;height:30px;border-radius:8px;overflow:hidden;background:#2563eb;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none">${u.avatar?`<img src="${u.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`:rxEsc((u.name||u.user||'U').charAt(0).toUpperCase())}</div>
           <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${rxEsc(u.name||u.user)} ${u.founder?`<span style="font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:1px 6px;border-radius:999px;background:rgba(245,158,11,.15);color:#b45309;vertical-align:middle">FOUNDER</span>`:''}</div><div style="font-size:11px;color:var(--text-3)">${rxEsc(u.user)} · ${rxEsc(u.role)}</div></div>
-          ${u.founder?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">protected</span>`:(u.id===me.userId?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">you</span>`:`<button class="btn btn-ghost rmU" data-id="${u.id}" style="padding:5px 11px;font-size:12px">Remove</button>`)}
+          ${u.founder?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">protected</span>`:(u.id===me.userId?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">you</span>`:`<div style="display:flex;align-items:center;gap:6px;flex:none">
+            <select class="roleSel" data-id="${u.id}" style="padding:5px 7px;border:1px solid var(--border);border-radius:8px;background:var(--bg-1,transparent);color:var(--text);font-size:11.5px"><option value="member"${u.role!=='admin'?' selected':''}>Member</option><option value="admin"${u.role==='admin'?' selected':''}>Admin</option></select>
+            <button class="pwU" data-id="${u.id}" title="Reset password" style="background:none;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;cursor:pointer;color:var(--text-2)">🔑</button>
+            <button class="rmU" data-id="${u.id}" title="Remove user" style="background:none;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;cursor:pointer;color:var(--text-2)">✕</button>
+          </div>`)}
         </div>`).join('') || '<div style="font-size:12px;color:var(--text-3)">No users yet.</div>';
       box.querySelectorAll('.rmU').forEach(b=>b.onclick=async()=>{
         if(!confirm('Remove this user? They will lose access immediately.')) return;
         let r=null; try{ r=await NEXA.removeUser(b.dataset.id); }catch(e){}
         if(r&&r.ok) loadUsers(); else alert((r&&r.message)||'Could not remove user.');
+      });
+      box.querySelectorAll('.roleSel').forEach(sel=>sel.onchange=async()=>{
+        let r=null; try{ r=await NEXA.setUserRole(sel.dataset.id, sel.value); }catch(e){}
+        if(r&&r.ok){ toast(`Role updated to <b>${rxEsc(sel.value)}</b>`); }
+        else { alert((r&&r.message)||'Could not change role.'); loadUsers(); }
+      });
+      box.querySelectorAll('.pwU').forEach(b=>b.onclick=async()=>{
+        const pw=prompt('Set a new password for this user (min 8 characters):');
+        if(pw===null) return;
+        if(pw.length<8){ alert('Password must be at least 8 characters.'); return; }
+        let r=null; try{ r=await NEXA.setUserPassword(b.dataset.id, pw); }catch(e){}
+        if(r&&r.ok) toast('Password reset ✓'); else alert((r&&r.message)||'Could not reset password.');
       });
     }
     loadUsers();
