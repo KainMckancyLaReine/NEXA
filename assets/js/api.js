@@ -65,6 +65,7 @@ window.NEXA = (function () {
 
   return {
     get online() { return online; },
+    get configured() { return !!configured; },
     get authed() { return !!token; },
     logout: () => setToken(null),
     login,

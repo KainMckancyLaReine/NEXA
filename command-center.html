@@ -416,9 +416,20 @@ function showResult(task){
 }
 
 /* ---- in-app Marketplace pop-up shop (distinct from the public page) ---- */
+const MARKET_FALLBACK=[
+  {id:'OM',code:'OM',person:'Emma',name:'AI Operations Manager',dept:'Operations',tagline:'Email · Scheduling · Reporting · CRM',skills:['Email management','Scheduling','Reporting'],price:499,installed:true},
+  {id:'SM',code:'SM',person:'Liam',name:'AI Sales Manager',dept:'Sales',tagline:'Lead qualification · Follow-up · Proposals',skills:['Lead qualification','Follow-up','Proposals'],price:499,installed:true},
+  {id:'FM',code:'FM',person:'Sophie',name:'AI Finance Manager',dept:'Finance',tagline:'Invoices · Reminders · Cashflow reports',skills:['Invoices','Payment reminders','Cashflow'],price:499,installed:true},
+  {id:'SA',code:'SA',person:'Noah',name:'AI Support Agent',dept:'Support',tagline:'Tickets · Customer comms · 24/7 support',skills:['Ticket resolution','Customer comms','24/7'],price:499,installed:true},
+  {id:'RA',code:'RA',person:'Maya',name:'AI Recruiting Agent',dept:'Recruiting',tagline:'Screening · Scheduling · Analytics',skills:['Screening','Interview scheduling','Analytics'],price:499,installed:true},
+  {id:'DA',code:'DA',person:'Lucas',name:'AI Data Analyst',dept:'Operations',tagline:'Dashboards · Insights · Anomaly detection',skills:['Reporting','Anomaly detection','KPIs'],price:499,installed:false},
+  {id:'MM',code:'MM',person:'Olivia',name:'AI Marketing Manager',dept:'Marketing',tagline:'Campaigns · Content · Lead gen',skills:['Campaigns','Content','Lead gen'],price:499,installed:false},
+  {id:'PM',code:'PM',person:'Daniel',name:'AI Procurement Manager',dept:'Operations',tagline:'Vendors · POs · Approvals',skills:['Vendor mgmt','Purchase orders','Spend'],price:499,installed:false},
+  {id:'DOC',code:'DOC',person:'Ava',name:'AI Document Specialist',dept:'Documents',tagline:'Excel · Word · PowerPoint · automated',skills:['Excel','Word','PowerPoint'],price:599,installed:false},
+];
 async function openShop(){
   let data=null; try{ data=await NEXA.marketplace(); }catch(e){}
-  const items=(data&&data.marketplace)||[];
+  const items=(data&&data.marketplace)||MARKET_FALLBACK.map(x=>({...x}));
   const ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(2,6,23,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px';
   const card=document.createElement('div'); card.className='glass';
@@ -469,7 +480,9 @@ async function openShop(){
     grid.querySelectorAll('.shopInstall').forEach(b=>b.onclick=async()=>{
       const id=b.dataset.id; b.disabled=true; b.textContent='Hiring…';
       let r=null; try{ r=await NEXA.install(id); }catch(e){}
-      if(r && (r.ok || r.already)){
+      // r ok = real install; r null = offline/demo → install locally so the shop still works
+      const ok = r ? (r.ok || r.already) : true;
+      if(ok){
         const it=items.find(x=>x.id===id); if(it) it.installed=true; draw();
         toast(`<b>${rxEsc((items.find(x=>x.id===id)||{}).person||'Employee')}</b> hired ✓`);
         if(typeof renderLiveWorkforce==='function') renderLiveWorkforce();
@@ -544,7 +557,15 @@ const routes = { dashboard: renderDashboard, workforce: renderWorkforce, operati
 /* Load the signed-in user's name + avatar into the sidebar chip. */
 async function initMe(){
   let me=null; try{ me = await NEXA.me(); }catch(e){}
-  if(!me) return;
+  if(!me){
+    // Offline / demo mode — reflect the local user name from localStorage.
+    try{ const n=localStorage.getItem('nexa_user')||'Demo user';
+      const nm=document.getElementById('meName'); if(nm) nm.textContent=n;
+      const av=document.getElementById('meAvatar'); if(av) av.textContent=n.trim().charAt(0).toUpperCase();
+      const sub=document.getElementById('meSub'); if(sub) sub.textContent='Demo · sample data';
+    }catch(e){}
+    return;
+  }
   const av=document.getElementById('meAvatar'), nm=document.getElementById('meName'), sub=document.getElementById('meSub');
   if(nm && me.name) nm.textContent=me.name;
   if(sub) sub.textContent=`${me.role==='admin'?'Admin':'Member'} · ${me.company||''}`;

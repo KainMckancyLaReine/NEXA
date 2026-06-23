@@ -144,6 +144,9 @@ body { min-height:100vh; background:var(--bg); }
       </form>
 
       <div class="foot-note" id="signinFoot"><span data-i18n="si.nowork">No workspace yet?</span> <a href="onboarding.html" data-i18n="si.create">Create one</a></div>
+      <div id="demoWrap" style="margin-top:14px">
+        <button type="button" id="demoBtn" class="btn btn-ghost btn-block" style="font-size:13.5px">Explore the demo →</button>
+      </div>
 
       <!-- forgot-password flow -->
       <div id="forgotPanel" style="display:none">
@@ -200,8 +203,18 @@ body { min-height:100vh; background:var(--bg); }
     try { result = window.NEXA ? await NEXA.login(user, pass) : null; } catch (e) { result = null; }
     if (result && result.ok) return go(result.user, result.token);
     if (result && result.ok === false) return fail(btn, orig, 'Invalid username or password.');
-    return fail(btn, orig, 'Can’t reach the server. Make sure NEXA is running.');
+    // result === null → backend unreachable
+    if (window.NEXA && NEXA.configured) return fail(btn, orig, 'Can’t reach the server — it may be waking up. Wait a moment and try again.');
+    return fail(btn, orig, 'No server connected. Run NEXA locally, or use “Explore the demo”.');
   }
+
+  /* Demo mode: explore the dashboard with local sample data (no backend, no
+     real account). Works on static hosting like GitHub Pages. */
+  function demoMode() {
+    try { localStorage.setItem('nexa_user', 'Demo user'); localStorage.removeItem('nexa_token'); } catch (e) {}
+    window.location.href = 'command-center.html';
+  }
+  $('#demoBtn').addEventListener('click', demoMode);
 
   $('#signinForm').addEventListener('submit', e => {
     e.preventDefault();
