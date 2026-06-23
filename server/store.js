@@ -238,6 +238,24 @@ function findUserById(id) {
   return (root.users || []).find(x => x.id === id) || null;
 }
 
+/* Sanitized list of users in a tenant (never exposes password hashes). */
+function listUsers(tenantId = 'default') {
+  const root = load();
+  return (root.users || [])
+    .filter(u => (u.tenantId || 'default') === tenantId)
+    .map(u => ({ id: u.id, user: u.user, name: u.name, email: u.email || null, role: u.role, avatar: u.avatar || null }));
+}
+
+function removeUser(userId) {
+  const root = load();
+  const i = (root.users || []).findIndex(u => u.id === userId);
+  if (i < 0) return { error: 'not_found' };
+  const u = root.users[i];
+  root.users.splice(i, 1);
+  save();
+  return { ok: true, removed: { id: u.id, tenantId: u.tenantId } };
+}
+
 /* Set a new password for a user (used by the reset flow). */
 function setPassword(userId, newPass) {
   const root = load();
@@ -269,5 +287,6 @@ function reset() {
 module.exports = {
   load, save, reset,
   tenant, tenantIds, createTenant, createUser, findUser, findUserById, setPassword, updateUserProfile,
+  listUsers, removeUser,
   EMPLOYEE_LIBRARY,
 };

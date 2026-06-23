@@ -168,10 +168,35 @@ const server = http.createServer(async (req, res) => {
     const isAdmin = req.auth.role === 'admin';
 
     /* ---------- admin: user management ---------- */
+    if (p === '/api/users' && req.method === 'GET') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      return json(res, 200, { users: store.listUsers(tid) });
+    }
     if (p === '/api/users' && req.method === 'POST') {
       if (!isAdmin) return json(res, 403, { error: 'forbidden' });
-      const { user, pass, name, role } = body;
-      const r = store.createUser({ tenantId: tid, user, pass, name, role: role === 'admin' ? 'admin' : 'member' });
+      const { user, pass, name, email, role } = body;
+      if (!pass || String(pass).length < 8) return json(res, 400, { error: 'weak_password', message: 'Password must be at least 8 characters.' });
+      const r = store.createUser({ tenantId: tid, user, pass, name, email, role: role === 'admin' ? 'admin' : 'member' });
+      return json(res, r.error ? 409 : 200, r);
+    }
+    if (p === '/api/users/remove' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      const { userId } = body;
+      if (userId === req.auth.userId) return json(res, 400, { error: 'cannot_remove_self', message: "You can't remove your own account." });
+      const target = store.findUserById(userId);
+      if (!target || (target.tenantId || 'default') !== tid) return json(res, 404, { error: 'not_found' });
+      const admins = store.listUsers(tid).filter(u => u.role === 'admin');
+      if (target.role === 'admin' && admins.length <= 1) return json(res, 400, { error: 'last_admin', message: 'Cannot remove the last admin.' });
+      return json(res, 200, store.removeUser(userId));
+    }
+
+    /* ---------- admin: create a new company account (tenant) ---------- */
+    if (p === '/api/tenants' && req.method === 'POST') {
+      if (!isAdmin) return json(res, 403, { error: 'forbidden' });
+      const { tenantId, companyName, user, pass, name } = body;
+      if (!tenantId || !user || !pass) return json(res, 400, { error: 'missing_fields' });
+      if (String(pass).length < 8) return json(res, 400, { error: 'weak_password', message: 'Admin password must be at least 8 characters.' });
+      const r = store.createTenant({ tenantId: String(tenantId).trim().toLowerCase(), companyName, adminUser: user, adminPass: pass, adminName: name });
       return json(res, r.error ? 409 : 200, r);
     }
     if (p === '/api/me' && req.method === 'GET') {

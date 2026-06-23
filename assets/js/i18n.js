@@ -415,6 +415,7 @@ if (!window.gsap) {
     // -------- command center · approvals / audit / autonomy / roi --------
     'cc.approvals':{ en:'Approvals', de:'Freigaben', nl:'Goedkeuringen' },
     'cc.audit':    { en:'Audit log', de:'Audit-Log', nl:'Auditlog' },
+    'cc.settings': { en:'Settings', de:'Einstellungen', nl:'Instellingen' },
     'ap.title':    { en:'Approvals', de:'Freigaben', nl:'Goedkeuringen' },
     'ap.sub':      { en:'Supervised actions wait here for your approval before they run.', de:'Überwachte Aktionen warten hier auf deine Freigabe, bevor sie ausgeführt werden.', nl:'Begeleide acties wachten hier op je goedkeuring voordat ze worden uitgevoerd.' },
     'ap.none':     { en:'Nothing waiting — your workforce is clear.', de:'Nichts offen — deine Belegschaft ist auf dem Laufenden.', nl:'Niets in de wachtrij — je personeel is bij.' },

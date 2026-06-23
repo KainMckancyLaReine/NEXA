@@ -495,6 +495,33 @@ async function renderSettings(){
   me = me || {};
   const initial=(me.name||'U').trim().charAt(0).toUpperCase();
   const IN='width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg-1,transparent);color:var(--text);font-family:inherit;font-size:14px;margin-top:6px';
+  const isAdminUser = me.role==='admin';
+  const H4='font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px';
+  const adminHtml = !isAdminUser ? '' : `
+      <div class="glass" style="padding:20px">
+        <h4 style="${H4}">Team members</h4>
+        <div id="stUsers" style="display:grid;gap:8px;margin-bottom:14px"><div style="font-size:12px;color:var(--text-3)">Loading…</div></div>
+        <div style="border-top:1px solid var(--border);padding-top:14px">
+          <div style="font-size:12px;color:var(--text-3);margin-bottom:6px">Add a team member</div>
+          <input id="auName" placeholder="Full name" style="${IN};margin-top:0">
+          <input id="auEmail" placeholder="Email (optional)" style="${IN}">
+          <input id="auUser" placeholder="Username" style="${IN}">
+          <input id="auPass" type="password" placeholder="Temporary password (min 8)" style="${IN}">
+          <select id="auRole" style="${IN}"><option value="member">Member</option><option value="admin">Admin</option></select>
+          <div id="auMsg" style="font-size:12.5px;margin-top:10px;min-height:16px"></div>
+          <button class="btn btn-primary" id="auAdd" style="margin-top:8px;padding:9px 18px;font-size:13px">Add user</button>
+        </div>
+      </div>
+      <div class="glass" style="padding:20px">
+        <h4 style="${H4}">Company accounts</h4>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:6px">Create a separate company workspace with its own admin and data.</div>
+        <input id="acName" placeholder="Company name" style="${IN};margin-top:0">
+        <input id="acTenant" placeholder="Workspace id (e.g. acme)" style="${IN}">
+        <input id="acUser" placeholder="Admin username" style="${IN}">
+        <input id="acPass" type="password" placeholder="Admin password (min 8)" style="${IN}">
+        <div id="acMsg" style="font-size:12.5px;margin-top:10px;min-height:16px"></div>
+        <button class="btn btn-primary" id="acCreate" style="margin-top:8px;padding:9px 18px;font-size:13px">Create company account</button>
+      </div>`;
   view.innerHTML=`
     <div class="view-head"><div><h2>Settings</h2><p>Manage your profile photo, name and password.</p></div></div>
     <div style="display:grid;gap:16px;max-width:560px">
@@ -520,6 +547,7 @@ async function renderSettings(){
         <div id="stPassMsg" style="font-size:12.5px;margin-top:10px;min-height:16px"></div>
         <button class="btn btn-primary" id="stSavePass" style="margin-top:8px;padding:9px 18px;font-size:13px">Update password</button>
       </div>
+      ${adminHtml}
       <div class="glass" style="padding:14px 20px;font-size:13px;color:var(--text-3)">Signed in as <b style="color:var(--text)">${rxEsc(me.user||'')}</b> · ${rxEsc(me.role||'')} · ${rxEsc(me.company||'')}</div>
     </div>`;
   if(window.I18N) I18N.apply(view);
@@ -555,6 +583,42 @@ async function renderSettings(){
     if(r&&r.ok){ msg.style.color='var(--success)'; msg.textContent='Password updated.'; view.querySelector('#stCur').value=''; view.querySelector('#stNew').value=''; view.querySelector('#stConf').value=''; }
     else { msg.style.color='var(--error)'; msg.textContent=(r&&r.message)||'Current password is incorrect.'; }
   };
+
+  /* ---- admin: team + company management ---- */
+  if(isAdminUser){
+    async function loadUsers(){
+      const box=view.querySelector('#stUsers'); if(!box) return;
+      let r=null; try{ r=await NEXA.listUsers(); }catch(e){}
+      const users=(r&&r.users)||[];
+      box.innerHTML = users.map(u=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:9px">
+          <div style="width:30px;height:30px;border-radius:8px;overflow:hidden;background:#2563eb;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none">${u.avatar?`<img src="${u.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`:rxEsc((u.name||u.user||'U').charAt(0).toUpperCase())}</div>
+          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${rxEsc(u.name||u.user)}</div><div style="font-size:11px;color:var(--text-3)">${rxEsc(u.user)} · ${rxEsc(u.role)}</div></div>
+          ${u.id===me.userId?`<span style="font-size:11px;color:var(--text-3);padding:0 6px">you</span>`:`<button class="btn btn-ghost rmU" data-id="${u.id}" style="padding:5px 11px;font-size:12px">Remove</button>`}
+        </div>`).join('') || '<div style="font-size:12px;color:var(--text-3)">No users yet.</div>';
+      box.querySelectorAll('.rmU').forEach(b=>b.onclick=async()=>{
+        if(!confirm('Remove this user? They will lose access immediately.')) return;
+        let r=null; try{ r=await NEXA.removeUser(b.dataset.id); }catch(e){}
+        if(r&&r.ok) loadUsers(); else alert((r&&r.message)||'Could not remove user.');
+      });
+    }
+    loadUsers();
+    view.querySelector('#auAdd').onclick=async()=>{
+      const msg=view.querySelector('#auMsg'); msg.textContent='';
+      const u={ name:view.querySelector('#auName').value.trim(), email:view.querySelector('#auEmail').value.trim(), user:view.querySelector('#auUser').value.trim(), pass:view.querySelector('#auPass').value, role:view.querySelector('#auRole').value };
+      if(!u.user || u.pass.length<8){ msg.style.color='var(--error)'; msg.textContent='Username and an 8+ character password are required.'; return; }
+      let r=null; try{ r=await NEXA.createUser(u); }catch(e){}
+      if(r && !r.error){ msg.style.color='var(--success)'; msg.textContent='User added.'; ['#auName','#auEmail','#auUser','#auPass'].forEach(s=>view.querySelector(s).value=''); loadUsers(); }
+      else { msg.style.color='var(--error)'; msg.textContent=(r&&r.message)||(r&&r.error==='user_exists'?'That username already exists.':'Could not add user.'); }
+    };
+    view.querySelector('#acCreate').onclick=async()=>{
+      const msg=view.querySelector('#acMsg'); msg.textContent='';
+      const d={ companyName:view.querySelector('#acName').value.trim(), tenantId:view.querySelector('#acTenant').value.trim(), user:view.querySelector('#acUser').value.trim(), pass:view.querySelector('#acPass').value };
+      if(!d.tenantId || !d.user || d.pass.length<8){ msg.style.color='var(--error)'; msg.textContent='Workspace id, admin username and an 8+ character password are required.'; return; }
+      let r=null; try{ r=await NEXA.createCompany(d); }catch(e){}
+      if(r && !r.error){ msg.style.color='var(--success)'; msg.textContent=`Company "${d.companyName||d.tenantId}" created. Its admin signs in as "${d.user}" on workspace "${r.tenant||d.tenantId}".`; ['#acName','#acTenant','#acUser','#acPass'].forEach(s=>view.querySelector(s).value=''); }
+      else { msg.style.color='var(--error)'; msg.textContent=(r&&r.error==='tenant_exists'?'That workspace id already exists.':(r&&r.message)||'Could not create company.'); }
+    };
+  }
 }
 function navigate(v){
   if(!routes[v]) v = 'dashboard';
