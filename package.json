@@ -1,12 +1,15 @@
 {
-  "name": "naamloze-map",
+  "name": "nexa",
   "version": "1.0.0",
-  "description": "",
+  "description": "NEXA — AI Workforce Operating System (site + API).",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "dev": "node server/server.js",
     "test": "echo \"No test specified\""
+  },
+  "engines": {
+    "node": ">=18"
   },
   "keywords": [],
   "author": "",

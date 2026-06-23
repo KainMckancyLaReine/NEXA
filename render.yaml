@@ -1,0 +1,27 @@
+# NEXA — Render Blueprint (one service serves the site AND the API)
+# Deploy: push to GitHub → Render → New → Blueprint → pick this repo.
+services:
+  - type: web
+    name: nexa
+    runtime: node
+    plan: free
+    startCommand: node server/server.js
+    envVars:
+      # Signing secret for login tokens — generated once, kept stable across restarts.
+      - key: NEXA_AUTH_SECRET
+        generateValue: true
+      # Founder / admin account. Set NEXA_ADMIN_PASS as a secret in the Render dashboard.
+      - key: NEXA_ADMIN_USER
+        value: kain
+      - key: NEXA_ADMIN_PASS
+        sync: false
+      # Lock self-serve signup off in production (admins create accounts in-app).
+      - key: NEXA_ALLOW_SIGNUP
+        value: "false"
+    # NOTE: the free plan has an EPHEMERAL filesystem — accounts/data reset on
+    # each redeploy/restart (the app reseeds from NEXA_ADMIN_* env). For
+    # persistent accounts, upgrade the plan and attach a disk:
+    #   disk:
+    #     name: nexa-data
+    #     mountPath: /opt/render/project/src/server/data
+    #     sizeGB: 1

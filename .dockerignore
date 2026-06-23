@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+.env.local
+server/data/nexa.json
+*.log
+.DS_Store
+**/.DS_Store
+NEXA-walkthrough.mp4
