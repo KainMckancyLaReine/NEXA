@@ -190,6 +190,9 @@ body { height: 100vh; overflow: hidden; }
   .cmd-input .mic { order: 1; }
   .cmd-head .hi { width: 100%; }
 }
+@media (max-width:820px){
+  #repLayout, #docLayout { grid-template-columns: 1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -262,9 +265,15 @@ const WF_FALLBACK = [
 /* ============================================================
    GLOBAL COMMAND BAR
    ============================================================ */
-const suggestions = ['Follow up all inactive leads','Generate weekly operational report','Create invoices for all pending deals','Schedule onboarding meetings','Review overdue invoices'];
+const suggestions = ['Follow up all inactive leads','Generate weekly operational report','Create invoices for all pending deals','Schedule onboarding meetings','Review overdue invoices','Build a financial model in Excel','Create a pitch deck in PowerPoint','Screen all new candidate applications','Send payment reminders for overdue invoices','Refresh all sales dashboards'];
 const sugEl = $('#suggestions');
-suggestions.forEach(s => { const b=document.createElement('div'); b.className='suggestion'; b.textContent=s; b.onclick=()=>runCommand(s); sugEl.appendChild(b); });
+function renderSuggestions(){
+  const shuffled=[...suggestions].sort(()=>Math.random()-.5).slice(0,5);
+  sugEl.innerHTML='';
+  shuffled.forEach(s => { const b=document.createElement('div'); b.className='suggestion'; b.textContent=s; b.onclick=()=>runCommand(s); sugEl.appendChild(b); });
+  const ref=document.createElement('div'); ref.className='suggestion'; ref.textContent='↻'; ref.title='More suggestions'; ref.style.padding='7px 11px'; ref.onclick=renderSuggestions; sugEl.appendChild(ref);
+}
+renderSuggestions();
 $('#cmdSend').onclick = () => { const v=$('#cmd').value.trim(); if(v) runCommand(v); };
 $('#cmd').addEventListener('keydown', e => { if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) runCommand(v); } });
 
@@ -532,20 +541,66 @@ async function renderApprovals(){
   if(window.I18N) I18N.apply(wrap);
   wrap.querySelectorAll('[data-id]').forEach(card=>{
     const id=card.dataset.id;
-    card.querySelector('.ap-ok').onclick=async()=>{ const rr=await ENG.approve(id); const e=(rr&&rr.task&&rr.task.empId)||''; const nm=(window.AINAMES&&AINAMES[e])||(rr&&rr.task&&rr.task.empName)||'Workforce'; toast(`<b>${nm}</b> ${t('ap.approved')}`); if(rr&&rr.task) showResult(rr.task); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
-    card.querySelector('.ap-no').onclick=async()=>{ await ENG.reject(id); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:renderApprovals}); };
+    card.querySelector('.ap-ok').onclick=async()=>{ const rr=await ENG.approve(id); const e=(rr&&rr.task&&rr.task.empId)||''; const nm=(window.AINAMES&&AINAMES[e])||(rr&&rr.task&&rr.task.empName)||'Workforce'; toast(`<b>${nm}</b> ${t('ap.approved')}`); if(rr&&rr.task) showResult(rr.task); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:()=>{ if(currentView==='approvals') renderApprovals(); }}); };
+    card.querySelector('.ap-no').onclick=async()=>{ await ENG.reject(id); gsap.to(card,{opacity:0,y:-8,duration:.3,onComplete:()=>{ if(currentView==='approvals') renderApprovals(); }}); };
   });
   updateApBadge();
 }
 
 /* ---------- VIEW: AUDIT ---------- */
 async function renderAudit(){
-  view.innerHTML=`<div class="view-head"><div><h2 data-i18n="au.title">Audit log</h2><p data-i18n="au.sub">Every command, execution, approval and change.</p></div></div><div class="rep-list" id="auList"></div>`;
+  view.innerHTML=`
+    <div class="view-head">
+      <div><h2 data-i18n="au.title">Audit log</h2><p data-i18n="au.sub">Every command, execution, approval and change.</p></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input id="auSearch" placeholder="Search…" style="padding:9px 13px;border:1px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);min-width:180px;outline:none">
+        <select id="auFilter" style="padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);cursor:pointer;outline:none">
+          <option value="">All types</option>
+          <option value="command">Command</option>
+          <option value="execute">Execute</option>
+          <option value="approve">Approve</option>
+          <option value="reject">Reject</option>
+          <option value="autonomy">Autonomy</option>
+        </select>
+        <button id="auExport" class="btn btn-ghost" style="padding:9px 16px;font-size:13px">⬇ Export</button>
+      </div>
+    </div>
+    <div class="rep-list" id="auList"></div>`;
   if(window.I18N) I18N.apply(view);
-  const list=view.querySelector('#auList'); const items=await ENG.auditLog();
-  if(!items.length){ list.innerHTML=`<div class="glass" style="padding:24px;color:var(--text-3)" data-i18n="au.none">No activity logged yet.</div>`; if(window.I18N)I18N.apply(list); return; }
   const ICON={command:'⌘',execute:'⚡',approve:'✔',reject:'✕',autonomy:'⚙',memory:'❒',schedule:'◷',connector:'⊞'};
-  list.innerHTML=items.map(a=>`<div class="rep"><div class="ric">${ICON[a.type]||'•'}</div><div style="min-width:0"><div class="nm" style="font-weight:500">${a.summary}</div><div class="meta">${a.empCode||'system'} · ${new Date(a.ts).toLocaleString(lang())}</div></div><span class="chip" style="margin-left:auto;font-size:11px">${a.type}</span></div>`).join('');
+  const allItems=await ENG.auditLog();
+
+  function renderList(items){
+    const list=view.querySelector('#auList');
+    if(!items.length){ list.innerHTML=`<div class="glass" style="padding:24px;color:var(--text-3)">No matching entries.</div>`; return; }
+    list.innerHTML=items.map(a=>`<div class="rep"><div class="ric">${ICON[a.type]||'•'}</div><div style="min-width:0"><div class="nm" style="font-weight:500">${rxEsc(a.summary)}</div><div class="meta">${a.empCode||'system'} · ${new Date(a.ts).toLocaleString(lang())}</div></div><span class="chip" style="margin-left:auto;font-size:11px">${a.type}</span></div>`).join('');
+  }
+
+  function applyFilter(){
+    const q=(view.querySelector('#auSearch')?.value||'').toLowerCase();
+    const type=view.querySelector('#auFilter')?.value||'';
+    const filtered=allItems.filter(a=>{
+      if(type && a.type!==type) return false;
+      if(q && !(a.summary||'').toLowerCase().includes(q) && !(a.empCode||'').toLowerCase().includes(q)) return false;
+      return true;
+    });
+    renderList(filtered);
+  }
+
+  if(!allItems.length){ view.querySelector('#auList').innerHTML=`<div class="glass" style="padding:24px;color:var(--text-3)" data-i18n="au.none">No activity logged yet.</div>`; if(window.I18N)I18N.apply(view); return; }
+  renderList(allItems);
+
+  view.querySelector('#auSearch').addEventListener('input', applyFilter);
+  view.querySelector('#auFilter').addEventListener('change', applyFilter);
+  view.querySelector('#auExport').onclick=()=>{
+    const q=(view.querySelector('#auSearch')?.value||'').toLowerCase();
+    const type=view.querySelector('#auFilter')?.value||'';
+    const rows=allItems.filter(a=>(!type||a.type===type)&&(!q||(a.summary||'').toLowerCase().includes(q)||(a.empCode||'').toLowerCase().includes(q)));
+    const csv=['Type,Employee,Summary,Time',...rows.map(a=>[a.type,a.empCode||'system',`"${(a.summary||'').replace(/"/g,'""')}"`,new Date(a.ts).toISOString()].join(','))].join('\n');
+    const fn='NEXA-Audit-'+new Date().toISOString().slice(0,10)+'.csv';
+    downloadBlob(new Blob([csv],{type:'text/csv'}),fn);
+    toast(`<b>${fn}</b> exported`);
+  };
 }
 
 /* ============================================================
@@ -874,7 +929,8 @@ async function renderLiveWorkforce(){
   const actData=await NEXA.activity(); const acts=(actData&&actData.activity)||[];
   const latest={}; for(const a of acts){ if(!latest[a.empCode]) latest[a.empCode]={summary:a.summary,ts:a.ts}; }
   box.innerHTML=wf.map(e=>{
-    const code=e.code||e.id; const l=latest[code]; const working=l&&(Date.now()-l.ts<12000);
+    const code=e.code||e.id; const l=latest[code];
+    const working=(e.status==='live'||e.status==='busy')||(l&&(Date.now()-l.ts<60000));
     const nm=(EMP[code]&&EMP[code][1])||e.name;
     const doing=l?rxEsc(l.summary):'ready for your command';
     return `<a href="employee.html?id=${code}" style="display:flex;align-items:center;gap:11px;padding:9px 8px;border-bottom:1px solid var(--border);text-decoration:none;color:inherit">
@@ -1062,7 +1118,7 @@ function renderReports(){
       <div class="chart-card glass"><h4>Actions executed</h4><div class="sub">This week · ${[42,58,49,71,63,38,55].reduce((a,b)=>a+b)} total</div>${barChart([42,58,49,71,63,38,55],'#7C3AED')}</div>
       <div class="chart-card glass"><h4>Hours saved</h4><div class="sub">Trending up · 7-day</div>${lineChart([18,22,20,27,25,29,31],'#FF7A50')}</div>
     </div>
-    <div class="cards" style="grid-template-columns:1fr 320px;gap:16px;align-items:start">
+    <div id="repLayout" style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start">
       <div class="rep-list" id="repList"></div>
       <div class="glass" style="padding:18px"><h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px">Recently generated</h4><div class="recent-list" id="recent"><div class="r" style="color:var(--text-3)">No reports generated yet.</div></div></div>
     </div>`;
@@ -1155,7 +1211,7 @@ function renderDocuments(){
   view.innerHTML = `
     <div class="view-head"><div><h2 data-i18n="doc.title">Documents</h2><p data-i18n="doc.sub">Ava generates Excel, Word and PowerPoint — fully automated.</p></div>
       <span class="chip"><span class="status-dot live"></span> Ava</span></div>
-    <div class="cards" style="grid-template-columns:1fr 320px;gap:16px;align-items:start">
+    <div id="docLayout" style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start">
       <div>
         <div class="rep-list" id="docList"></div>
         <div class="glass" style="padding:18px;margin-top:16px"><h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px" data-i18n="doc.schedules">Scheduled documents</h4><div id="schedList"></div></div>

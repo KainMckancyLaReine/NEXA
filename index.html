@@ -591,7 +591,7 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:20px; he
       </div>
       <div><h5 data-i18n="nav.platform">Platform</h5><a href="platform.html" data-i18n="nav.platform">Platform</a><a href="workforce.html" data-i18n="nav.workforce">Workforce</a><a href="integrations.html" data-i18n="nav.integrations">Integrations</a></div>
       <div><h5 data-i18n="foot.company">Company</h5><a href="pricing.html" data-i18n="nav.pricing">Pricing</a><a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a><a href="command-center.html" data-i18n="nav.command">Command Center</a></div>
-      <div><h5 data-i18n="foot.resources">Resources</h5><a href="#" data-i18n="foot.docs">Documentation</a><a href="#" data-i18n="foot.security">Security</a><a href="#" data-i18n="foot.status">Status</a></div>
+      <div><h5 data-i18n="foot.resources">Resources</h5><a href="#" onclick="event.preventDefault();showFooterToast(this.textContent)" data-i18n="foot.docs">Documentation</a><a href="#" onclick="event.preventDefault();showFooterToast(this.textContent)" data-i18n="foot.security">Security</a><a href="#" onclick="event.preventDefault();showFooterToast(this.textContent)" data-i18n="foot.status">Status</a></div>
     </div>
     <p class="faint" style="margin-top:46px;font-size:13px">© 2026 NEXA · SOC 2 Type II · GDPR</p>
   </div>
@@ -639,5 +639,14 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:20px; he
 <script src="assets/js/avatars.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/landing.js"></script>
+<script>
+function showFooterToast(label){
+  let t=document.getElementById('footToast');
+  if(!t){ t=document.createElement('div'); t.id='footToast'; t.style.cssText='position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 20px;font-size:13.5px;box-shadow:0 8px 30px -12px rgba(10,10,10,0.3);z-index:500;transition:.3s;pointer-events:none;white-space:nowrap'; document.body.appendChild(t); }
+  t.textContent=label+' — coming soon';
+  t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._t); t._t=setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; },2400);
+}
+</script>
 </body>
 </html>
