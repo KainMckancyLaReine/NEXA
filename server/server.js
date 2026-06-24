@@ -226,7 +226,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (p === '/api/me' && req.method === 'GET') {
       const u = store.findUserById(req.auth.userId);
-      return json(res, 200, { userId: req.auth.userId, role: req.auth.role, tenant: tid, company: ws.company.name,
+      return json(res, 200, { userId: req.auth.userId, user: u ? u.user : null, role: req.auth.role, tenant: tid, company: ws.company.name,
         name: u ? u.name : null, email: u ? (u.email || null) : null, avatar: u ? (u.avatar || null) : null });
     }
     if (p === '/api/me/password' && req.method === 'POST') {

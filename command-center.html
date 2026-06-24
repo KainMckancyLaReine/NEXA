@@ -504,13 +504,21 @@ window.openShop = openShop;
 
 async function runCommand(text){
   $('#cmd').value='';
-  const r=await ENG.submit(text); const task=(r&&r.task)||{};
-  if(r&&r.executed){
-    showResult(task);
-  } else {
-    updateApBadge();
-    showResult(task);
-    if(currentView==='approvals') renderApprovals();
+  const btn=$('#cmdSend');
+  if(btn){ btn.disabled=true; btn.textContent='Running…'; }
+  try {
+    const r=await ENG.submit(text); const task=(r&&r.task)||{};
+    if(r&&r.executed){
+      showResult(task);
+    } else {
+      updateApBadge();
+      showResult(task);
+      if(currentView==='approvals') renderApprovals();
+    }
+  } catch(e){
+    toast('Command failed — please try again.');
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent=t('cc.execute')||'Execute'; }
   }
 }
 
@@ -864,33 +872,54 @@ function renderDashboard(){
       </div>
     </div>`;
   (async () => {
-    // ---- real numbers from the API (fall back to demo values) ----
-    let roi=null; try { roi = await ENG.roi(); } catch(e){}
+    // ---- metrics: ROI from API, demo values as fallback ----
+    let roi=null;
+    try { roi = await ENG.roi(); } catch(e){}
     if(roi){
       countTo('#mActions', roi.tasksToday||0, '');
-      const mt=view.querySelector('#mTime'); if(mt) mt.textContent=(roi.hoursSavedToday||0)+'h';
+      const mt=view.querySelector('#mTime'); if(mt) mt.textContent=(roi.hoursSavedToday||0).toFixed(1)+'h';
       countTo('#mPerf', roi.avgPerformance||0, '%');
       const p=view.querySelector('#roiPct'), a=view.querySelector('#roiAnnual');
-      if(p) p.textContent=(roi.roiPct||0)+'% ROI'; if(a) a.textContent='€'+(roi.annualSavings||0).toLocaleString('en-US');
-    } else { countTo('#mActions',318,''); const mt=view.querySelector('#mTime'); if(mt) mt.textContent='27.6h'; countTo('#mPerf',98,'%'); }
+      if(p) p.textContent=(roi.roiPct||0).toLocaleString()+'% ROI';
+      if(a) a.textContent='€'+(roi.annualSavings||0).toLocaleString('nl-NL');
+    } else {
+      countTo('#mActions',318,'');
+      const mt=view.querySelector('#mTime'); if(mt) mt.textContent='27.6h';
+      countTo('#mPerf',98,'%');
+    }
+
     // ---- approvals tile ----
-    try { const n=await ENG.pending(); const m=view.querySelector('#mApprov'); if(m) m.textContent=n;
-      const d=view.querySelector('#mApprovD'); if(d) d.textContent = n? 'tap to review →' : 'all clear ✓'; } catch(e){}
-    // ---- intelligence rail (real bottleneck / risk / revenue) ----
-    const intel = await NEXA.intelligence();
+    try {
+      const n=await ENG.pending();
+      const m=view.querySelector('#mApprov'); if(m) m.textContent=n;
+      const d=view.querySelector('#mApprovD'); if(d) d.textContent = n? 'tap to review →' : 'all clear ✓';
+    } catch(e){}
+
+    // ---- intelligence rail ----
+    let intel=null;
+    try { intel = await NEXA.intelligence(); } catch(e){}
     if(intel){
       const rev=view.querySelector('#intRev'); if(rev&&intel.revenueForecast) rev.textContent=intel.revenueForecast;
       const bott=view.querySelector('#intBott'); if(bott&&intel.bottleneck) bott.textContent=intel.bottleneck;
-      if(intel.risk){ const rp=view.querySelector('#intRiskPill'), rb=view.querySelector('#intRiskBig');
-        if(rp) rp.textContent=(intel.risk.accounts||0)+' accounts'; if(rb&&intel.risk.arr) rb.textContent=intel.risk.arr+' ARR flagged at risk'; }
+      if(intel.risk){
+        const rp=view.querySelector('#intRiskPill'), rb=view.querySelector('#intRiskBig');
+        if(rp) rp.textContent=(intel.risk.accounts||0)+' accounts';
+        if(rb&&intel.risk.arr) rb.textContent=intel.risk.arr+' ARR flagged at risk';
+      }
     }
-    // ---- performance + recommendations ----
-    const perf = view.querySelector('#perfBox'), rec = view.querySelector('#recBox');
-    const wfData = (await NEXA.workforce());
-    const wf = (wfData && wfData.workforce) ? wfData.workforce : WF_FALLBACK;
-    if(perf) perf.innerHTML = wf.slice(0,5).map(e => `<div class="top" style="margin-top:8px"><span class="lbl">${e.name.replace('AI ','')}</span><span style="font-weight:700">${e.performance}%</span></div><div class="perfbar"><i style="width:${e.performance}%"></i></div>`).join('');
-    const recs = (intel && intel.recommendations) || ['14 trial accounts show buying signals — deploy Sales Manager outreach.','Auto-send payment reminders for 6 overdue invoices (€31k).','Route tier-1 tickets fully to Support Agent — frees 9h/week.'];
-    if(rec) rec.innerHTML = recs.map(r => `<div class="rec"><span class="ai">AI</span><div class="body">${r}</div></div>`).join('');
+
+    // ---- performance bars + recommendations ----
+    let wf=WF_FALLBACK;
+    try {
+      const wfData=await NEXA.workforce();
+      if(wfData&&wfData.workforce) wf=wfData.workforce;
+    } catch(e){}
+    const perf=view.querySelector('#perfBox'), rec=view.querySelector('#recBox');
+    if(perf) perf.innerHTML = wf.slice(0,5).map(e =>
+      `<div class="top" style="margin-top:8px"><span class="lbl">${rxEsc(e.name.replace('AI ',''))}</span><span style="font-weight:700">${e.performance}%</span></div><div class="perfbar"><i style="width:${e.performance}%"></i></div>`
+    ).join('');
+    const recs=(intel&&intel.recommendations)||['14 trial accounts show buying signals — deploy Sales Manager outreach.','Auto-send payment reminders for 6 overdue invoices (€31k).','Route tier-1 tickets fully to Support Agent — frees 9h/week.'];
+    if(rec) rec.innerHTML = recs.map(r => `<div class="rec"><span class="ai">AI</span><div class="body">${rxEsc(r)}</div></div>`).join('');
     window.__wf = wf;
   })();
   if(window.I18N) I18N.apply(view);
@@ -906,7 +935,8 @@ async function renderStatusStrip(){
   let conn=[]; try { const c=await NEXA.connectorList(); conn=(c&&c.connectors)||[]; } catch(e){}
   const live=conn.filter(c=>c.mode==='live').length, sand=conn.length-live;
   let pilot=null; try { pilot=await NEXA.pilot(); } catch(e){}
-  const wfData=await NEXA.workforce(); const wf=(wfData&&wfData.workforce)?wfData.workforce:WF_FALLBACK;
+  let wf=window.__wf||WF_FALLBACK;
+  try { const wfData=await NEXA.workforce(); if(wfData&&wfData.workforce) wf=wfData.workforce; } catch(e){}
   const dot=(c)=>`<span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block;flex:none"></span>`;
   const item=(c,txt)=>`<span style="display:inline-flex;align-items:center;gap:7px">${dot(c)}${txt}</span>`;
   const sep=`<span style="color:var(--border)">|</span>`;
@@ -925,8 +955,10 @@ function countTo(sel, val, suf){ const el=view.querySelector(sel); if(!el) retur
 const ROLE={OM:'Operations · inbox, scheduling, CRM',SM:'Sales · leads & follow-ups',FM:'Finance · invoices & reminders',SA:'Support · tickets & CSAT',RA:'Recruiting · screening & interviews',DA:'Data · dashboards & anomalies',MM:'Marketing · campaigns & content',PM:'Procurement · POs & vendors',DOC:'Documents · Excel / Word / PPT'};
 async function renderLiveWorkforce(){
   const box=view.querySelector('#liveWork'); if(!box) return;
-  const wfData=await NEXA.workforce(); const wf=(wfData&&wfData.workforce)?wfData.workforce:(window.__wf||WF_FALLBACK);
-  const actData=await NEXA.activity(); const acts=(actData&&actData.activity)||[];
+  let wf=window.__wf||WF_FALLBACK;
+  try { const wfData=await NEXA.workforce(); if(wfData&&wfData.workforce) wf=wfData.workforce; } catch(e){}
+  let acts=[];
+  try { const actData=await NEXA.activity(); acts=(actData&&actData.activity)||[]; } catch(e){}
   const latest={}; for(const a of acts){ if(!latest[a.empCode]) latest[a.empCode]={summary:a.summary,ts:a.ts}; }
   box.innerHTML=wf.map(e=>{
     const code=e.code||e.id; const l=latest[code];

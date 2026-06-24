@@ -39,13 +39,25 @@ window.NEXA = (function () {
         headers,
         body: opts.body ? JSON.stringify(opts.body) : undefined,
       });
-      // On an expired/missing token, clear it and behave like "offline" so
-      // callers fall back to local demo data instead of rendering errors.
-      if (res.status === 401 && pathname !== '/api/login' && pathname !== '/api/signup') { setToken(null); return null; }
-      if (!res.ok) { online = false; return null; }
+      // On an expired/missing token, clear it and redirect to sign-in
+      // so the user doesn't silently get stale demo data.
+      if (res.status === 401 && pathname !== '/api/login' && pathname !== '/api/signup') {
+        setToken(null);
+        // Only redirect from within the dashboard pages, not the public site.
+        if (location.pathname.includes('command-center') || location.pathname.includes('employee') || location.pathname.includes('workforce')) {
+          try { localStorage.removeItem('nexa_user'); } catch {}
+          location.replace('signin.html');
+        }
+        return null;
+      }
+      // HTTP 4xx/5xx errors mean the server is reachable but the request failed.
+      // Do NOT set online=false — that would silently fall back to demo data for
+      // every subsequent call, hiding the real error from the user.
+      if (!res.ok) return null;
       online = true;
       return await res.json();
     } catch {
+      // Network failure (server unreachable, DNS, etc.) — go offline.
       online = false;
       return null;
     }
