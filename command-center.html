@@ -207,6 +207,7 @@ body { height: 100vh; overflow: hidden; }
     <a class="nav-i" data-view="operations" href="#operations"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span data-i18n="cc.operations">Operations</span></a>
     <a class="nav-i" data-view="approvals" href="#approvals"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><span data-i18n="cc.approvals">Approvals</span><span class="badge" id="apBadge" style="display:none">0</span></a>
     <a class="nav-i" data-view="audit" href="#audit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span><span data-i18n="cc.audit">Audit log</span></a>
+    <a class="nav-i" data-view="walkthrough" href="#walkthrough"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span data-i18n="cc.walkthrough">Walkthrough</span></a>
     <div class="grp-label">Configure</div>
     <a class="nav-i" data-view="integrations" href="#integrations"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span data-i18n="cc.integrations">Integrations</span></a>
     <a class="nav-i" data-view="reports" href="#reports"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="20" x2="21" y2="20"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="9"/><line x1="18" y1="20" x2="18" y2="5"/></svg></span><span data-i18n="cc.reports">Reports</span></a>
@@ -615,7 +616,7 @@ async function renderAudit(){
    ROUTER
    ============================================================ */
 let currentView = 'dashboard';
-const routes = { dashboard: renderDashboard, workforce: renderWorkforce, operations: renderOperations, integrations: renderIntegrations, reports: renderReports, documents: renderDocuments, approvals: renderApprovals, audit: renderAudit, settings: renderSettings };
+const routes = { dashboard: renderDashboard, workforce: renderWorkforce, operations: renderOperations, integrations: renderIntegrations, reports: renderReports, documents: renderDocuments, approvals: renderApprovals, audit: renderAudit, settings: renderSettings, walkthrough: renderWalkthrough };
 
 /* Load the signed-in user's name + avatar into the sidebar chip. */
 async function initMe(){
@@ -1143,6 +1144,49 @@ const REPORTS = [
   ['☎','Support & CSAT Report','Support · volume, resolution, satisfaction'],
   ['⚏','Recruiting Funnel Report','Recruiting · applicants, screening, interviews'],
 ];
+function renderWalkthrough(){
+  const chapters = [
+    [0,  'Welcome', 'A guided tour of NEXA'],
+    [3,  'Create workspace', 'Where your AI workforce lives'],
+    [8,  'Connect tools', 'Plug into Slack, Gmail, Salesforce & more'],
+    [12, 'Pick AI employees', 'Pre-trained for each role'],
+    [17, 'Deploy', 'Your workforce goes live'],
+    [21, 'Command Center', 'Everything happening, in real time'],
+    [30, 'Workforce', 'Per-employee output & performance'],
+    [37, 'Operations', 'Work flowing from queued to done'],
+  ];
+  const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  view.innerHTML = `
+    <div class="view-head"><div><h2>Walkthrough</h2><p>See how NEXA works — from first setup to a live command center</p></div></div>
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start">
+      <div class="glass" style="padding:14px;border-radius:18px">
+        <video id="wtVideo" controls playsinline preload="metadata" poster="assets/walkthrough-poster.jpg"
+          style="width:100%;border-radius:12px;display:block;background:#0a0a0a;aspect-ratio:16/10">
+          <source src="assets/walkthrough.mp4" type="video/mp4">
+        </video>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px" id="wtChips"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="glass" style="padding:18px;border-radius:16px">
+          <h4 style="font-size:13px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px">Chapters</h4>
+          <div id="wtChapters" style="display:flex;flex-direction:column;gap:2px"></div>
+        </div>
+        <div class="glass" style="padding:18px;border-radius:16px">
+          <h4 style="font-size:14px;margin-bottom:8px">What you're seeing</h4>
+          <p style="font-size:13px;color:var(--text-2);line-height:1.6">NEXA deploys a team of pre-trained AI employees that connect to the tools you already use. This Command Center is the single place to direct them, watch every action stream in live, and track the hours they save — all in one screen.</p>
+          <a href="walkthrough.html" style="display:inline-block;margin-top:12px;font-size:13px;font-weight:600;color:var(--accent-2);text-decoration:none">Read the full overview →</a>
+        </div>
+      </div>
+    </div>`;
+  const v = view.querySelector('#wtVideo');
+  const chips = view.querySelector('#wtChips');
+  const list = view.querySelector('#wtChapters');
+  chips.innerHTML = chapters.map((c,i)=>`<button class="suggestion" data-t="${c[0]}">${fmt(c[0])} · ${c[1]}</button>`).join('');
+  list.innerHTML = chapters.map((c,i)=>`<a href="#" class="wt-ch" data-t="${c[0]}" style="display:flex;gap:12px;align-items:center;padding:9px 10px;border-radius:10px;text-decoration:none;transition:.15s"><span style="font-size:12px;font-weight:700;color:var(--accent-2);min-width:34px">${fmt(c[0])}</span><span><span style="display:block;font-size:13.5px;font-weight:600;color:var(--text)">${c[1]}</span><span style="font-size:12px;color:var(--text-3)">${c[2]}</span></span></a>`).join('');
+  const seek = t => { v.currentTime = t; v.play().catch(()=>{}); };
+  view.querySelectorAll('[data-t]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); seek(+el.dataset.t); }));
+  list.querySelectorAll('.wt-ch').forEach(a => { a.onmouseenter=()=>a.style.background='rgba(79,70,229,0.07)'; a.onmouseleave=()=>a.style.background='none'; });
+}
 function renderReports(){
   view.innerHTML = `
     <div class="view-head"><div><h2>Reports</h2><p>Workforce-generated intelligence, on demand</p></div></div>
