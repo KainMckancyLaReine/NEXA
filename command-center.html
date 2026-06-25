@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script>/* auth guard — no dashboard without login */try{if(!localStorage.getItem('nexa_user'))location.replace('signin.html');}catch(e){}</script>
+<script>/* theme init (before paint to avoid flash) */try{var _t=localStorage.getItem('nexa_theme');document.documentElement.dataset.theme=(_t==='dark'||_t==='brand')?_t:'light';}catch(e){}</script>
 <title>NEXA — Command Center</title>
 <link rel="icon" href="assets/img/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -193,6 +194,63 @@ body { height: 100vh; overflow: hidden; }
 @media (max-width:820px){
   #repLayout, #docLayout { grid-template-columns: 1fr !important; }
 }
+
+/* =========================================================
+   THEMES — dashboard only · Light · NEXA (brand) · Dark
+   ========================================================= */
+.theme-switch { display:flex; gap:4px; padding:4px; border:1px solid var(--border); border-radius:12px; background:var(--bg-2); margin:auto 0 10px; }
+.theme-switch button { flex:1; display:grid; place-items:center; padding:8px 0; border:none; background:none; border-radius:8px; cursor:pointer; color:var(--text-3); transition:.18s; font-family:inherit; }
+.theme-switch button svg { width:16px; height:16px; }
+.theme-switch button:hover { color:var(--text); }
+.theme-switch button.active { background:var(--card); color:var(--accent-2); box-shadow:0 1px 4px rgba(0,0,0,.12); }
+@media (min-width:681px) and (max-width:1000px){ .theme-switch { flex-direction:column; } }
+@media (max-width:680px){
+  /* compact horizontal group that sits neatly at the end of the mobile tab bar */
+  .side .theme-switch { flex:0 0 auto; flex-direction:row; gap:2px; margin:0 0 0 4px; padding:3px; align-self:center; }
+  .side .theme-switch button { padding:7px 9px; }
+}
+
+/* ---- NEXA brand theme: logo colors (violet → magenta), light & readable ---- */
+html[data-theme="brand"]{
+  --bg:#FBFAFF; --bg-2:#F4F0FC; --surface:#FFFFFF; --card:#FFFFFF;
+  --ink:#1B1233; --text:#1B1233; --text-2:#675E83; --text-3:#7E73A2;
+  --border:rgba(124,58,237,0.14); --border-strong:rgba(124,58,237,0.24);
+  --accent:#7C3AED; --accent-2:#6D28D9; --accent-soft:#C4B5FD; --accent-glow:rgba(124,58,237,0.28);
+  --warm:#7C3AED; --warm-2:#C4B5FD; --sunset:#EC4899;
+  --warm-glow:rgba(236,72,153,0.18); --sunset-glow:rgba(236,72,153,0.20);
+}
+html[data-theme="brand"] .nav-i.active{ background:linear-gradient(100deg, rgba(124,58,237,0.20), rgba(236,72,153,0.08)); box-shadow:inset 0 0 0 1px rgba(124,58,237,0.30); }
+html[data-theme="brand"] .cmd-input .send,
+html[data-theme="brand"] .rep .gen,
+html[data-theme="brand"] .act .av,
+html[data-theme="brand"] .wf-card .av{ background:linear-gradient(135deg,var(--accent),var(--sunset)); }
+html[data-theme="brand"] .cmd-input:focus-within{ box-shadow:0 0 0 4px rgba(124,58,237,0.12); }
+
+/* ---- Dark theme — high contrast, everything stays legible ---- */
+html[data-theme="dark"]{
+  --bg:#0B0D12; --bg-2:#0E1117; --surface:#11141B; --card:#171B24;
+  --ink:#EEF1F6; --text:#EEF1F6; --text-2:#AAB2C0; --text-3:#7E8696;
+  --border:rgba(255,255,255,0.10); --border-strong:rgba(255,255,255,0.20);
+  --accent:#818CF8; --accent-2:#A5B4FC; --accent-soft:#A5B4FC; --accent-glow:rgba(129,140,248,0.30);
+  --warm:#A78BFA; --warm-2:#C4B5FD; --sunset:#60A5FA;
+  --success:#34D399; --warning:#FBBF24; --error:#F87171;
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] .app { background:var(--bg); }
+html[data-theme="dark"] .glass{ background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.45), 0 14px 32px -20px rgba(0,0,0,.8); }
+html[data-theme="dark"] .cmdbar{ background:rgba(17,20,27,0.72); }
+html[data-theme="dark"] .cmd-input .mic{ background:var(--card); color:var(--text-2); }
+html[data-theme="dark"] .int-card .lg{ background:var(--card); }
+html[data-theme="dark"] .int-toggle{ background:var(--card); color:var(--text); }
+html[data-theme="dark"] .perfbar{ background:rgba(255,255,255,0.12); }
+html[data-theme="dark"] .nav-i:hover{ background:rgba(255,255,255,0.06); }
+html[data-theme="dark"] .suggestion{ background:rgba(255,255,255,0.04); }
+html[data-theme="dark"] .task,
+html[data-theme="dark"] .wf-card .m{ background:rgba(255,255,255,0.04); }
+html[data-theme="dark"] .col h4 .ct{ background:rgba(255,255,255,0.08); }
+html[data-theme="dark"] .rec{ background:rgba(129,140,248,0.10); }
+html[data-theme="dark"] .theme-switch button.active{ box-shadow:0 1px 4px rgba(0,0,0,.55); }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb{ background:#2a2f3a; border-color:var(--bg-2); }
 </style>
 </head>
 <body>
@@ -214,7 +272,12 @@ body { height: 100vh; overflow: hidden; }
     <a class="nav-i" data-view="documents" href="#documents"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></span><span data-i18n="cc.documents">Documents</span></a>
     <a class="nav-i" data-view="settings" href="#settings"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></span><span data-i18n="cc.settings">Settings</span></a>
     <a class="nav-i" href="#" id="navShop" onclick="openShop();return false;"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span data-i18n="cc.marketplace">Marketplace</span></a>
-    <div class="user"><span class="av" id="meAvatar" style="overflow:hidden">K</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600" id="meName">Kain</div><div style="font-size:11px;color:var(--text-3)" id="meSub">Admin · Acme Inc.</div></div><a class="logout" href="signin.html" title="Sign out" onclick="try{localStorage.removeItem('nexa_user');localStorage.removeItem('nexa_token');}catch(e){}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a></div>
+    <div class="theme-switch" id="themeSwitch" role="group" aria-label="Theme">
+      <button type="button" data-theme-val="light" title="Light" aria-label="Light theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
+      <button type="button" data-theme-val="brand" title="NEXA colors" aria-label="NEXA brand theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.2L19 10l-5.1 1.8L12 17l-1.9-5.2L5 10l5.1-1.8L12 3z"/></svg></button>
+      <button type="button" data-theme-val="dark" title="Dark" aria-label="Dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <div class="user" style="margin-top:0"><span class="av" id="meAvatar" style="overflow:hidden">K</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600" id="meName">Kain</div><div style="font-size:11px;color:var(--text-3)" id="meSub">Admin · Acme Inc.</div></div><a class="logout" href="signin.html" title="Sign out" onclick="try{localStorage.removeItem('nexa_user');localStorage.removeItem('nexa_token');}catch(e){}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a></div>
   </aside>
 
   <!-- CENTER -->
@@ -1337,6 +1400,21 @@ function renderDocuments(){
 
 window.runCommand = runCommand;
 window.addEventListener('nexa:lang', () => navigate(currentView));
+/* ---------- theme switch (Light · NEXA · Dark) ---------- */
+(function(){
+  var sw = document.getElementById('themeSwitch'); if(!sw) return;
+  var btns = sw.querySelectorAll('button');
+  function current(){ var t=document.documentElement.dataset.theme; return (t==='dark'||t==='brand')?t:'light'; }
+  function apply(t){
+    if(t!=='dark'&&t!=='brand') t='light';
+    document.documentElement.dataset.theme = t;
+    try{ localStorage.setItem('nexa_theme', t); }catch(e){}
+    btns.forEach(function(b){ b.classList.toggle('active', b.dataset.themeVal===t); });
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ apply(b.dataset.themeVal); }); });
+  apply(current());
+})();
+
 /* ---------- boot ---------- */
 initMe();
 navigate(location.hash.replace('#','') || 'dashboard');

@@ -19,11 +19,9 @@
 <style>
 .wt-hero { padding:140px 0 50px; text-align:center; }
 .wt-hero .lead { margin:20px auto 0; max-width:600px; }
-.player-wrap { max-width:980px; margin:42px auto 0; }
-.player-frame { border-radius:20px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow-lift); background:#0A0A0A; }
-.player-frame .bar { display:flex; align-items:center; gap:7px; padding:11px 14px; border-bottom:1px solid rgba(255,255,255,.08); background:#15161c; }
-.player-frame .bar i { width:10px; height:10px; border-radius:50%; }
-.player-frame video { width:100%; display:block; aspect-ratio:16/10; background:#0A0A0A; }
+.player-wrap { max-width:1000px; margin:42px auto 0; }
+.player-frame { border-radius:18px; overflow:hidden; box-shadow:0 30px 70px -30px rgba(10,10,20,.45), 0 2px 8px rgba(10,10,20,.06); background:#0A0A0A; line-height:0; }
+.player-frame video { width:100%; display:block; aspect-ratio:16/10; background:#0A0A0A; border-radius:18px; }
 .chips-row { display:flex; flex-wrap:wrap; gap:9px; justify-content:center; margin-top:22px; }
 .chip-seek { font-size:13px; font-weight:600; color:var(--text-2); padding:8px 14px; border-radius:999px; border:1px solid var(--border); background:var(--bg); cursor:pointer; transition:.18s; }
 .chip-seek:hover { border-color:var(--accent); color:var(--accent-2); transform:translateY(-1px); }
@@ -35,6 +33,15 @@
 .shot-frame .bar { display:flex; align-items:center; gap:7px; padding:11px 14px; border-bottom:1px solid var(--border); background:var(--bg-2); }
 .shot-frame .bar i { width:10px; height:10px; border-radius:50%; }
 .cta-band { text-align:center; background:linear-gradient(rgba(10,12,24,.46),rgba(10,12,24,.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat #0A0A0A; color:#fff; border-radius:var(--radius-xl); padding:70px 28px; text-shadow:0 2px 14px rgba(0,0,0,.55); } .cta-band h2{color:#fff;}
+@media (max-width:640px){
+  .wt-hero { padding:104px 0 34px; }
+  .player-wrap { margin-top:26px; }
+  .player-frame video { aspect-ratio:16/11; }
+  .chips-row { gap:7px; margin-top:16px; }
+  .chip-seek { font-size:12px; padding:7px 12px; }
+  .shot-frame .photo { height:240px !important; }
+  .cta-band { padding:52px 20px; }
+}
 </style>
 </head>
 <body>
@@ -49,7 +56,6 @@
     <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
     <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
     <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
-    <a href="walkthrough.html" style="color:var(--ink)" data-i18n="nav.walkthrough">Walkthrough</a>
   </div>
   <div class="nav-actions">
     <span data-lang-mount></span>
@@ -65,7 +71,7 @@
   <a href="integrations.html" data-i18n="nav.integrations">Integrations</a>
   <a href="marketplace.html" data-i18n="nav.marketplace">Marketplace</a>
   <a href="pricing.html" data-i18n="nav.pricing">Pricing</a>
-  <a href="walkthrough.html" data-i18n="nav.walkthrough">Walkthrough</a>
+  <a href="#" data-demo data-i18n="nav.demo">Book a demo</a>
   <a href="signin.html" data-i18n="nav.signin">Sign in</a>
   <a href="onboarding.html" class="btn btn-primary" style="margin-top:10px" data-i18n="nav.deploy">Deploy Workforce</a>
 </div>
@@ -78,7 +84,6 @@
     <p class="lead">From creating your workspace and connecting your tools, to deploying pre-trained AI employees and running everything from a live Command Center — in under a minute.</p>
     <div class="player-wrap reveal">
       <div class="player-frame">
-        <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
         <video id="wtVideo" controls playsinline preload="metadata" poster="assets/walkthrough-poster.jpg">
           <source src="assets/walkthrough.mp4" type="video/mp4">
           Your browser doesn’t support embedded video. <a href="assets/walkthrough.mp4">Download the walkthrough</a>.
@@ -153,6 +158,36 @@
     <p class="faint" style="margin-top:46px;font-size:13px">© 2026 NEXA · SOC 2 Type II · GDPR · Dev by <a href="https://www.kainlareine.nl" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">Kain Mckancy</a></p>
   </div>
 </footer>
+
+<!-- DEMO MODAL -->
+<div class="modal-back" id="demoModal">
+  <div class="modal">
+    <div class="mhead"><div><h3 data-i18n="demo.title">Book your NEXA demo</h3><div class="msub" data-i18n="demo.sub">Pick a slot — we walk you through deploying your first AI workforce.</div></div><button class="x" data-demo-close aria-label="Close">✕</button></div>
+    <div id="demoForm">
+      <div class="mlabel" data-i18n="demo.name">Your details</div>
+      <div class="mfield"><input id="dName" placeholder="Full name" autocomplete="name"></div>
+      <div class="mfield"><input id="dEmail" type="email" placeholder="Work email" autocomplete="email"></div>
+      <div class="mrow2">
+        <div class="mfield"><input id="dCompany" placeholder="Company" autocomplete="organization"></div>
+        <div class="mfield"><select id="dTeam"><option value="" disabled selected data-i18n="demo.teamph">Team size…</option><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div>
+      </div>
+      <div class="mlabel" data-i18n="demo.topics">What would you like to see?</div>
+      <div class="chips" id="dTopics">
+        <button class="ch sel" data-topic="Operations">Operations</button>
+        <button class="ch" data-topic="Sales">Sales</button>
+        <button class="ch" data-topic="Finance">Finance</button>
+        <button class="ch" data-topic="Support">Support</button>
+        <button class="ch" data-topic="Recruiting">Recruiting</button>
+      </div>
+      <div class="mlabel" data-i18n="demo.date">Choose a day</div>
+      <div class="chips" id="dDates"></div>
+      <div class="mlabel" data-i18n="demo.time">Choose a time</div>
+      <div class="chips" id="dTimes"></div>
+      <button class="btn btn-primary btn-block btn-lg" id="dConfirm" style="margin-top:22px" data-i18n="demo.confirm">Confirm booking</button>
+    </div>
+    <div id="demoDone" class="done hidden"><div class="ok">✓</div><h3 data-i18n="demo.booked">Demo booked!</h3><div class="msub" id="demoWhen" style="margin-top:8px;font-weight:600;color:var(--ink)"></div><div class="msub" data-i18n="demo.bookedsub" style="margin-top:6px">Check your inbox for the calendar invite.</div></div>
+  </div>
+</div>
 
 <script src="assets/js/logos.js"></script>
 <script src="assets/js/i18n.js"></script>

@@ -46,6 +46,7 @@ if (!window.gsap) {
     'nav.deploy':     { en:'Deploy Workforce', de:'Belegschaft starten', nl:'Personeel inzetten' },
     'nav.home':       { en:'Home',         de:'Start',         nl:'Home' },
     'nav.command':    { en:'Command Center', de:'Kommandozentrale', nl:'Commandocentrum' },
+    'nav.walkthrough':{ en:'Walkthrough',   de:'Rundgang',      nl:'Rondleiding' },
 
     // -------- hero --------
     'hero.badge':  { en:'The AI Workforce Operating System', de:'Das Betriebssystem für die KI-Belegschaft', nl:'Het besturingssysteem voor je AI-personeel' },
@@ -194,6 +195,7 @@ if (!window.gsap) {
     'cc.cmd_ph':   { en:'Tell your workforce what to accomplish…', de:'Sag deiner Belegschaft, was zu tun ist…', nl:'Vertel je personeel wat het moet doen…' },
     'cc.execute':  { en:'Execute', de:'Ausführen', nl:'Uitvoeren' },
     'cc.dashboard':{ en:'Command Center', de:'Kommandozentrale', nl:'Commandocentrum' },
+    'cc.walkthrough':{ en:'Walkthrough', de:'Rundgang', nl:'Rondleiding' },
     'cc.workforce':{ en:'Workforce', de:'Belegschaft', nl:'Personeel' },
     'cc.operations':{ en:'Operations', de:'Betrieb', nl:'Operatie' },
     'cc.integrations':{ en:'Integrations', de:'Integrationen', nl:'Integraties' },

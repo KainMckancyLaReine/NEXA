@@ -132,7 +132,7 @@ h1,h2,h3,h4 { font-weight:700; letter-spacing:-0.035em; line-height:1.04; color:
 .mobile-menu a.btn-ghost { color:var(--ink); }
 .mobile-backdrop { position:fixed; inset:0; background:rgba(10,10,10,0.3); opacity:0; visibility:hidden; transition:.25s; z-index:250; }
 .mobile-backdrop.open { opacity:1; visibility:visible; }
-@media (max-width:920px){ .nav-toggle { display:flex; } }
+@media (max-width:1040px){ .nav-toggle { display:flex; } .nav-actions .btn { display:none; } }
 
 /* ---------- Ambient (very subtle, strak) ---------- */
 .ambient { position:fixed; inset:0; z-index:-2; pointer-events:none; background:radial-gradient(800px 500px at 80% -10%, rgba(99,102,241,0.05), transparent 60%), radial-gradient(700px 500px at 5% 10%, rgba(236,72,153,0.04), transparent 60%); }
